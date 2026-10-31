@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="wol_import_group_note">Skupina: %1$s</string>
+    <string name="wol_import_size">Import překračuje limit 1 MiB. Seznam se nezměnil.</string>
+    <string name="wol_import_utf8">Soubor není platný UTF-8. Seznam se nezměnil.</string>
+    <string name="wol_import_format">Neplatný formát JSON nebo typ položky. Seznam se nezměnil.</string>
+    <string name="wol_import_schema">Nepodporované nebo chybějící schéma; podporováno 1 a 2.</string>
+    <string name="wol_import_unknown_field">Import obsahuje neznámé pole. Seznam se nezměnil.</string>
+    <string name="wol_import_duplicate_id">Import obsahuje duplicitní ID zařízení. Seznam se nezměnil.</string>
+    <string name="wol_import_invalid_device">Neplatné zařízení: zkontrolujte adresy, rozsahy a délky polí (název 100, poznámka 1000, host 253, ID 64 znaků) i nezáporné časy.</string>
+    <plurals name="wol_import_duplicate_mac">
+        <item quantity="one">Pozor: %1$d další záznam používá stejnou MAC pod jiným ID.</item>
+        <item quantity="few">Pozor: %1$d další záznamy používají stejnou MAC pod jiným ID.</item>
+        <item quantity="other">Pozor: %1$d dalších záznamů používá stejnou MAC pod jiným ID.</item>
+    </plurals>
+    <string name="wol_cancel_probe">Zrušit kontrolu</string>
+    <string name="wol_import_blocked">Import nyní nelze přijmout: dokončete úpravu zařízení nebo odesílání. Seznam se nezměnil.</string>
+    <string name="wol_transfer_cancelled">Přenos zrušen.</string>
+    <string name="wol_document_unavailable">Výběr dokumentu není dostupný. Ověřte aplikaci poskytovatele souborů.</string>
+    <string name="wol_cancel_transfer">Zrušit přenos</string>
+    <string name="wol_dismiss_message">Skrýt zprávu</string>
+    <string name="wol_import_add_item">Přidá se: %1$s</string>
+    <string name="wol_import_replace_item">Přepíše se záznam: %1$s</string>
+    <string name="wol_import_target_warning">Cíl není ověřená privátní IPv4. U názvu hostu se adresa zjistí až při použití; ověřte jeho správnost.</string>
+</resources>

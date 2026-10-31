@@ -1,0 +1,142 @@
+# Tag vX.Y.Z -> unsigned release APK + SHA256SUMS in a DRAFT GitHub Release (D11, docs/distribuce.md §2).
+# CI has no signing key or keystore: the maintainer signs locally with tools/sign_release.sh, which uploads
+# netkit-X.Y.Z.apk, latest.json and a new SHA256SUMS to the draft; publishing runs publish.yml.
+# Actions are pinned to full commit SHAs (verified in the official repos).
+name: Release draft
+
+on:
+  push:
+    tags:
+      - "v*"
+  # Dry run (D24): builds with the placeholder web allowed and creates a draft named
+  # "NetKit X.Y.Z (zkušební běh)" without creating the tag. Delete the draft afterwards.
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+# Explicit bash = `bash --noprofile --norc -eo pipefail {0}`: a failing command inside a pipeline
+# (e.g. a verification piped to tee) fails the step instead of being masked by the last command.
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: Build unsigned APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Tag matches netkitVersion
+        id: version
+        env:
+          EVENT: ${{ github.event_name }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [ "$EVENT" = workflow_dispatch ]; then
+            TAG=v$(sed -nE 's/^val netkitVersion = "([^"]*)"$/\1/p' androidApp/build.gradle.kts)
+          fi
+          tools/check_release_version.sh "$TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: No placeholder escape in the repo (D17)
+        run: |
+          if grep -Eq '^[[:space:]]*netkitAllowPlaceholderWeb' gradle.properties; then
+            echo "::error::netkitAllowPlaceholderWeb is for local R8 tests only and must not be committed"
+            exit 1
+          fi
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "21"
+          # No Gradle cache on purpose: a release build must not reuse state written by other runs.
+
+      # assembleRelease fails by itself (checkReleaseConfig) while netkitWebBase is a placeholder;
+      # -P on the command line wins over every other source of the escape property. Only the
+      # dry run (workflow_dispatch) allows the placeholder; its draft must never be published.
+      - name: Test and build unsigned release APK
+        env:
+          ALLOW_PLACEHOLDER: ${{ github.event_name == 'workflow_dispatch' }}
+        run: >-
+          ./gradlew --no-daemon --dependency-verification strict
+          "-PnetkitAllowPlaceholderWeb=$ALLOW_PLACEHOLDER"
+          testDebugUnitTest lintDebug assembleRelease
+
+      - name: Package and checksum
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          mkdir dist
+          cp androidApp/build/outputs/apk/release/androidApp-release-unsigned.apk "dist/netkit-${VERSION}-unsigned.apk"
+          cp androidApp/build/outputs/mapping/release/mapping.txt "dist/netkit-${VERSION}-mapping.txt"
+          (cd dist && sha256sum -- * > SHA256SUMS && cat SHA256SUMS)
+          # Output captured first: inside `if`, a failing aapt2 would only read as "not found".
+          permissions=$("$ANDROID_HOME/build-tools/35.0.0/aapt2" dump permissions "dist/netkit-${VERSION}-unsigned.apk")
+          printf '%s\n' "$permissions"
+          if grep -q REQUEST_INSTALL_PACKAGES <<<"$permissions"; then
+            echo "::error::REQUEST_INSTALL_PACKAGES must never be in the APK"
+            exit 1
+          fi
+
+      # Optional build provenance (SLSA Build L2). Works only in a public repo on Free/Pro/Team plans
+      # and covers the unsigned APK, not the one the maintainer signs (docs/distribuce.md §2). Enabling it
+      # needs `id-token: write` and `attestations: write` on this job and a pinned actions/attest SHA.
+      # - uses: actions/attest@<full-commit-sha> # vX.Y.Z
+      #   with:
+      #     subject-path: dist/*.apk
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-draft
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
+
+  draft:
+    name: Create draft release
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-draft
+          path: dist
+
+      - name: Draft release with the unsigned APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          TAG: ${{ needs.build.outputs.tag }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          (cd dist && sha256sum -c SHA256SUMS)
+          if [ "$EVENT" = workflow_dispatch ]; then
+            echo "ZKUŠEBNÍ BĚH (D24), zástupná doména, nepublikovat. Draft po ověření smazat." > notes.md
+            gh release create "$TAG" --draft --target "$GITHUB_SHA" --title "NetKit ${VERSION} (zkušební běh)" \
+              --notes-file notes.md dist/*
+            exit 0
+          fi
+          {
+            echo "Nepodepsaný build ${TAG} z CI. Před publikací (docs/distribuce.md §2) lokálně:"
+            echo "tools/sign_release.sh ${VERSION} --keystore <cesta> --alias <alias> --upload"
+            echo "(podpis, latest.json, SHA256SUMS, poznámky z CHANGELOG), zkontrolovat draft a publikovat."
+          } > notes.md
+          gh release create "$TAG" --draft --verify-tag --title "NetKit ${VERSION}" --notes-file notes.md dist/*

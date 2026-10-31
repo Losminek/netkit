@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="speed_segment_speed">Speed</string>
+    <string name="speed_title">Speed</string>
+    <string name="speed_live">measuring</string>
+
+    <string name="speed_server_section">Server</string>
+    <string name="speed_server_librespeed">LibreSpeed · %1$s↓ %2$s↑ connections</string>
+    <string name="speed_server_ndt7">Nearest server · results are public</string>
+    <string name="speed_server_custom">custom</string>
+    <string name="speed_server_add">Custom server…</string>
+    <string name="speed_server_remove">Remove custom</string>
+    <string name="speed_custom_title">Custom LibreSpeed server</string>
+    <string name="speed_custom_label">Address (https://…)</string>
+    <string name="speed_custom_hint">Root of the LibreSpeed installation, e.g. https://speed.example.com/. The app calls backend/garbage.php, backend/empty.php and backend/getIP.php. HTTPS only.</string>
+    <string name="speed_custom_save">Save</string>
+    <string name="speed_custom_cancel">Cancel</string>
+    <string name="speed_url_error_empty">Enter the server address.</string>
+    <string name="speed_url_error_too_long">The address is too long.</string>
+    <string name="speed_url_error_not_https">https:// only. The app never uses unencrypted http.</string>
+    <string name="speed_url_error_credentials">The address must not contain a user name or password.</string>
+    <string name="speed_url_error_query">The address must not contain ? or #.</string>
+    <string name="speed_url_error_host">Invalid server name.</string>
+    <string name="speed_url_error_port">Invalid port (1–65535).</string>
+    <string name="speed_url_error_path">Invalid path. Enter the installation root, not a .php file.</string>
+
+    <string name="speed_start">Start test</string>
+    <string name="speed_restart">Run again</string>
+    <string name="speed_stop">Stop</string>
+    <string name="speed_phase_idle">Ready</string>
+    <string name="speed_phase_preparing">Preparing…</string>
+    <string name="speed_phase_locating">Locating server…</string>
+    <string name="speed_phase_latency">Measuring latency…</string>
+    <string name="speed_phase_download">Download</string>
+    <string name="speed_phase_upload">Upload</string>
+    <string name="speed_phase_done">Done · download</string>
+    <string name="speed_phase_failed">Error</string>
+    <string name="speed_phase_cancelled">Stopped</string>
+    <string name="speed_dial_description">Speed %1$s Mbit/s</string>
+    <string name="speed_cancelled_note">The test was stopped; the result is not saved.</string>
+    <string name="speed_error_network_lost">The connection dropped or changed during the test. The result is incomplete.</string>
+    <string name="speed_error_dns">The server name could not be resolved via the Wi-Fi network\'s DNS.</string>
+    <string name="speed_error_connect">The server does not respond or the connection dropped.</string>
+    <string name="speed_error_tls">Secure connection (TLS) failed: invalid or untrusted server certificate.</string>
+    <string name="speed_error_timeout">The server did not answer in time.</string>
+    <string name="speed_error_http">The server returned HTTP %1$d. Is it really LibreSpeed (backend/…)?</string>
+    <string name="speed_error_protocol">The server violated the test protocol.</string>
+    <string name="speed_error_not_librespeed">The server answers, but not like LibreSpeed (it returns a web page or only a few bytes instead of data). Enter the root of the LibreSpeed installation that contains the backend/ directory.</string>
+    <string name="speed_streams_degraded">Some parallel connections failed (download %1$s, upload %2$s working). The result is a lower bound and is saved as incomplete; the server may limit connections.</string>
+    <string name="speed_error_no_capacity">M-Lab is out of capacity right now. Try again later.</string>
+    <string name="speed_error_no_server">M-Lab returned no usable secure server.</string>
+    <string name="speed_error_no_data">No data arrived from the server.</string>
+    <string name="speed_store_failed">The test history could not be loaded or saved; starting over.</string>
+
+    <string name="speed_tile_latency">Latency</string>
+    <string name="speed_download">Download</string>
+    <string name="speed_upload">Upload</string>
+    <string name="speed_chart_section">Trace</string>
+    <string name="speed_legend_download">Download · peak %1$s</string>
+    <string name="speed_legend_upload">Upload · peak %1$s</string>
+    <string name="speed_chart_description">Speed chart in Mbit/s, download %1$s, upload %2$s.</string>
+
+    <string name="speed_latency_section">Latency under load</string>
+    <string name="speed_latency_idle">Unloaded</string>
+    <string name="speed_latency_idle_server">Min RTT (server TCP)</string>
+    <string name="speed_latency_download">During download</string>
+    <string name="speed_latency_download_server">RTT during download</string>
+    <string name="speed_latency_upload">During upload</string>
+    <string name="speed_latency_value">%1$s ms · jitter %2$s ms</string>
+    <string name="speed_latency_loaded_value">%1$s ms (+%2$s)</string>
+    <string name="speed_latency_loss_label">No answer</string>
+    <string name="speed_latency_loss">%1$d of %2$d</string>
+    <string name="speed_bufferbloat">Bufferbloat %1$s</string>
+
+    <string name="speed_server_view">Server view (M-Lab)</string>
+    <string name="speed_server_app_download">Download (application)</string>
+    <string name="speed_server_tcp_download">Download (TCP)</string>
+    <string name="speed_server_retrans">Retransmissions</string>
+    <string name="speed_server_bbr">BBR estimate</string>
+    <string name="speed_server_app_upload">Upload (server)</string>
+    <string name="speed_mbps_value">%1$s Mbit/s</string>
+    <string name="speed_percent_value">%1$s %%</string>
+
+    <string name="speed_context_section">Measurement context</string>
+    <string name="speed_context_engine">Method</string>
+    <string name="speed_engine_librespeed">LibreSpeed</string>
+    <string name="speed_engine_ndt7">NDT7 (M-Lab)</string>
+    <string name="speed_context_server">Server</string>
+    <string name="speed_context_isp">Public IP</string>
+    <string name="speed_context_ssid">Wi-Fi</string>
+    <string name="speed_context_hidden_ssid">hidden or unknown</string>
+    <string name="speed_context_band">Band</string>
+    <string name="speed_context_rssi">RSSI at start</string>
+    <string name="speed_context_rssi_value">%1$s dBm</string>
+    <string name="speed_context_link">PHY RX / TX at start</string>
+    <string name="speed_context_link_during">PHY during test</string>
+    <string name="speed_context_link_value">%1$s / %2$s Mb/s</string>
+    <string name="speed_context_time">Time</string>
+
+    <string name="speed_note_summary">How it is measured and what limits the result</string>
+    <string name="speed_note_detail">This measures phone-to-server speed over the active connection: Wi-Fi, mobile data, ethernet or VPN. On a metered network (mobile data) a data estimate is shown before the test. The ceiling is the PHY link rate (in practice about 60–70 %), channel load, the router, the ISP line and the server uplink (rychlost.zelina.eu is a colleague\'s server on Proxmox, M-Lab is shared infrastructure). One test transfers hundreds of MB up to a few GB.\n\nLibreSpeed: 6 parallel HTTPS downloads and 3 uploads of random data, 10 s per direction, the first 2–4 s of ramp-up are excluded. Latency is an HTTP request to empty.php over a kept-alive connection (median; jitter = mean difference of consecutive samples); it includes server processing and is not an ICMP ping.\n\nNDT7: one WebSocket connection, the server ends the test within 10 s, the app after 15 s at most. It has no ping of its own; latency comes from the server\'s TCP_INFO (MinRTT and RTT during download). The server measures the whole test including ramp-up, the client excludes the first seconds, so a difference is expected; the server\'s upload figure is more accurate. Run both engines to compare.\n\nHistory keeps the last 20 results on the phone only, excluded from backup. No IP address is stored.</string>
+
+    <string name="speed_consent_title">M-Lab publishes results</string>
+    <string name="speed_consent_text">The NDT7 test runs on Measurement Lab servers. M-Lab stores every test including the public IP address it came from and publishes it as open data (internet research). Anyone reading M-Lab data can see that IP address. If that is fine, continue; the app remembers your consent. Otherwise use LibreSpeed.</string>
+    <string name="speed_consent_accept">I understand, start</string>
+    <string name="speed_consent_decline">Back</string>
+
+    <string name="speed_history_section">History</string>
+    <string name="speed_history_meta">last %1$d</string>
+    <string name="speed_history_empty">No saved test yet.</string>
+    <string name="speed_history_today">today %1$s</string>
+    <string name="speed_history_yesterday">yesterday %1$s</string>
+    <string name="speed_history_row">%1$s ↓ · %2$s ↑</string>
+    <string name="speed_history_partial">incomplete</string>
+    <string name="speed_history_clear">Clear history</string>
+    <string name="speed_subtitle_network">Measured over: %1$s</string>
+    <string name="speed_error_no_network">The phone is not connected to any network.</string>
+    <string name="speed_context_operator">Operator</string>
+    <string name="speed_context_standard">Standard</string>
+    <string name="speed_context_signal">Signal at start</string>
+    <string name="speed_context_network">Network</string>
+    <string name="speed_metered_title">Test on a metered network</string>
+    <string name="speed_metered_cellular">The test will use about %1$s MB of mobile data.</string>
+    <string name="speed_metered_other">The network is marked as metered. The test will use about %1$s MB of data.</string>
+    <string name="speed_metered_from_history">Estimated from the last result on this network type. It is always the full test.</string>
+    <string name="speed_metered_default">No result on this network type yet, so the estimate is conservative. It is always the full test.</string>
+    <string name="speed_metered_accept">Start test</string>
+    <string name="speed_metered_decline">Back</string>
+</resources>

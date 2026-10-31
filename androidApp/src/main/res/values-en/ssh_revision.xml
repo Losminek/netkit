@@ -1,0 +1,35 @@
+<resources>
+    <string name="ssh_close_all">Close all sessions</string>
+    <string name="ssh_close_all_confirm">Close all open SSH sessions?</string>
+    <string name="ssh_secure_screen">Block screenshots</string>
+    <string name="ssh_ime_privacy">The keyboard is asked to disable suggestions and learning. Some keyboards may ignore this request.</string>
+    <string name="ssh_recover">Archive damaged storage</string>
+    <string name="ssh_recover_confirm">Archive original SSH metadata and start with an empty list? Profiles and trust will be empty; the original file stays in a private archive. Encrypted secrets are retained. For a newer schema, try updating the app first.</string>
+    <string name="ssh_archive_path">Original data: %1$s</string>
+    <string name="ssh_rejected_fingerprint">Last rejected fingerprint: %1$s</string>
+    <string name="ssh_error_host_changed">The server key changed. The connection was rejected.</string>
+    <string name="ssh_error_authentication">Authentication failed. Check the username and credentials.</string>
+    <string name="ssh_error_algorithms">No permitted algorithm is shared with the server. Security policy was preserved.</string>
+    <string name="ssh_error_dns">The server name could not be resolved.</string>
+    <string name="ssh_error_timeout">The connection or response timed out.</string>
+    <string name="ssh_error_connection">The network connection failed.</string>
+    <string name="ssh_error_import_rsa">The RSA key must have at least 3072 bits.</string>
+    <string name="ssh_error_import_dsa">DSA keys are not permitted.</string>
+    <string name="ssh_error_import_phrase">The supplied passphrase could not unlock the key.</string>
+    <string name="ssh_error_import_format">Unsupported or damaged key format.</string>
+    <string name="ssh_error_secret">The stored secret cannot be decrypted. The Keystore key was not replaced; enter credentials again in the profile.</string>
+    <string name="ssh_network_lost">Connection may be lost</string>
+    <string name="ssh_reconnect">Reconnect</string>
+    <string name="ssh_connection_summary">Authorized servers only · default route including VPN</string>
+    <string name="ssh_no_trusted_hosts">No verified server is stored yet.</string>
+    <string name="ssh_copy_fingerprint">Copy fingerprint</string>
+    <string name="ssh_direct_input">Tap to type directly into the terminal</string>
+    <string name="ssh_more_keys">More keys</string>
+    <string name="ssh_key_insert">Ins</string>
+    <string name="ssh_key_delete">Del</string>
+    <string name="ssh_shift_tab">Shift+Tab</string>
+    <string name="ssh_function_key">F%1$d</string>
+    <string name="ssh_fallback_input">Fallback input / paste</string>
+    <string name="ssh_session_options">SSH session options</string>
+    <string name="ssh_terminal_options">Terminal options</string>
+</resources>

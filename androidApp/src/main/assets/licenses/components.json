@@ -1,0 +1,207 @@
+{
+  "comment": "Components bundled in the NetKit APK, shown in About > Open-source licences. Sources: NOTICE, docs/licenses/*, docs/zavislosti.md, docs/project-license-inventory.tsv. 'catalog' = aliases from gradle/libs.versions.toml, 'artifacts' = group:artifact patterns of the runtime graph ('*' = any artifact, 'androidx.*' = any androidx group); both are checked by OssComponentsTest.",
+  "components": [
+    {
+      "id": "netkit",
+      "name": "NetKit",
+      "license": "Apache-2.0",
+      "copyright": "Copyright 2026 NetKit contributors",
+      "texts": ["NOTICE.txt", "Apache-2.0.txt"]
+    },
+    {
+      "id": "compose",
+      "name": "Jetpack Compose",
+      "version": "BOM 2025.08.00 (UI, Foundation, Runtime 1.9.0; Material 3 1.3.2; Material Icons Core 1.7.8)",
+      "license": "Apache-2.0",
+      "copyright": "Copyright The Android Open Source Project",
+      "texts": ["Apache-2.0.txt"],
+      "catalog": ["compose-bom", "compose-ui", "compose-foundation", "compose-material3"],
+      "artifacts": ["androidx.compose:*", "androidx.compose.animation:*", "androidx.compose.foundation:*", "androidx.compose.material:*",
+        "androidx.compose.material3:*", "androidx.compose.runtime:*", "androidx.compose.ui:*"]
+    },
+    {
+      "id": "androidx-activity",
+      "name": "AndroidX Activity",
+      "version": "1.10.1",
+      "license": "Apache-2.0",
+      "copyright": "Copyright The Android Open Source Project",
+      "texts": ["Apache-2.0.txt"],
+      "catalog": ["activity-compose"],
+      "artifacts": ["androidx.activity:*"]
+    },
+    {
+      "id": "androidx-lifecycle",
+      "name": "AndroidX Lifecycle",
+      "version": "2.9.4",
+      "license": "Apache-2.0",
+      "copyright": "Copyright The Android Open Source Project",
+      "texts": ["Apache-2.0.txt"],
+      "catalog": ["lifecycle-viewmodel"],
+      "artifacts": ["androidx.lifecycle:*"]
+    },
+    {
+      "id": "androidx-datastore",
+      "name": "AndroidX DataStore",
+      "version": "1.1.7",
+      "license": "Apache-2.0",
+      "copyright": "Copyright The Android Open Source Project",
+      "texts": ["Apache-2.0.txt"],
+      "catalog": ["datastore-core"],
+      "artifacts": ["androidx.datastore:*"]
+    },
+    {
+      "id": "androidx-profileinstaller",
+      "name": "AndroidX ProfileInstaller",
+      "version": "1.4.0",
+      "license": "Apache-2.0",
+      "copyright": "Copyright The Android Open Source Project",
+      "texts": ["Apache-2.0.txt"],
+      "catalog": ["profileinstaller"],
+      "artifacts": ["androidx.profileinstaller:*"]
+    },
+    {
+      "id": "androidx",
+      "name": "AndroidX",
+      "version": "Core 1.15.0, Annotation 1.9.1, Collection 1.5.0, SavedState 1.3.1, Startup 1.2.0, Emoji2 1.4.0, Arch Core 2.2.0, Tracing 1.2.0, Graphics Path 1.0.1, Autofill, Concurrent, CustomView, Interpolator, VersionedParcelable",
+      "license": "Apache-2.0",
+      "copyright": "Copyright The Android Open Source Project",
+      "texts": ["Apache-2.0.txt"],
+      "artifacts": ["androidx.*"]
+    },
+    {
+      "id": "kotlin-stdlib",
+      "name": "Kotlin Standard Library",
+      "version": "2.2.21",
+      "license": "Apache-2.0",
+      "copyright": "Copyright JetBrains s.r.o. and Kotlin Programming Language contributors",
+      "texts": ["Apache-2.0.txt"],
+      "artifacts": ["org.jetbrains.kotlin:*"]
+    },
+    {
+      "id": "kotlinx-coroutines",
+      "name": "kotlinx.coroutines",
+      "version": "1.10.2",
+      "license": "Apache-2.0",
+      "copyright": "Copyright JetBrains s.r.o. and Kotlin Programming Language contributors",
+      "texts": ["Apache-2.0.txt"],
+      "catalog": ["coroutines-core"],
+      "artifacts": ["org.jetbrains.kotlinx:kotlinx-coroutines-*"]
+    },
+    {
+      "id": "kotlinx-serialization",
+      "name": "kotlinx.serialization",
+      "version": "1.9.0",
+      "license": "Apache-2.0",
+      "copyright": "Copyright JetBrains s.r.o. and Kotlin Programming Language contributors",
+      "texts": ["Apache-2.0.txt"],
+      "catalog": ["serialization-json"],
+      "artifacts": ["org.jetbrains.kotlinx:kotlinx-serialization-*"]
+    },
+    {
+      "id": "jetbrains-annotations",
+      "name": "JetBrains Java Annotations",
+      "version": "23.0.0",
+      "license": "Apache-2.0",
+      "copyright": "Copyright JetBrains s.r.o.",
+      "texts": ["Apache-2.0.txt"],
+      "artifacts": ["org.jetbrains:annotations"]
+    },
+    {
+      "id": "okhttp",
+      "name": "OkHttp",
+      "version": "5.3.2",
+      "license": "Apache-2.0",
+      "copyright": "Copyright Square, Inc.",
+      "texts": ["Apache-2.0.txt"],
+      "catalog": ["okhttp"],
+      "artifacts": ["com.squareup.okhttp3:*"]
+    },
+    {
+      "id": "public-suffix-list",
+      "name": "Public Suffix List (via OkHttp)",
+      "version": "OkHttp 5.3.2, assets/PublicSuffixDatabase.list",
+      "license": "MPL-2.0",
+      "copyright": "Public Suffix List contributors. Source form: https://publicsuffix.org/list/ (OkHttp compiles the list into this file; NetKit ships it unchanged)",
+      "texts": ["MPL-2.0.txt"]
+    },
+    {
+      "id": "okio",
+      "name": "Okio",
+      "version": "3.16.4",
+      "license": "Apache-2.0",
+      "copyright": "Copyright Square, Inc.",
+      "texts": ["Apache-2.0.txt"],
+      "artifacts": ["com.squareup.okio:*"]
+    },
+    {
+      "id": "guava-listenablefuture",
+      "name": "Guava ListenableFuture",
+      "version": "1.0",
+      "license": "Apache-2.0",
+      "copyright": "Copyright The Guava Authors",
+      "texts": ["Apache-2.0.txt"],
+      "artifacts": ["com.google.guava:listenablefuture"]
+    },
+    {
+      "id": "jspecify",
+      "name": "JSpecify",
+      "version": "1.0.0",
+      "license": "Apache-2.0",
+      "copyright": "Copyright The JSpecify Authors",
+      "texts": ["Apache-2.0.txt"],
+      "artifacts": ["org.jspecify:jspecify"]
+    },
+    {
+      "id": "jsch",
+      "name": "JSch (fork mwiede)",
+      "version": "2.28.0",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2002-2015 Atsuhiko Yamanaka, JCraft,Inc.",
+      "texts": ["jsch-LICENSE.txt"],
+      "catalog": ["jsch"],
+      "artifacts": ["com.github.mwiede:jsch"]
+    },
+    {
+      "id": "jzlib",
+      "name": "JZlib (in JSch)",
+      "version": "JSch 2.28.0",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2000-2011 ymnk, JCraft,Inc.",
+      "texts": ["jzlib-LICENSE.txt"]
+    },
+    {
+      "id": "jbcrypt",
+      "name": "jBCrypt (in JSch)",
+      "version": "JSch 2.28.0",
+      "license": "ISC",
+      "copyright": "Copyright (c) 2006 Damien Miller",
+      "texts": ["jbcrypt-LICENSE.txt"]
+    },
+    {
+      "id": "bouncycastle",
+      "name": "Bouncy Castle (bcprov-jdk18on)",
+      "version": "1.83",
+      "license": "MIT (Bouncy Castle)",
+      "copyright": "Copyright (c) 2000-2023 The Legion of the Bouncy Castle Inc.",
+      "texts": ["bouncycastle-LICENSE.txt"],
+      "catalog": ["bcprov"],
+      "artifacts": ["org.bouncycastle:bcprov-jdk18on"]
+    },
+    {
+      "id": "manrope",
+      "name": "Manrope (font)",
+      "version": "4.505",
+      "license": "OFL-1.1",
+      "copyright": "Copyright 2018 The Manrope Project Authors",
+      "texts": ["manrope-OFL.txt"]
+    },
+    {
+      "id": "jetbrains-mono",
+      "name": "JetBrains Mono (font)",
+      "version": "2.211",
+      "license": "OFL-1.1",
+      "copyright": "Copyright 2020 The JetBrains Mono Project Authors",
+      "texts": ["jetbrains-mono-OFL.txt"]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+<resources>
+    <string name="wol_add_compact">Zařízení</string>
+    <string name="wol_chip_sending">odesílám…</string>
+    <string name="wol_chip_checking">čekám na odpověď…</string>
+    <string name="wol_chip_already">odpovídal už předtím</string>
+    <string name="wol_chip_no_response">bez odpovědi</string>
+    <string name="wol_chip_unavailable">kontrola nedostupná</string>
+    <string name="wol_chip_cancelled">zrušeno</string>
+    <string name="wol_target_short_auto">broadcast Wi-Fi</string>
+    <string name="wol_target_short_limited" translatable="false">255.255.255.255</string>
+    <string name="wol_port_short">UDP %1$d</string>
+    <string name="wol_section_device">Zařízení</string>
+    <string name="wol_section_repeat">Opakování</string>
+    <string name="wol_section_probe">Kontrola probuzení</string>
+    <string name="wol_section_note">Poznámka</string>
+    <string name="wol_state_idle">neověřeno</string>
+    <string name="wol_state_failed">neodesláno</string>
+    <string name="wol_state_unverified">bez ověření</string>
+    <string name="wol_state_responds_port">odpovídá na %1$d</string>
+    <string name="wol_state_responds_ping">odpovídá na ping</string>
+    <string name="wol_state_probe_cancelled">kontrola zrušena</string>
+</resources>

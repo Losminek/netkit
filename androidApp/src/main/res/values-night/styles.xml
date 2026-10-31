@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.NetKit" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowBackground">#0C131A</item>
+        <item name="android:windowActionModeOverlay">true</item>
+    </style>
+</resources>

@@ -1,0 +1,37 @@
+<resources>
+    <string name="wifi_security_wpa2_wpa3">WPA2/WPA3 (přechodný režim)</string>
+    <string name="wifi_security_owe_transition">OWE (přechodný režim, umožňuje otevřené připojení)</string>
+    <string name="wifi_recommendation_limits">Jen odhad překryvu v pozorovaných pásmech. Regionální pravidla, DFS a skryté rušení nejsou ověřené. Bez dostupné BSSID nelze automaticky vyloučit připojené AP; použijte vlastní označení nebo volbu stejného SSID.</string>
+
+    <string name="wifi_precise_required">Povolena je jen přibližná poloha. Scan potřebuje přesnou polohu; změňte ji v oprávněních aplikace.</string>
+    <string name="wifi_permission_permanent">Oprávnění je zamítnuté a systém další dialog nenabízí. Přesnou polohu lze povolit v nastavení aplikace.</string>
+    <string name="wifi_settings_failed">Nastavení se nepodařilo otevřít. Otevřete je ručně v systému.</string>
+    <string name="wifi_scan_failure">Scan selhal. Zkontrolujte Wi-Fi, oprávnění a systémovou polohu; potom zkuste nový scan.</string>
+    <string name="wifi_ssid_filter">Filtrovat podle SSID</string>
+    <string name="wifi_no_filter_results">Filtru neodpovídá žádná síť.</string>
+    <string name="wifi_app_settings">Nastavení aplikace</string>
+    <string name="wifi_location_settings">Nastavení polohy</string>
+    <string name="wifi_bssid_label">BSSID</string>
+    <string name="wifi_age_seconds">%1$d s</string>
+    <string name="wifi_ipv4_label">IPv4</string>
+    <string name="wifi_gateway_label">Výchozí brána</string>
+    <string name="wifi_dns_label">DNS servery</string>
+    <string name="wifi_graph_snapshot">Graf zobrazuje poslední dostupnou sadu AP; jednotlivá AP se během stárnutí sady nemažou. RSSI není spektrální měření.</string>
+    <string name="wifi_no_band_data">V této datové sadě nejsou AP v tomto pásmu.</string>
+    <string name="wifi_frequency_axis">Frekvence (MHz)</string>
+    <string name="wifi_history_select">Další skeny doplní historii RSSI (až 90 měření).</string>
+    <string name="wifi_recommendation_width">Šířka pro 5 a 6 GHz (2,4 GHz vždy 20 MHz, kanály 1/6/11)</string>
+    <string name="wifi_dataset_unknown">Čas potvrzeného scanu není známý.</string>
+    <string name="wifi_no_recommendation">V této datové sadě nejsou sousední AP pro doporučení.</string>
+    <string name="wifi_recommendation_detail">%1$s: střední kanál %2$d · %3$d MHz · skóre %4$s mW</string>
+    <string name="wifi_dfs_warning">Kandidát zasahuje do DFS pásma; dostupnost závisí na regionu a detekci radaru.</string>
+    <string name="wifi_dataset_aging">Data nejsou čerstvá. Graf a doporučení stále vycházejí z posledního potvrzeného scanu.</string>
+    <string name="wifi_dataset_expired">Od potvrzeného scanu uplynulo více než 5 minut. Doporučení je skryté; proveďte nový scan.</string>
+    <string name="wifi_dataset_unconfirmed">Bez potvrzeného scanu není podklad pro doporučení. Cache zůstává označená.</string>
+    <string name="wifi_exclude_connected_ssid">Vyloučit ze skóre stejné SSID jako připojená síť</string>
+    <string name="wifi_own_ap">Moje AP (ruční označení)</string>
+    <string name="wifi_ap_excluded">Vyloučeno ze skóre: připojené AP nebo vaše volba.</string>
+    <string name="wifi_own_ap_detail">Připojená BSSID se vyloučí automaticky. Stejné SSID může patřit mesh síti i cizímu provozovateli; vyloučení proto zapněte jen podle vlastní znalosti. Jednotlivá AP lze označit jako moje. Tyto volby mění pouze skóre, ne seznam ani graf. Neukládají se trvale.</string>
+    <string name="wifi_graph_limit">V grafu: %1$d; mimo graf: %2$d. Seznam a skóre zahrnují všechna AP.</string>
+    <string name="wifi_graph_legend_numbered">%1$d. %2$s · %3$s · %4$d dBm</string>
+</resources>

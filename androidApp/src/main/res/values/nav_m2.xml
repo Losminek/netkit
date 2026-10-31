@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tab_signal">Přehled</string>
+    <string name="tab_spectrum">Spektrum</string>
+    <string name="tab_devices">Zařízení</string>
+    <string name="lan_segment_devices">Zařízení</string>
+    <string name="lan_segment_tools">Nástroje</string>
+</resources>

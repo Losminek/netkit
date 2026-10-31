@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ssh_import_profiles">Importovat profily z PC</string>
+    <string name="ssh_import_title">Import profilů z PC</string>
+    <string name="ssh_import_summary">Nové: %1$d · změněné: %2$d · beze změny: %3$d · přeskočené: %4$d</string>
+    <string name="ssh_import_source">Zdroj: %1$s</string>
+    <string name="ssh_import_new">Nové profily</string>
+    <string name="ssh_import_updated">Změní se host, port nebo uživatel</string>
+    <string name="ssh_import_skipped">Přeskočené aliasy</string>
+    <string name="ssh_import_key">Klíč pro nové profily</string>
+    <string name="ssh_import_no_key">Telefon zatím nemá vlastní klíč. Vytvořte ho v sekci Klíče, rozdejte jeho veřejnou část skriptem na PC a import opakujte, nebo pokračujte s heslem.</string>
+    <string name="ssh_import_password">Bez klíče, přihlášení heslem</string>
+    <string name="ssh_import_note">Hesla ani klíče soubor neobsahuje. Existující profily si ponechají způsob přihlášení, klíč i startovací příkaz.</string>
+    <string name="ssh_import_confirm">Importovat</string>
+    <string name="ssh_cancel_import">Zrušit</string>
+    <string name="ssh_share_public">Sdílet veřejný klíč</string>
+    <string name="ssh_share_unavailable">Žádná aplikace pro sdílení ani výběr souboru není k dispozici.</string>
+    <string name="ssh_skip_proxy_jump">ProxyJump</string>
+    <string name="ssh_skip_proxy_command">ProxyCommand</string>
+    <string name="ssh_skip_match">Match</string>
+    <string name="ssh_skip_wildcard">vzor</string>
+    <string name="ssh_skip_missing_host">bez hosta</string>
+    <string name="ssh_skip_unsupported">nepodporováno</string>
+    <string name="ssh_import_blocked">Import teď nejde. Zavřete otevřené relace, formulář nebo dialog a zkuste to znovu.</string>
+    <string name="ssh_import_io">Soubor se nepodařilo přečíst nebo uložit.</string>
+    <string name="ssh_import_timeout">Čtení souboru trvalo příliš dlouho.</string>
+    <string name="ssh_import_key_unavailable">Vybraný klíč už v telefonu není. Vyberte jiný.</string>
+    <string name="ssh_import_size">Soubor je větší než 256 KiB.</string>
+    <string name="ssh_import_utf8">Soubor není platné UTF-8.</string>
+    <string name="ssh_import_schema">Nepodporovaná verze souboru. Vytvořte ho znovu aktuálním skriptem.</string>
+    <string name="ssh_import_unknown_field">Soubor obsahuje neznámé pole. Vytvořte ho skriptem netkit_ssh_export.py.</string>
+    <string name="ssh_import_duplicate">Alias se v souboru nebo v telefonu opakuje. Přejmenujte ho a export opakujte.</string>
+    <string name="ssh_import_invalid_profile">Některý profil má neplatný host, port nebo uživatele.</string>
+    <string name="ssh_import_limit">Po importu by bylo víc než 200 profilů.</string>
+    <string name="ssh_import_stale">Profily se mezitím změnily. Otevřete soubor znovu.</string>
+    <string name="ssh_import_format">Soubor nemá formát profilů NetKit.</string>
+    <string name="ssh_import_secret_moves">Uložené heslo se odpojí a smaže; při připojení ho zadáte znovu.</string>
+</resources>

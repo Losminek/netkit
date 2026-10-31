@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Karta mobilní sítě v Přehledu (M4 A2 data: cellular/CellularMonitor.kt, UI: overview/OverviewCards.kt). -->
+<resources>
+    <string name="cellular_title">Mobilní síť</string>
+
+    <!-- Standard (CellRat) -->
+    <string name="cellular_rat_lte" translatable="false">LTE</string>
+    <string name="cellular_rat_nr_nsa" translatable="false">5G NSA</string>
+    <string name="cellular_rat_nr_sa" translatable="false">5G SA</string>
+    <string name="cellular_rat_umts" translatable="false">3G</string>
+    <string name="cellular_rat_gsm" translatable="false">2G</string>
+    <string name="cellular_rat_unknown">Neznámý standard</string>
+
+    <!-- Kvalita (CellQuality) -->
+    <string name="cellular_quality_excellent">Výborný</string>
+    <string name="cellular_quality_good">Dobrý</string>
+    <string name="cellular_quality_fair">Slabší</string>
+    <string name="cellular_quality_poor">Slabý</string>
+    <string name="cellular_quality_none">Bez signálu</string>
+
+    <!-- SIM a stavy -->
+    <string name="cellular_sim">SIM %1$d</string>
+    <string name="cellular_sim_unknown">SIM</string>
+    <string name="cellular_data">Data</string>
+    <string name="cellular_roaming">Roaming</string>
+    <string name="cellular_operator_unknown">Neznámý operátor</string>
+    <string name="cellular_airplane">Režim letadlo</string>
+    <string name="cellular_no_sim">Bez SIM</string>
+    <string name="cellular_no_service">Bez služby</string>
+
+    <!-- Metriky -->
+    <string name="cellular_rsrp" translatable="false">RSRP</string>
+    <string name="cellular_rsrq" translatable="false">RSRQ</string>
+    <string name="cellular_sinr" translatable="false">SINR</string>
+    <string name="cellular_value_dbm" translatable="false">%1$s dBm</string>
+    <string name="cellular_unit_db" translatable="false">dB</string>
+    <string name="cellular_chart_signal">Graf mobilního signálu za posledních %1$d min, aktuálně %2$s dBm, kvalita %3$s</string>
+
+    <!-- Oprávnění (READ_PHONE_STATE, docs/bezpecnost.md) -->
+    <string name="cellular_permission_action">Zobrazit obě SIM</string>
+    <string name="cellular_permission_denied">Bez oprávnění k telefonu je vidět jen SIM s daty</string>
+    <string name="cellular_permission_note">Bez oprávnění k telefonu je vidět jen SIM, která nese data. Čísla, IMEI ani identifikátory SIM se nečtou. Oprávnění lze udělit v nastavení aplikace.</string>
+    <string name="cellular_location_note">Bez přístupu k poloze Android neposílá jméno operátora ze sítě; použije se jméno ze SIM.</string>
+</resources>

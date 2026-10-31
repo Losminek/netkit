@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cellular_title">Mobile network</string>
+
+    <string name="cellular_rat_unknown">Unknown standard</string>
+
+    <string name="cellular_quality_excellent">Excellent</string>
+    <string name="cellular_quality_good">Good</string>
+    <string name="cellular_quality_fair">Fair</string>
+    <string name="cellular_quality_poor">Poor</string>
+    <string name="cellular_quality_none">No signal</string>
+
+    <string name="cellular_sim">SIM %1$d</string>
+    <string name="cellular_sim_unknown">SIM</string>
+    <string name="cellular_data">Data</string>
+    <string name="cellular_roaming">Roaming</string>
+    <string name="cellular_operator_unknown">Unknown operator</string>
+    <string name="cellular_airplane">Airplane mode</string>
+    <string name="cellular_no_sim">No SIM</string>
+    <string name="cellular_no_service">No service</string>
+
+    <string name="cellular_chart_signal">Mobile signal chart for the last %1$d min, now %2$s dBm, quality %3$s</string>
+
+    <string name="cellular_permission_action">Show both SIMs</string>
+    <string name="cellular_permission_denied">Without the phone permission only the data SIM is shown</string>
+    <string name="cellular_permission_note">Without the phone permission only the SIM carrying data is shown. Phone numbers, IMEI and SIM identifiers are never read. The permission can be granted in the app settings.</string>
+    <string name="cellular_location_note">Without location access Android withholds the network operator name; the SIM name is used instead.</string>
+</resources>

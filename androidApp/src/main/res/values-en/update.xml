@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_available_title">Version %1$s available</string>
+    <string name="update_released">Released %1$s</string>
+    <string name="update_download">Download</string>
+    <string name="update_dismiss">Hide until the next version</string>
+    <string name="update_install_hint">Downloads in the browser, you confirm the install yourself.</string>
+
+    <string name="overview_more">More options</string>
+    <string name="about_title">About</string>
+
+    <string name="about_back">Back</string>
+    <string name="about_tagline">Wi-Fi, LAN devices, SSH and Wake-on-LAN in one app.</string>
+    <string name="about_version">Version %1$s (%2$d)</string>
+    <string name="about_updates_title">Updates</string>
+    <string name="about_updates_toggle">Check for updates</string>
+    <string name="about_updates_toggle_detail">At most once a day, only while the app is open</string>
+    <string name="about_check_now">Check now</string>
+    <string name="about_checking">Checking…</string>
+    <string name="about_last_check">Last checked %1$s</string>
+    <string name="about_last_check_github">Last checked %1$s via GitHub</string>
+    <string name="about_never_checked">Not checked yet</string>
+    <string name="about_up_to_date">You have the latest version.</string>
+    <string name="about_requires_android">Version %1$s needs a newer Android.</string>
+    <string name="about_check_unreachable">The update source is unreachable.</string>
+    <string name="about_check_invalid">The update source returned an invalid answer.</string>
+    <string name="about_updates_not_configured">This build has no update site configured.</string>
+    <string name="about_updates_note_summary">What the check sends</string>
+    <string name="about_updates_note_detail">The app reads a small latest.json file over HTTPS from %1$s. If the site does not answer, it tries the GitHub release (github.com, file served from githubusercontent.com). No identifiers or cookies; the server sees your IP address, the time and the app version. You download and install a new version yourself in the browser.</string>
+    <string name="about_updates_note_detail_web">The app reads a small latest.json file from %1$s over HTTPS, without identifiers or cookies. The site sees your IP address, the time and the app version. You download and install a new version yourself in the browser.</string>
+    <string name="about_updates_note_detail_github">The app reads a small latest.json file over HTTPS from the GitHub release (github.com, file served from githubusercontent.com), without identifiers or cookies. GitHub sees your IP address, the time and the app version. You download and install a new version yourself in the browser.</string>
+    <string name="about_project_title">Project</string>
+    <string name="about_web">Project website</string>
+    <string name="about_source">Source code</string>
+    <string name="about_privacy">Privacy policy</string>
+    <string name="about_oss_licenses">Open-source licences</string>
+    <string name="about_oss_licenses_detail">Libraries and fonts in the app</string>
+    <string name="about_license">App licence</string>
+    <string name="about_open_failed">Cannot open the link, no browser found.</string>
+
+    <string name="oss_intro">NetKit contains these third-party components. Tap one to show the full licence text.</string>
+    <string name="oss_loading">Loading…</string>
+    <string name="oss_load_failed">Cannot load the licence text.</string>
+</resources>

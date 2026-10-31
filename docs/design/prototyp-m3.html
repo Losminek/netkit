@@ -1,0 +1,829 @@
+<title>NetKit M3</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: návrhový stůl — vlevo popis a přepínače směrů, vpravo telefon 412×915 dp s živými ukázkovými daty. */
+:root {
+  --page: #EEF2F4; --page-ink: #0D1B24; --page-muted: #5B6E7A; --page-line: #D5DEE3; --page-card: #FFFFFF; --page-acc: #0A7166;
+  --sans: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --page: #0A1117; --page-ink: #E4ECF0; --page-muted: #8597A3; --page-line: #1D2A34; --page-card: #111B23; --page-acc: #2DD4BF; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --page: #0A1117; --page-ink: #E4ECF0; --page-muted: #8597A3; --page-line: #1D2A34; --page-card: #111B23; --page-acc: #2DD4BF; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { background: var(--page); color: var(--page-ink); font: 15px/1.5 var(--sans); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--page-acc); outline-offset: 2px; }
+
+.desk { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: minmax(280px, 380px) 1fr; gap: 40px; align-items: start; }
+@media (max-width: 900px) { .desk { grid-template-columns: 1fr; } }
+.brief h1 { font-size: 30px; line-height: 1.15; margin: 0 0 6px; letter-spacing: -0.02em; font-weight: 700; text-wrap: balance; }
+.brief p { margin: 0; color: var(--page-muted); max-width: 60ch; }
+.brief .lead { margin-bottom: 22px; }
+.group { display: grid; gap: 8px; margin-top: 22px; }
+.group > h2 { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--page-muted); margin: 0; }
+.dirs { display: grid; gap: 8px; }
+.dir { text-align: left; background: var(--page-card); border: 1px solid var(--page-line); border-radius: 12px; padding: 12px 14px; display: grid; gap: 2px; }
+.dir b { font-weight: 700; font-size: 15px; }
+.dir span { color: var(--page-muted); font-size: 13px; line-height: 1.4; }
+.dir[aria-pressed="true"] { border-color: var(--page-acc); box-shadow: inset 0 0 0 1px var(--page-acc); }
+.toggles { display: flex; flex-wrap: wrap; gap: 8px; }
+.tg { background: var(--page-card); border: 1px solid var(--page-line); border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 600; }
+.tg[aria-pressed="true"] { background: var(--page-acc); border-color: var(--page-acc); color: var(--page); }
+.notes { font-size: 13.5px; color: var(--page-muted); display: grid; gap: 6px; padding-left: 18px; margin: 0; }
+.notes li::marker { color: var(--page-acc); }
+.sample { font-size: 12.5px; color: var(--page-muted); border-top: 1px solid var(--page-line); padding-top: 12px; margin-top: 22px; }
+
+.stage { display: flex; justify-content: center; }
+.scaler { width: calc(var(--fw) * var(--k)); height: calc(var(--fh) * var(--k)); transition: width .5s, height .5s; }
+.phone { --fw: 412px; --fh: 915px; width: var(--fw); height: var(--fh); transform: scale(var(--k)); transform-origin: top left; border-radius: 44px; overflow: hidden; position: relative; transition: width .5s cubic-bezier(.2,.8,.2,1), height .5s cubic-bezier(.2,.8,.2,1); box-shadow: 0 0 0 10px #05090C, 0 0 0 11px #2A3742, 0 30px 80px -20px rgba(0,0,0,.45); }
+
+/* ===== Phone tokens: three directions × two modes ===== */
+.phone {
+  --bg: #060B10; --s1: #0C151D; --s1b: #0A121A; --s2: #111D27; --s3: #172633; --line: rgba(150,195,215,.10); --line2: rgba(150,195,215,.06);
+  --text: #E8F1F5; --muted: #93A6B3; --dim: #5F7380; --acc: #2DD4BF; --acc2: #7AE7D7; --acc-ink: #04201C; --acc-soft: rgba(45,212,191,.12);
+  --info: #5AB8FF; --violet: #B69CFF; --ok: #3DDC97; --warn: #F5B544; --err: #F2706B;
+  --glow: 1; --r1: 22px; --r2: 14px; --pad: 18px; --gap: 14px; --panel-border: 1px solid var(--line); --panel-bg: linear-gradient(180deg, var(--s1) 0%, var(--s1b) 100%);
+  --nav-bg: rgba(8,14,20,.86);
+  font-family: var(--sans); color: var(--text); background: var(--bg);
+}
+.phone[data-dir="unifi"] { --bg: #0C131A; --s1: #141E28; --s1b: #141E28; --s2: #1A2633; --s3: #22303E; --line: transparent; --line2: rgba(255,255,255,.05); --glow: 0; --r1: 16px; --r2: 12px; --pad: 20px; --gap: 16px; --panel-border: 0; --nav-bg: #101922; --info: #4C9DFF; }
+.phone[data-dir="rex"] { --bg: #08111A; --s1: #0E1924; --s1b: #0E1924; --s2: #13212E; --s3: #1A2B3A; --line: #1C2B38; --line2: #16232F; --glow: 0; --r1: 10px; --r2: 8px; --pad: 14px; --gap: 10px; --nav-bg: #0B1620; }
+.phone[data-mode="light"] { --bg: #EEF3F6; --s1: #FFFFFF; --s1b: #FBFDFE; --s2: #F1F5F8; --s3: #E3EAEF; --line: rgba(12,45,65,.09); --line2: rgba(12,45,65,.06); --text: #0B1A24; --muted: #4E6372; --dim: #7E909C; --acc: #0A7166; --acc2: #0E8C7E; --acc-ink: #FFFFFF; --acc-soft: rgba(10,113,102,.10); --info: #1F6FC0; --violet: #6E4FD0; --ok: #12805A; --warn: #A86A00; --err: #C2413A; --nav-bg: rgba(255,255,255,.9); color-scheme: light; }
+.phone[data-mode="light"][data-dir="unifi"] { --s1b: #FFFFFF; --line: transparent; --nav-bg: #FFFFFF; }
+.phone[data-mode="light"][data-dir="rex"] { --line: #D4DEE5; --s1b: #FFFFFF; --nav-bg: #FFFFFF; }
+
+.phone, .phone * { -webkit-tap-highlight-color: transparent; }
+.status { height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; font-size: 13px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+.status i { font-style: normal; opacity: .75; font-weight: 600; letter-spacing: .02em; }
+.screen { position: absolute; inset: 40px 0 0 0; overflow-y: auto; overflow-x: hidden; padding: 6px 16px 112px; scrollbar-width: none; }
+.screen::-webkit-scrollbar { display: none; }
+.view { display: grid; gap: var(--gap); animation: enter .32s cubic-bezier(.2,.8,.2,1); }
+@keyframes enter { from { opacity: .0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* Header */
+.hdr { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 4px 2px 0; }
+.hdr h1 { margin: 0; font-size: 26px; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; }
+.hdr .sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.live { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: var(--acc); background: var(--acc-soft); padding: 5px 11px 5px 9px; border-radius: 999px; white-space: nowrap; }
+.live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 0 currentColor; animation: pulse 2s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 55%, transparent); } 70% { box-shadow: 0 0 0 7px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+.ibtn { width: 40px; height: 40px; border-radius: 12px; border: 0; background: var(--s2); color: var(--text); display: grid; place-items: center; }
+.ibtn svg { width: 20px; height: 20px; }
+.btn { border: 0; border-radius: 12px; min-height: 44px; padding: 0 18px; font-weight: 700; font-size: 14.5px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.btn svg { width: 18px; height: 18px; }
+.btn.primary { background: var(--acc); color: var(--acc-ink); }
+.phone[data-dir="instrument"] .btn.primary { background: linear-gradient(180deg, var(--acc2), var(--acc)); box-shadow: 0 6px 20px -8px var(--acc); }
+.btn.tonal { background: var(--acc-soft); color: var(--acc); }
+.btn.ghost { background: var(--s2); color: var(--text); }
+.btn.sm { min-height: 36px; padding: 0 14px; font-size: 13.5px; border-radius: 10px; }
+.btn.block { width: 100%; }
+
+/* Segmented with sliding thumb */
+.seg { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--s2); border-radius: 12px; padding: 4px; }
+.seg .thumb { position: absolute; top: 4px; bottom: 4px; left: 4px; border-radius: 9px; background: var(--s1); box-shadow: 0 1px 0 var(--line), 0 4px 14px -6px rgba(0,0,0,.5); transition: transform .32s cubic-bezier(.2,.8,.2,1), width .32s; }
+.phone[data-mode="light"] .seg .thumb { box-shadow: 0 1px 3px rgba(10,40,60,.14); }
+.seg button { position: relative; border: 0; background: none; min-height: 38px; font-weight: 600; font-size: 14px; color: var(--muted); transition: color .2s; }
+.seg button[aria-selected="true"] { color: var(--text); }
+
+/* Panels */
+.panel { background: var(--panel-bg); border: var(--panel-border); border-radius: var(--r1); padding: var(--pad); display: grid; gap: 14px; position: relative; }
+.phone[data-dir="instrument"] .panel { box-shadow: inset 0 1px 0 rgba(255,255,255,.035); }
+.phone[data-mode="light"] .panel { box-shadow: 0 1px 2px rgba(12,45,65,.06); }
+.ptitle { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ptitle h2 { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: -0.005em; }
+.ptitle .meta { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.label { font-size: 12.5px; color: var(--muted); font-weight: 500; }
+.num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+.mono { font-family: var(--mono); font-size: .92em; letter-spacing: -0.01em; }
+
+/* Signal hero */
+.hero { display: grid; grid-template-columns: 148px 1fr; gap: 16px; align-items: center; }
+.gauge { position: relative; width: 148px; height: 128px; }
+.gauge svg { width: 148px; height: 128px; overflow: visible; }
+.gauge .val { position: absolute; left: 0; right: 0; top: 36px; text-align: center; }
+.gauge .val b { display: inline-block; position: relative; font-size: 38px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+.gauge .val b .minus, .spd-val b .minus { position: absolute; right: 100%; top: 0; font-weight: 500; opacity: .72; padding-right: 1px; }
+.gauge .val small { display: block; margin-top: 2px; }
+.gauge .val small { font-size: 12px; color: var(--muted); font-weight: 600; }
+.quality { position: absolute; left: 0; right: 0; bottom: -2px; text-align: center; font-size: 13px; font-weight: 700; }
+.arc-v { transition: stroke-dashoffset .8s cubic-bezier(.2,.8,.2,1), stroke .4s; }
+.phone[data-dir="instrument"] .arc-v { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--acc) 60%, transparent)); }
+.net h3 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.015em; overflow-wrap: anywhere; }
+.net .bssid { color: var(--dim); font-size: 12.5px; margin-top: 2px; }
+.net .band { display: inline-flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 4px 9px; border-radius: 8px; background: var(--s2); color: var(--muted); white-space: nowrap; }
+.tag.acc { background: var(--acc-soft); color: var(--acc); }
+.tag.ok { background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); }
+.tag.warn { background: color-mix(in srgb, var(--warn) 15%, transparent); color: var(--warn); }
+.tag.info { background: color-mix(in srgb, var(--info) 14%, transparent); color: var(--info); }
+.tag .d { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.stats { display: grid; grid-template-columns: 1fr 1.45fr .8fr; gap: 1px; background: var(--line2); border-radius: var(--r2); overflow: hidden; }
+.phone[data-dir="unifi"] .stats { gap: 8px; background: none; }
+.stat { background: var(--s2); padding: 10px 12px; display: grid; gap: 2px; min-width: 0; }
+.phone[data-dir="instrument"] .stat { background: color-mix(in srgb, var(--s2) 70%, transparent); }
+.stat .v { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stat .v small { font-size: 11.5px; color: var(--muted); font-weight: 600; margin-left: 2px; }
+@media (max-width: 0) {}
+.hero.stack { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+
+/* Metric picker (replaces inner segmented) */
+.picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pick { border: 1px solid transparent; background: var(--s2); border-radius: var(--r2); padding: 9px 11px; text-align: left; display: grid; gap: 1px; transition: border-color .2s, background .2s; }
+.pick .k { font-size: 12px; color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.pick .k .d { width: 8px; height: 3px; border-radius: 2px; background: var(--c); }
+.pick .v { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; }
+.pick .v small { font-size: 11px; color: var(--muted); font-weight: 600; margin-left: 2px; }
+.pick[aria-selected="true"] { border-color: color-mix(in srgb, var(--c) 55%, transparent); background: color-mix(in srgb, var(--c) 9%, var(--s2)); }
+
+.chartbox { position: relative; }
+.chartbox canvas { display: block; width: 100%; height: 190px; }
+.chart-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); font-weight: 600; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 14px; height: 3px; border-radius: 2px; background: var(--c); display: inline-block; }
+.legend i.dash { background: repeating-linear-gradient(90deg, var(--c) 0 4px, transparent 4px 7px); }
+.expand { border: 0; background: var(--s2); color: var(--text); border-radius: 9px; height: 30px; padding: 0 10px; display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; }
+.expand svg { width: 15px; height: 15px; }
+
+/* Rows */
+.rows { display: grid; }
+.row { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 12px; padding: 9px 0; border-top: 1px solid var(--line2); font-size: 14px; }
+.row:first-child { border-top: 0; padding-top: 0; }
+.row .k { color: var(--muted); }
+.row .v { font-weight: 600; text-align: right; }
+.row .v.ok { color: var(--ok); }
+.lrow { display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line2); text-align: left; background: none; border-left: 0; border-right: 0; border-bottom: 0; width: 100%; }
+.lrow:first-child { border-top: 0; }
+.ico { width: 40px; height: 40px; border-radius: 12px; background: var(--s2); display: grid; place-items: center; color: var(--muted); }
+.ico svg { width: 20px; height: 20px; }
+.ico.acc { background: var(--acc-soft); color: var(--acc); }
+.lrow .t { font-weight: 650; font-size: 15px; letter-spacing: -0.005em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lrow .s { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lrow .end { display: flex; align-items: center; gap: 8px; color: var(--dim); }
+.lrow .end svg { width: 18px; height: 18px; }
+.lrow .ms { font-size: 13px; font-weight: 700; color: var(--text); }
+
+/* Speed */
+.dial { width: 100%; max-width: 320px; margin: 2px auto 0; }
+.dial svg { width: 100%; height: auto; display: block; overflow: visible; }
+.spd-val { text-align: center; display: grid; justify-items: center; gap: 2px; margin-top: -6px; }
+.spd-val b { position: relative; display: inline-block; font-size: 46px; font-weight: 700; letter-spacing: -0.035em; line-height: 1; }
+.spd-val .u { font-size: 13px; color: var(--muted); font-weight: 600; }
+.spd-val .phase { font-size: 13px; font-weight: 700; color: var(--muted); margin-top: 4px; display: inline-flex; align-items: center; gap: 7px; }
+.spd-val .phase i { width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--dim)); }
+.phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.ph { background: var(--s2); border-radius: var(--r2); padding: 10px 12px; display: grid; gap: 1px; position: relative; overflow: hidden; }
+.ph .k { font-size: 12px; color: var(--muted); font-weight: 600; }
+.ph .v { font-size: 19px; font-weight: 700; letter-spacing: -0.015em; }
+.ph .v small { font-size: 11.5px; color: var(--muted); font-weight: 600; margin-left: 2px; }
+.ph.on::after { content: ""; position: absolute; left: 0; bottom: 0; height: 2px; width: var(--p, 0%); background: var(--c, var(--acc)); transition: width .25s linear; }
+.servers { display: grid; gap: 8px; }
+.srv { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; padding: 12px 14px; border-radius: var(--r2); background: var(--s2); border: 1px solid transparent; text-align: left; }
+.srv[aria-pressed="true"] { border-color: color-mix(in srgb, var(--acc) 55%, transparent); background: color-mix(in srgb, var(--acc) 8%, var(--s2)); }
+.srv .t { font-weight: 700; font-size: 14.5px; }
+.srv .s { font-size: 12.5px; color: var(--muted); }
+.radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--dim); display: grid; place-items: center; }
+.srv[aria-pressed="true"] .radio { border-color: var(--acc); }
+.srv[aria-pressed="true"] .radio::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--acc); }
+.grade { font-size: 30px; font-weight: 800; letter-spacing: -0.03em; color: var(--ok); }
+
+/* Spectrum */
+.chips { display: flex; gap: 6px; background: var(--s2); padding: 4px; border-radius: 12px; }
+.chips button { flex: 1; border: 0; background: none; border-radius: 9px; min-height: 34px; font-size: 13px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.chips button small { font-weight: 600; opacity: .7; margin-left: 3px; }
+.chips button[aria-selected="true"] { background: var(--s1); color: var(--text); box-shadow: 0 1px 0 var(--line); }
+.spec canvas { display: block; width: 100%; height: 200px; }
+.heat { display: grid; gap: 10px; }
+.heat .strip { display: grid; grid-template-columns: repeat(var(--n), 1fr); gap: 3px; }
+.cell { height: 44px; border-radius: 6px; border: 0; padding: 0; position: relative; background: var(--c); opacity: .9; transition: transform .2s; }
+.cell[aria-pressed="true"] { outline: 2px solid var(--text); outline-offset: 1px; }
+.cell.conn::after { content: ""; position: absolute; left: 50%; top: -7px; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: var(--acc); }
+.cell.gap { background: transparent; border: 1px dashed var(--line2); opacity: 1; }
+.heat .axis { display: grid; grid-template-columns: repeat(var(--n), 1fr); gap: 3px; font-size: 10.5px; color: var(--dim); text-align: center; font-variant-numeric: tabular-nums; }
+.scale { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.scale .bar { flex: 1; height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--ok), var(--warn), var(--err)); }
+.ap { display: grid; grid-template-columns: 34px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line2); }
+.ap:first-child { border-top: 0; }
+.ap .sw { width: 10px; height: 34px; border-radius: 4px; background: var(--c); justify-self: center; }
+.ap .t { font-weight: 650; font-size: 14.5px; display: flex; gap: 8px; align-items: center; min-width: 0; }
+.ap .t span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ap .s { font-size: 12.5px; color: var(--muted); }
+.ap .db { text-align: right; font-weight: 700; font-size: 15px; }
+.ap .db small { display: block; font-size: 11px; color: var(--muted); font-weight: 600; }
+
+/* Devices */
+.summary { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.progress { height: 3px; border-radius: 2px; background: var(--s3); overflow: hidden; position: relative; }
+.progress::after { content: ""; position: absolute; inset: 0; width: 40%; background: linear-gradient(90deg, transparent, var(--acc), transparent); animation: slide 1.4s infinite cubic-bezier(.4,0,.2,1); }
+@keyframes slide { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+.ports { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.port { background: var(--s2); border-radius: 10px; padding: 8px 10px; display: grid; gap: 0; }
+.port b { font-size: 15px; font-weight: 700; }
+.port span { font-size: 12px; color: var(--muted); }
+.port.open b { color: var(--acc); }
+.dhero { display: grid; grid-template-columns: 56px 1fr; gap: 14px; align-items: center; }
+.dhero .ico { width: 56px; height: 56px; border-radius: 16px; }
+.dhero .ico svg { width: 26px; height: 26px; }
+.dhero h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+.back { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; color: var(--muted); font-weight: 600; font-size: 13.5px; padding: 6px 0; }
+.back svg { width: 18px; height: 18px; transform: rotate(180deg); }
+.missing { font-size: 12.5px; color: var(--dim); }
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+/* SSH / WoL */
+.profile { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line2); }
+.profile:first-child { border-top: 0; padding-top: 0; }
+.mono-tile { width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center; font-weight: 800; font-size: 15px; background: var(--s2); color: var(--acc); letter-spacing: -0.02em; }
+.wake { position: relative; width: 52px; height: 52px; border-radius: 50%; border: 0; background: var(--acc-soft); color: var(--acc); display: grid; place-items: center; }
+.wake svg { width: 24px; height: 24px; }
+.wake.busy::before { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid transparent; border-top-color: var(--acc); animation: spin 1s linear infinite; }
+.wake.done { background: var(--acc); color: var(--acc-ink); }
+@keyframes spin { to { transform: rotate(360deg); } }
+.wolcard { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+.wolcard h3 { margin: 0; font-size: 16px; font-weight: 700; }
+.wolcard .s { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.note { font-size: 13px; color: var(--muted); display: flex; gap: 8px; align-items: flex-start; }
+.note svg { width: 16px; height: 16px; flex: none; margin-top: 2px; color: var(--dim); }
+
+/* Bottom nav */
+.nav { position: absolute; left: 0; right: 0; bottom: 0; padding: 8px 10px 22px; background: var(--nav-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid var(--line2); display: grid; grid-template-columns: repeat(5, 1fr); }
+.nav button { border: 0; background: none; display: grid; justify-items: center; gap: 4px; padding: 6px 0; color: var(--dim); font-size: 11.5px; font-weight: 700; position: relative; }
+.nav button .pill { width: 54px; height: 30px; border-radius: 15px; display: grid; place-items: center; transition: background .25s, color .25s; }
+.nav button svg { width: 22px; height: 22px; }
+.nav button[aria-selected="true"] { color: var(--text); }
+.nav button[aria-selected="true"] .pill { background: var(--acc-soft); color: var(--acc); }
+.homebar { position: absolute; left: 50%; bottom: 8px; width: 120px; height: 4px; margin-left: -60px; border-radius: 2px; background: var(--text); opacity: .35; }
+
+/* Fullscreen chart (landscape) */
+.fs { position: absolute; inset: 0; background: var(--bg); display: grid; grid-template-rows: auto 1fr; padding: 22px 30px 26px 44px; gap: 14px; animation: enter .35s; }
+.fs-top { display: flex; align-items: center; gap: 10px; }
+.fs-close { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--s2); color: var(--text); display: grid; place-items: center; flex: none; }
+.fs-close svg { width: 18px; height: 18px; }
+.fs-title { display: grid; gap: 1px; margin-left: 4px; min-width: 0; }
+.fs-title h2 { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; }
+.fs-title span { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.fs-top .grow { flex: 1; }
+.pills { display: flex; gap: 6px; }
+.pills button { border: 1px solid var(--line2); background: none; border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.phone[data-dir="unifi"] .pills button { border-color: var(--s3); }
+.pills button[aria-selected="true"] { background: var(--acc-soft); color: var(--acc); border-color: transparent; }
+.mini-seg { display: inline-grid; grid-auto-flow: column; background: var(--s2); border-radius: 999px; padding: 3px; }
+.mini-seg button { border: 0; background: none; padding: 5px 11px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.mini-seg button[aria-selected="true"] { background: var(--s3); color: var(--text); font-weight: 700; }
+.zoomctl { display: inline-grid; grid-template-columns: 30px 44px 30px; align-items: center; background: var(--s2); border-radius: 999px; padding: 3px; text-align: center; font-size: 13px; font-weight: 700; }
+.zoomctl button { border: 0; background: none; height: 28px; border-radius: 50%; font-size: 16px; font-weight: 700; color: var(--text); }
+.zoomctl button:disabled { color: var(--dim); }
+.fs-body { display: grid; grid-template-columns: 1fr 212px; gap: 12px; min-height: 0; }
+.fs-plot { background: var(--s1); border-radius: var(--r1); padding: 10px 8px 6px 4px; min-height: 0; display: flex; }
+.fs-plot canvas { flex: 1; width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
+.fs-side { display: grid; align-content: start; gap: 10px; min-height: 0; overflow: auto; }
+.fs-card { background: var(--s1); border-radius: var(--r2); padding: 11px 13px; display: grid; gap: 8px; }
+.fs-hint { font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+.fs-card h3 { margin: 0; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.fs-card h3 i { width: 14px; height: 3px; border-radius: 2px; background: var(--c); }
+.fs-card h3 i.dash { background: repeating-linear-gradient(90deg, var(--c) 0 4px, transparent 4px 7px); }
+.mma { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; font-size: 11.5px; color: var(--muted); }
+.mma b { display: block; color: var(--text); font-size: 13.5px; font-weight: 700; }
+.evlist { display: grid; gap: 6px; padding: 2px 4px; }
+.ev { display: grid; grid-template-columns: 10px 1fr auto; gap: 8px; align-items: center; font-size: 12.5px; color: var(--muted); border: 0; background: none; text-align: left; padding: 2px 0; }
+.ev i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+.ev span:last-child { color: var(--dim); font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="desk">
+  <section class="brief" aria-label="Popis návrhu">
+    <h1>NetKit M3</h1>
+    <p class="lead">Interaktivní návrh nového vzhledu. Data se mění každou sekundu, záložky, grafy, speed test i probuzení WoL jsou klikací.</p>
+
+    <div class="group">
+      <h2>Směr</h2>
+      <div class="dirs" id="dirs">
+        <button class="dir" data-dir="unifi" aria-pressed="true"><b>Čistý UniFi · vybráno</b><span>Ploché karty bez rámečků, víc vzduchu, modrá v grafech, bez záře.</span></button>
+        <button class="dir" data-dir="instrument" aria-pressed="false"><b>Přesný přístroj</b><span>Hluboké vrstvy, velké číslice, data jemně svítí. Měřicí přístroj v kapse.</span></button>
+        <button class="dir" data-dir="rex" aria-pressed="false"><b>Rex panel</b><span>Hustší rozvržení, tenké rámečky, menší rádiusy. Blíž současné verzi.</span></button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Režim telefonu</h2>
+      <div class="toggles" id="modes">
+        <button class="tg" data-mode="dark" aria-pressed="true">Tmavý</button>
+        <button class="tg" data-mode="light" aria-pressed="false">Světlý</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Co se mění proti 0.4.0</h2>
+      <ul class="notes">
+        <li>Jedna úroveň přepínačů: Živě a Rychlost. Graf se vybírá klepnutím na metriku.</li>
+        <li>Graf vyplní šířku podle času, osa vlevo, série se liší barvou i čárkováním. Tlačítko Rozbalit otevře graf na šířku.</li>
+        <li>Na rozbaleném grafu: okno 1, 5 a 15 min, kurzor tažením, kolečko nebo dva prsty pro zoom, značky roamingu a ztrát.</li>
+        <li>Manrope s tabulárními číslicemi. JetBrains Mono jen pro IP, MAC a terminál.</li>
+        <li>Zdraví kanálů jako tepelný pás místo seznamu desítek řádků.</li>
+        <li>U zařízení jen zjištěné údaje, porty jako mřížka.</li>
+      </ul>
+    </div>
+    <p class="sample">Všechna čísla, sítě, zařízení a profily jsou ukázková.</p>
+  </section>
+
+  <div class="stage">
+    <div class="scaler" id="scaler">
+      <div class="phone" id="phone" data-dir="unifi" data-mode="dark">
+        <div class="status"><span class="num" id="clock">17:33</span><i>Wi-Fi 6 · 77 %</i></div>
+        <div class="screen" id="screen"></div>
+        <nav class="nav" id="nav" aria-label="Hlavní navigace"></nav>
+        <div class="homebar"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = (s, r = document) => r.querySelector(s);
+const phone = $('#phone'), screen = $('#screen'), nav = $('#nav'), scaler = $('#scaler');
+const css = n => getComputedStyle(phone).getPropertyValue(n).trim();
+const fmt = (v, d = 0) => v == null ? '–' : v.toLocaleString('cs-CZ', { minimumFractionDigits: d, maximumFractionDigits: d });
+
+/* ---------- icons (24 grid, stroke 1.8) ---------- */
+const I = {
+  signal: '<path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.2a9.5 9.5 0 0 1 13 0"/><path d="M8.6 15.4a5 5 0 0 1 6.8 0"/><circle cx="12" cy="18.6" r="1.1" fill="currentColor"/>',
+  spectrum: '<path d="M3 19h18"/><path d="M4 19 7 8h3l3 11"/><path d="M11 19l2.5-7h3L19 19"/>',
+  devices: '<circle cx="6" cy="17" r="2.2"/><circle cx="12" cy="6" r="2.2"/><circle cx="18" cy="15" r="2.2"/><path d="m7.2 15.2 3.7-7.3M13.3 7.8l3.6 5.4"/>',
+  terminal: '<rect x="3" y="4.5" width="18" height="15" rx="3"/><path d="m7.5 10 2.5 2-2.5 2M12.5 15h4"/>',
+  power: '<path d="M12 3v8"/><path d="M6.4 6.6a8 8 0 1 0 11.2 0"/>',
+  router: '<rect x="3" y="13" width="18" height="6.5" rx="2"/><path d="M7 16.3h.01M10.5 16.3h.01"/><path d="M16 13V9M13.5 7.5a3.6 3.6 0 0 1 5 0M11.5 5.2a6.6 6.6 0 0 1 9 0"/>',
+  nas: '<rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M8.5 7.5h7M8.5 11h7"/><circle cx="12" cy="16.5" r="1.2"/>',
+  laptop: '<rect x="5" y="5" width="14" height="10" rx="1.8"/><path d="M3 18.5h18"/>',
+  phone: '<rect x="7" y="2.8" width="10" height="18.4" rx="2.4"/><path d="M11 18h2"/>',
+  tv: '<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M9 20h6"/>',
+  chip: '<rect x="6" y="6" width="12" height="12" rx="2.5"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/>',
+  chev: '<path d="m9 6 6 6-6 6"/>',
+  expand: '<path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  refresh: '<path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4v4.6h-4.6"/>',
+  route: '<circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h6.5a3.5 3.5 0 0 0 0-7h-5a3.5 3.5 0 0 1 0-7H16"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+  key: '<circle cx="8" cy="14" r="4"/><path d="m11 11 8-8M16 6l2 2M14 8l2 2"/>',
+  speed: '<path d="M4.5 16a8 8 0 1 1 15 0"/><path d="m12 13 4-5"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'
+};
+const ic = (n) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
+
+/* ---------- state & sample data ---------- */
+const S = { tab: 'signal', seg: 'live', metric: 'signal', devIdx: null, fs: false, win: 300, zoom: 1, pan: 0, scrub: null, band: '5', heatSel: 100, speed: { phase: 'idle', server: 'zelina' }, wol: {} };
+const N = 900; // 15 min @ 1 Hz
+function walk(n, start, min, max, step, seed) { let x = start, out = []; let s = seed; const r = () => (s = (s * 9301 + 49297) % 233280) / 233280; for (let i = 0; i < n; i++) { x += (r() - .5) * step; x = Math.max(min, Math.min(max, x)); out.push(x); } return out; }
+const H = {
+  rssi: walk(N, -52, -74, -41, 2.4, 7),
+  down: walk(N, 3, .2, 60, 6, 11).map(v => Math.max(.1, v * (Math.random() < .03 ? 6 : 1))),
+  up: walk(N, 1, .1, 14, 2, 13),
+  gw: walk(N, 2.2, .9, 9, 1.2, 17),
+  net: walk(N, 10, 6, 40, 4, 19)
+};
+for (let i = 330; i < 420; i++) H.rssi[i] = Math.min(H.rssi[i], -66 - Math.sin(i / 9) * 4);
+const EV = [ { i: 120, k: 'kanál', t: 'Změna kanálu 36 → 100' }, { i: 330, k: 'roaming', t: 'Roaming na …:ed:bd' }, { i: 420, k: 'roaming', t: 'Roaming zpět' }, { i: 648, k: 'ztráta', t: 'Ztráta 2 ech (1.1.1.1)' } ];
+const EVK = { roaming: { l: 'Roaming', c: '--info' }, 'ztráta': { l: 'Ztráta paketů', c: '--err' }, 'kanál': { l: 'Změna kanálu', c: '--warn' } };
+const ago = i => { const s = N - 1 - i; return `−${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+let now = 0;
+function push() {
+  const last = a => a[a.length - 1];
+  const nx = (a, min, max, step) => Math.max(min, Math.min(max, last(a) + (Math.random() - .5) * step));
+  H.rssi.push(nx(H.rssi, -70, -41, 2.2)); H.down.push(Math.max(.1, nx(H.down, .2, 40, 5) * (Math.random() < .05 ? 4 : 1))); H.up.push(nx(H.up, .1, 10, 1.5));
+  H.gw.push(nx(H.gw, .9, 6, 1)); H.net.push(nx(H.net, 6, 30, 3));
+  for (const k in H) H[k].shift();
+  EV.forEach(e => e.i--); while (EV.length && EV[0].i < 0) EV.shift();
+  now++;
+}
+const quality = r => r >= -55 ? ['Vynikající', 'ok'] : r >= -65 ? ['Dobrý', 'acc'] : r >= -72 ? ['Slabší', 'warn'] : ['Slabý', 'err'];
+
+/* ---------- animated numbers ---------- */
+const tweens = new Map();
+function tween(el, to, d = 0, unitless) {
+  if (!el) return;
+  const from = parseFloat(el.dataset.v ?? to);
+  el.dataset.v = to;
+  if (RM || from === to) { el.textContent = fmt(to, d); return; }
+  const t0 = performance.now(), dur = 600;
+  cancelAnimationFrame(tweens.get(el));
+  const step = t => { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3); el.textContent = fmt(from + (to - from) * e, d); if (k < 1) tweens.set(el, requestAnimationFrame(step)); };
+  tweens.set(el, requestAnimationFrame(step));
+}
+
+/* ---------- chart renderer ---------- */
+function setupCanvas(c) { const r = c.getBoundingClientRect(), k = devicePixelRatio || 1; const w = Math.max(1, Math.round(r.width * k)), h = Math.max(1, Math.round(r.height * k)); if (c.width !== w || c.height !== h) { c.width = w; c.height = h; } const x = c.getContext('2d'); x.setTransform(k, 0, 0, k, 0, 0); return [x, r.width, r.height]; }
+const METRICS = {
+  signal: { title: 'Signál', unit: 'dBm', range: [-90, -30], ticks: [-90, -70, -50, -30], series: () => [{ v: H.rssi, c: css('--acc'), w: 2.2, fill: true, name: 'RSSI' }] },
+  tput: { title: 'Propustnost', unit: 'Mb/s', auto: true, series: () => [{ v: H.down, c: css('--info'), w: 2.2, fill: true, name: 'Příjem' }, { v: H.up, c: css('--violet'), w: 1.8, dash: [5, 4], name: 'Odesílání' }] },
+  lat: { title: 'Latence', unit: 'ms', auto: true, series: () => [{ v: H.net, c: css('--info'), w: 2, fill: true, name: 'Internet 1.1.1.1' }, { v: H.gw, c: css('--acc'), w: 2, name: 'Brána' }] }
+};
+function niceMax(v) { const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 2, 2.5, 5, 10]) if (v <= m * p) return m * p; return 10 * p; }
+function drawChart(c, metric, opt = {}) {
+  if (!c || !c.isConnected) return;
+  const [x, W, Hh] = setupCanvas(c);
+  const M = METRICS[metric], series = M.series();
+  const win = Math.round(opt.win ?? 300), end = N - 1 - Math.round(opt.pan ?? 0), start = Math.max(0, end - win + 1);
+  let lo, hi, ticks;
+  if (M.auto) { let mx = 0; series.forEach(s => { for (let i = start; i <= end; i++) mx = Math.max(mx, s.v[i]); }); hi = niceMax(mx * 1.15); lo = 0; ticks = [0, hi / 4, hi / 2, hi * 3 / 4, hi]; }
+  else { [lo, hi] = M.range; ticks = M.ticks; }
+  const L = opt.big ? 44 : 34, R = 8, T = 10, B = opt.big ? 26 : 22, pw = W - L - R, ph = Hh - T - B;
+  const X = i => L + (i - start) / Math.max(1, win - 1) * pw, Y = v => T + (1 - (v - lo) / (hi - lo)) * ph;
+  x.clearRect(0, 0, W, Hh);
+  x.font = `600 ${opt.big ? 12 : 11}px ${css('--sans') || 'Manrope'}`; x.fillStyle = css('--dim'); x.textBaseline = 'middle'; x.textAlign = 'right';
+  ticks.forEach(t => { const y = Y(t); x.strokeStyle = css('--line2') || 'rgba(255,255,255,.06)'; x.lineWidth = 1; x.beginPath(); x.moveTo(L, Math.round(y) + .5); x.lineTo(W - R, Math.round(y) + .5); x.stroke(); x.fillText(fmt(t, t % 1 ? 1 : 0), L - 8, y); });
+  // time labels
+  x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+  const span = win, stepSec = span <= 60 ? 15 : span <= 300 ? 60 : span <= 900 ? 180 : 300;
+  for (let s = 0; s <= span; s += stepSec) { const i = end - s; if (i < start) break; const lab = s === 0 ? 'teď' : `−${s >= 60 ? (s / 60) + ' min' : s + ' s'}`; x.fillText(lab, Math.min(W - R - 12, Math.max(L + 14, X(i))), Hh - 6); }
+  // events: dashed rule in the event's colour; the expanded chart adds a label pill at the top
+  EV.forEach(e => {
+    if (e.i < start || e.i > end) return; const xx = X(e.i), col = css(EVK[e.k].c);
+    x.save(); x.strokeStyle = col; x.globalAlpha = .8; x.lineWidth = 1.2; x.setLineDash([3, 3]); x.beginPath(); x.moveTo(Math.round(xx) + .5, T); x.lineTo(Math.round(xx) + .5, T + ph); x.stroke(); x.restore();
+    if (opt.big) { x.save(); x.font = `600 11.5px ${css('--sans')}`; const lb = EVK[e.k].l, tw = x.measureText(lb).width + 18; let bx = xx + 5; if (bx + tw > W - R) bx = xx - 5 - tw; x.fillStyle = css('--s1'); x.strokeStyle = col; x.lineWidth = 1.2; x.beginPath(); x.roundRect(bx, T + 2, tw, 21, 10.5); x.fill(); x.stroke(); x.fillStyle = col; x.textAlign = 'left'; x.textBaseline = 'middle'; x.fillText(lb, bx + 9, T + 13); x.restore(); }
+    else { x.fillStyle = col; x.beginPath(); x.arc(xx, T + 3, 3, 0, 7); x.fill(); }
+  });
+  const glow = css('--glow') === '1';
+  series.forEach(s => {
+    x.save();
+    x.beginPath(); for (let i = start; i <= end; i++) { const v = Math.max(lo, Math.min(hi, s.v[i])); i === start ? x.moveTo(X(i), Y(v)) : x.lineTo(X(i), Y(v)); }
+    if (s.fill) { const g = x.createLinearGradient(0, T, 0, T + ph); g.addColorStop(0, s.c + '40'); g.addColorStop(1, s.c + '00'); x.save(); x.lineTo(X(end), T + ph); x.lineTo(X(start), T + ph); x.closePath(); x.fillStyle = g; x.fill(); x.restore(); x.beginPath(); for (let i = start; i <= end; i++) { const v = Math.max(lo, Math.min(hi, s.v[i])); i === start ? x.moveTo(X(i), Y(v)) : x.lineTo(X(i), Y(v)); } }
+    if (s.dash) x.setLineDash(s.dash);
+    if (glow) { x.shadowColor = s.c; x.shadowBlur = 8; }
+    x.strokeStyle = s.c; x.lineWidth = s.w; x.lineJoin = 'round'; x.lineCap = 'round'; x.stroke(); x.restore();
+    if (!opt.scrubbing && (opt.pan ?? 0) < 1) { const v = Math.max(lo, Math.min(hi, s.v[end])); x.fillStyle = s.c; x.beginPath(); x.arc(X(end), Y(v), 3.6, 0, 7); x.fill(); x.fillStyle = css('--bg'); x.beginPath(); x.arc(X(end), Y(v), 1.5, 0, 7); x.fill(); }
+  });
+  // scrub
+  if (opt.scrubX != null) {
+    const i = Math.max(start, Math.min(end, Math.round(start + (opt.scrubX - L) / pw * (win - 1)))), xx = X(i);
+    x.strokeStyle = css('--text'); x.globalAlpha = .5; x.beginPath(); x.moveTo(xx, T); x.lineTo(xx, T + ph); x.stroke(); x.globalAlpha = 1;
+    const lines = series.map(s => [s.c, `${s.name}  ${fmt(s.v[i], metric === 'signal' ? 0 : 1)} ${M.unit}`]);
+    const ev = EV.find(e => Math.abs(e.i - i) <= Math.max(1, win / 150)); if (ev) lines.push([css('--warn'), ev.t]);
+    const secs = end - i; lines.unshift([css('--muted'), secs === 0 ? 'teď' : `před ${secs >= 60 ? Math.floor(secs / 60) + ' min ' + (secs % 60) + ' s' : secs + ' s'}`]);
+    series.forEach(s => { const v = Math.max(lo, Math.min(hi, s.v[i])); x.fillStyle = s.c; x.beginPath(); x.arc(xx, Y(v), 4, 0, 7); x.fill(); });
+    x.font = `600 12px ${css('--sans')}`; const tw = Math.max(...lines.map(l => x.measureText(l[1]).width)) + 26, th = lines.length * 18 + 12;
+    let bx = xx + 12; if (bx + tw > W - R) bx = xx - 12 - tw; const by = T + 4;
+    x.fillStyle = css('--s1'); x.strokeStyle = css('--line') || 'transparent'; x.beginPath(); x.roundRect(bx, by, tw, th, 10); x.fill(); x.stroke();
+    x.textAlign = 'left'; x.textBaseline = 'middle';
+    lines.forEach((l, k) => { x.fillStyle = l[0]; x.fillRect(bx + 10, by + 15 + k * 18 - 1.5, 8, 3); x.fillStyle = k === 0 ? css('--muted') : css('--text'); x.fillText(l[1], bx + 22, by + 15 + k * 18); });
+  }
+  return { start, end, series, unit: M.unit };
+}
+
+/* ---------- screens ---------- */
+const NAVS = [['signal', 'Signál', 'signal'], ['spectrum', 'Spektrum', 'spectrum'], ['devices', 'Zařízení', 'devices'], ['ssh', 'SSH', 'terminal'], ['wol', 'WoL', 'power']];
+function renderNav() { nav.innerHTML = NAVS.map(([k, l, i]) => `<button role="tab" aria-selected="${S.tab === k}" data-tab="${k}"><span class="pill">${ic(i)}</span>${l}</button>`).join(''); }
+function seg(id, opts, sel) { return `<div class="seg" role="tablist" data-seg="${id}"><span class="thumb"></span>${opts.map(([k, l]) => `<button role="tab" aria-selected="${k === sel}" data-v="${k}">${l}</button>`).join('')}</div>`; }
+function placeThumbs() { screen.querySelectorAll('.seg').forEach(s => { const b = s.querySelector('[aria-selected="true"]'), t = s.querySelector('.thumb'); if (b && t) { t.style.width = b.offsetWidth + 'px'; t.style.transform = `translateX(${b.offsetLeft - 4}px)`; } }); }
+
+function gaugeSvg(r) {
+  const f = Math.max(0, Math.min(1, (r + 90) / 60)), R = 62, C = 2 * Math.PI * R, arc = C * 240 / 360;
+  const [ql, qt] = quality(r);
+  let ticks = ''; for (let k = 0; k <= 12; k++) { const a = (150 + k * 20) * Math.PI / 180, r1 = 72, r2 = k % 3 ? 76 : 79; ticks += `<line x1="${74 + r1 * Math.cos(a)}" y1="${70 + r1 * Math.sin(a)}" x2="${74 + r2 * Math.cos(a)}" y2="${70 + r2 * Math.sin(a)}" stroke="var(--dim)" stroke-width="${k % 3 ? 1 : 1.6}" stroke-linecap="round" opacity=".7"/>`; }
+  return `<svg viewBox="0 0 148 128" role="img" aria-label="Signál ${Math.round(r)} dBm, ${ql}">
+    ${css('--glow') === '1' ? ticks : ''}
+    <circle cx="74" cy="70" r="${R}" fill="none" stroke="var(--s3)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${arc} ${C}" transform="rotate(150 74 70)"/>
+    <circle class="arc-v" cx="74" cy="70" r="${R}" fill="none" stroke="var(--${qt})" stroke-width="10" stroke-linecap="round" stroke-dasharray="${arc} ${C}" stroke-dashoffset="${arc * (1 - f)}" transform="rotate(150 74 70)"/>
+  </svg>`;
+}
+function vSignal() {
+  const r = H.rssi[N - 1], [ql, qt] = quality(r), m = S.metric;
+  const pick = (k, name, val, d, unit, c) => `<button class="pick" role="tab" aria-selected="${m === k}" data-metric="${k}" style="--c:${c}"><span class="k"><i class="d"></i>${name}</span><span class="v"><span class="num" data-n="${k}">${fmt(val, d)}</span><small>${unit}</small></span></button>`;
+  return `<div class="view">
+    ${seg('sig', [['live', 'Živě'], ['speed', 'Rychlost']], S.seg)}
+    ${S.seg === 'speed' ? vSpeed() : `
+    <div class="hdr"><div><h1>Example-WiFi</h1><div class="sub">Připojeno · 5 GHz · kanál 100 · 80 MHz</div></div><span class="live">živě · 1 s</span></div>
+    <section class="panel" aria-label="Aktuální signál">
+      <div class="hero" id="hero">
+        <div class="gauge" id="gauge">${gaugeSvg(r)}<div class="val"><b class="num"><span class="minus">−</span><span id="rssi">${fmt(Math.abs(Math.round(r)))}</span></b><small>dBm</small></div><div class="quality" id="q" style="color:var(--${qt})">${ql}</div></div>
+        <div class="net">
+          <div class="label">Přístupový bod</div>
+          <div class="bssid mono">04:F4:1C:CB:ED:BD</div>
+          <div class="band"><span class="tag acc"><i class="d"></i>Wi-Fi 6</span><span class="tag">WPA2</span><span class="tag">2×2</span></div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><span class="label">PHY ↓/↑</span><span class="v num">1200<small>/ 1200</small></span></div>
+        <div class="stat"><span class="label">IPv4</span><span class="v mono" style="font-size:14.5px">192.0.2.30</span></div>
+        <div class="stat"><span class="label">Brána</span><span class="v mono" style="font-size:14.5px">192.0.2.1</span></div>
+      </div>
+    </section>
+    <section class="panel" aria-label="Průběh">
+      <div class="picker" role="tablist">
+        ${pick('signal', 'Signál', r, 0, 'dBm', css('--acc'))}
+        ${pick('tput', 'Příjem', H.down[N - 1], 1, 'Mb/s', css('--info'))}
+        ${pick('lat', 'Internet', H.net[N - 1], 1, 'ms', css('--info'))}
+      </div>
+      <div class="chartbox"><canvas id="live" aria-label="Graf ${METRICS[m].title} za posledních 5 minut"></canvas></div>
+      <div class="chart-foot"><div class="legend">${METRICS[m].series().map(s => `<span><i class="${s.dash ? 'dash' : ''}" style="--c:${s.c}"></i>${s.name}</span>`).join('')}</div><button class="expand" id="expand">${ic('expand')}Rozbalit</button></div>
+    </section>
+    <section class="panel" aria-label="Latence">
+      <div class="ptitle"><h2>Latence</h2><span class="meta">10 vzorků · 1 s</span></div>
+      <div class="rows">
+        <div class="row"><span class="k">Brána <span class="mono" style="color:var(--dim)">192.0.2.1</span></span><span class="v num"><span data-n="gw">${fmt(H.gw[N - 1], 1)}</span> ms</span></div>
+        <div class="row"><span class="k">Internet <span class="mono" style="color:var(--dim)">1.1.1.1</span></span><span class="v num"><span data-n="net">${fmt(H.net[N - 1], 1)}</span> ms</span></div>
+        <div class="row"><span class="k">DNS one.one.one.one</span><span class="v num">6,7 ms</span></div>
+        <div class="row"><span class="k">Ztráta paketů</span><span class="v ok">0 %</span></div>
+      </div>
+    </section>
+    <div class="note">${ic('info')}<span>Roaming a ztráty se v grafu značí trojúhelníkem nahoře.</span></div>`}
+  </div>`;
+}
+
+/* Speed */
+const LOG = v => Math.log10(1 + v) / Math.log10(1001); // 0..1000 Mbit/s
+/* Semicircular scale like an analog instrument: pivot at the bottom, value printed below, never under the needle. */
+function dialSvg(v, phase) {
+  const cx = 160, cy = 168, R = 138, f = LOG(v), color = phase === 'up' ? 'var(--violet)' : 'var(--info)';
+  const P = (fr, r) => { const a = Math.PI * (1 + fr); return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; };
+  let ticks = '';
+  for (let k = 0; k <= 40; k++) { const fr = k / 40, major = k % 5 === 0, [x1, y1] = P(fr, R - 14), [x2, y2] = P(fr, R - (major ? 30 : 22)), lit = fr <= f && v > 0; ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${lit ? color : 'var(--dim)'}" stroke-width="${major ? 2 : 1.2}" stroke-linecap="round" opacity="${lit ? 1 : major ? .75 : .45}"/>`; }
+  const marks = [0, 10, 50, 100, 250, 500, 1000];
+  const lab = marks.map(m => { const [x, y] = P(LOG(m), R - 46); return `<text x="${x.toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--muted)" font-family="var(--sans)">${m}</text>`; }).join('');
+  const arcLen = Math.PI * R, [nx, ny] = P(f, R - 40);
+  return `<svg viewBox="0 0 320 182" role="img" aria-label="Rychlost ${Math.round(v)} Mbit/s">
+    <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--s3)" stroke-width="5" stroke-dasharray="${arcLen} ${2 * Math.PI * R}" transform="rotate(180 ${cx} ${cy})" stroke-linecap="round"/>
+    <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${color}" stroke-width="5" stroke-dasharray="${arcLen} ${2 * Math.PI * R}" stroke-dashoffset="${arcLen * (1 - f)}" transform="rotate(180 ${cx} ${cy})" stroke-linecap="round" style="transition:stroke-dashoffset .25s linear"/>
+    ${ticks}${lab}
+    <line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="${v > 0 ? color : 'var(--dim)'}" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="${cx}" cy="${cy}" r="7" fill="var(--s1)" stroke="${v > 0 ? color : 'var(--dim)'}" stroke-width="2.2"/>
+  </svg>`;
+}
+const signed = (v) => v < 0 ? `<span class="minus">−</span>${fmt(Math.abs(v))}` : fmt(v);
+function vSpeed() {
+  const sp = S.speed, running = ['ping', 'down', 'up'].includes(sp.phase);
+  const val = sp.phase === 'down' ? sp.cur : sp.phase === 'up' ? sp.cur : sp.phase === 'done' ? sp.down : 0;
+  const phaseLabel = { idle: 'Připraveno', ping: 'Měřím latenci…', down: 'Stahování', up: 'Odesílání', done: 'Hotovo · stahování' }[sp.phase];
+  const ph = (k, name, v, unit, c, p) => `<div class="ph ${running && sp.phase === k ? 'on' : ''}" style="--c:${c};--p:${p}%"><span class="k">${name}</span><span class="v num">${v == null ? '–' : fmt(v, v < 100 ? 1 : 0)}<small>${unit}</small></span></div>`;
+  return `
+    <div class="hdr"><div><h1>Rychlost</h1><div class="sub">Přes Wi-Fi, mobilní data se nepoužijí</div></div>${running ? '<span class="live">měřím</span>' : ''}</div>
+    <section class="panel" aria-label="Měření">
+      <div class="dial" id="dial">${dialSvg(val, sp.phase)}</div>
+      <div class="spd-val"><b class="num" id="sv">${fmt(val, 0)}</b><span class="u">Mbit/s</span><span class="phase" style="--c:${sp.phase === 'up' ? 'var(--violet)' : sp.phase === 'ping' ? 'var(--acc)' : sp.phase === 'idle' ? 'var(--dim)' : 'var(--info)'}"><i></i>${phaseLabel}</span></div>
+      <div class="phases">
+        ${ph('ping', 'Latence', sp.ping, 'ms', 'var(--acc)', sp.p)}
+        ${ph('down', 'Stahování', sp.down, 'Mbit/s', 'var(--info)', sp.p)}
+        ${ph('up', 'Odesílání', sp.up, 'Mbit/s', 'var(--violet)', sp.p)}
+      </div>
+      <button class="btn ${running ? 'ghost' : 'primary'} block" id="sbtn">${running ? 'Zastavit' : sp.phase === 'done' ? 'Měřit znovu' : 'Spustit test'}</button>
+    </section>
+    ${sp.phase === 'done' ? `<section class="panel"><div class="ptitle"><h2>Latence pod zátěží</h2><span class="grade">A+</span></div><div class="rows">
+      <div class="row"><span class="k">Bez zátěže</span><span class="v num">${fmt(sp.ping, 0)} ms · jitter 5,8</span></div>
+      <div class="row"><span class="k">Při stahování</span><span class="v num ok">21 ms (+0)</span></div>
+      <div class="row"><span class="k">Při odesílání</span><span class="v num ok">23 ms (+2)</span></div></div></section>` : ''}
+    <section class="panel"><div class="ptitle"><h2>Server</h2></div><div class="servers">
+      <button class="srv" aria-pressed="${sp.server === 'zelina'}" data-srv="zelina"><div><div class="t">rychlost.zelina.eu</div><div class="s">LibreSpeed · 6↓ 3↑ spojení</div></div><span class="radio"></span></button>
+      <button class="srv" aria-pressed="${sp.server === 'ndt'}" data-srv="ndt"><div><div class="t">M-Lab NDT7</div><div class="s">Nejbližší server · výsledky veřejné</div></div><span class="radio"></span></button>
+    </div></section>
+    <section class="panel"><div class="ptitle"><h2>Historie</h2><span class="meta">posledních 20</span></div><div class="rows">
+      <div class="row"><span class="k">dnes 17:33 · zelina</span><span class="v num">383 ↓ · 144 ↑</span></div>
+      <div class="row"><span class="k">včera 21:10 · NDT7</span><span class="v num">402 ↓ · 151 ↑</span></div></div></section>`;
+}
+let speedTimer = null;
+function runSpeed() {
+  const sp = S.speed; clearInterval(speedTimer);
+  if (['ping', 'down', 'up'].includes(sp.phase)) { sp.phase = 'idle'; render(); return; }
+  Object.assign(sp, { phase: 'ping', ping: null, down: null, up: null, cur: 0, p: 0 }); render();
+  let t = 0;
+  speedTimer = setInterval(() => {
+    t += 250;
+    if (sp.phase === 'ping') { sp.p = Math.min(100, t / 20); if (t >= 2000) { sp.ping = 24 + Math.random() * 6; sp.phase = 'down'; t = 0; render(); return; } }
+    else if (sp.phase === 'down') { sp.p = t / 80; sp.cur = Math.min(470, 380 + Math.sin(t / 700) * 60 + Math.random() * 30) * Math.min(1, t / 1500); if (t >= 8000) { sp.down = 383; sp.phase = 'up'; t = 0; sp.cur = 0; render(); return; } }
+    else if (sp.phase === 'up') { sp.p = t / 80; sp.cur = Math.min(200, 140 + Math.sin(t / 600) * 25 + Math.random() * 15) * Math.min(1, t / 1500); if (t >= 8000) { sp.up = 144; sp.phase = 'done'; clearInterval(speedTimer); render(); return; } }
+    const d = $('#dial'); if (d) { d.innerHTML = dialSvg(sp.cur, sp.phase); tween($('#sv'), sp.cur, 0); }
+    screen.querySelectorAll('.ph.on').forEach(e => e.style.setProperty('--p', sp.p + '%'));
+  }, 250);
+}
+
+/* Spectrum */
+const APS5 = [ { n: 'Example-WiFi', ch: 100, w: 80, r: -45, c: '--acc', conn: 1 }, { n: 'Example-Guest', ch: 104, w: 160, r: -71, c: '--warn' }, { n: 'Example-5G', ch: 56, w: 20, r: -72, c: '--violet' }, { n: 'Example-WiFi', ch: 40, w: 20, r: -72, c: '--info', mine: 1 }, { n: 'Example-Ext', ch: 40, w: 20, r: -81, c: '--ok' }, { n: 'Example-ISP-5G', ch: 40, w: 20, r: -84, c: '--err' } ];
+const APS24 = [ { n: 'Example-Lab', ch: 7, w: 40, r: -45, c: '--acc' }, { n: 'Example-AP', ch: 4, w: 40, r: -50, c: '--warn' }, { n: 'Example-Lab', ch: 11, w: 40, r: -55, c: '--violet' }, { n: 'Example-Guest', ch: 1, w: 20, r: -60, c: '--info' }, { n: 'Example-ISP', ch: 6, w: 20, r: -73, c: '--ok' }, { n: 'Example-IoT', ch: 3, w: 40, r: -76, c: '--err' } ];
+const CH5 = [36, 40, 44, 48, 52, 56, 60, 64, null, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, null, 149, 153, 157, 161, 165];
+const CH24 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+function chScore(ch) {
+  const aps = S.band === '5' ? APS5 : APS24; let s = 0;
+  aps.forEach(a => { if (a.conn) return; const half = S.band === '5' ? a.w / 10 : a.w / 10; const d = Math.abs(a.ch - ch); if (d < half) s += Math.max(0, (a.r + 95) / 30); });
+  return s;
+}
+function heatColor(s) { return s < .4 ? css('--ok') : s < 1.2 ? css('--warn') : css('--err'); }
+function vSpectrum() {
+  const aps = S.band === '5' ? APS5 : APS24, chs = S.band === '5' ? CH5 : CH24;
+  const sel = S.heatSel, selAps = sel == null ? [] : aps.filter(a => Math.abs(a.ch - sel) < a.w / 10);
+  return `<div class="view">
+    <div class="hdr"><div><h1>Spektrum</h1><div class="sub">18 sítí · sken před 20 s</div></div><button class="btn primary sm" id="scan">${ic('refresh')}Skenovat</button></div>
+    <div class="chips" role="tablist">${[['24', '2,4 GHz', 12], ['5', '5 GHz', 6], ['6', '6 GHz', 0]].map(([k, l, n]) => `<button role="tab" aria-selected="${S.band === k}" data-band="${k}">${l}<small>${n}</small></button>`).join('')}</div>
+    <section class="panel spec" aria-label="Obsazenost kanálů">
+      <div class="ptitle"><h2>Kanály</h2><span class="meta">${aps.length} AP · RSSI ze skenu</span></div>
+      <canvas id="spec"></canvas>
+      <div class="legend">${aps.map(a => `<span><i style="--c:var(${a.c})"></i>${a.n}${a.conn ? ' · připojeno' : ''}</span>`).join('')}</div>
+    </section>
+    <section class="panel heat" aria-label="Zdraví kanálů">
+      <div class="ptitle"><h2>Zdraví kanálů</h2><span class="meta">doporučeno: ${S.band === '5' ? '149' : '13'}</span></div>
+      <div class="strip" style="--n:${chs.length}">${chs.map(c => c == null ? '<span class="cell gap" aria-hidden="true"></span>' : `<button class="cell ${aps.some(a => a.conn && a.ch === c) ? 'conn' : ''}" style="--c:${heatColor(chScore(c))}" aria-pressed="${sel === c}" data-ch="${c}" aria-label="Kanál ${c}"></button>`).join('')}</div>
+      <div class="axis" style="--n:${chs.length}">${chs.map((c, k) => `<span>${c == null ? '' : (S.band === '5' ? ([36, 52, 100, 116, 132, 149, 165].includes(c) ? c : '') : (c % 2 ? c : ''))}</span>`).join('')}</div>
+      <div class="scale"><span>volný</span><span class="bar"></span><span>rušený</span></div>
+      ${sel != null ? `<div class="rows"><div class="row"><span class="k">Kanál ${sel}${S.band === '5' && sel >= 52 && sel <= 144 ? ' · DFS' : ''}</span><span class="v">${selAps.length ? selAps.length + ' AP v dosahu' : 'žádné cizí AP'}</span></div>${selAps.map(a => `<div class="row"><span class="k">${a.n}</span><span class="v num">${a.r} dBm</span></div>`).join('')}</div>` : ''}
+    </section>
+    <section class="panel"><div class="ptitle"><h2>Sítě</h2><span class="meta">podle signálu</span></div><div>
+      ${aps.map(a => `<div class="ap"><span class="sw" style="--c:var(${a.c})"></span><div style="min-width:0"><div class="t"><span>${a.n}</span>${a.conn ? '<span class="tag acc"><i class="d"></i>připojeno</span>' : ''}</div><div class="s">k. ${a.ch} · ${a.w} MHz · WPA2</div></div><div class="db num" style="color:var(--${a.r > -60 ? 'ok' : a.r > -72 ? 'text' : 'muted'})">${a.r}<small>dBm</small></div></div>`).join('')}
+    </div></section>
+    <div class="note">${ic('info')}<span>Graf vychází z RSSI a šířky kanálu z posledního skenu, nejde o spektrální analyzátor.</span></div>
+  </div>`;
+}
+function drawSpec() {
+  const c = $('#spec'); if (!c) return; const [x, W, Hh] = setupCanvas(c);
+  const five = S.band === '5', aps = five ? APS5 : APS24;
+  const chs = five ? CH5 : CH24, L = 30, R = 8, T = 8, B = 22, pw = W - L - R, ph = Hh - T - B;
+  const pos = ch => { const idx = chs.indexOf(ch); if (idx >= 0) return L + (idx + .5) / chs.length * pw; const lo = [...chs].filter(v => v != null && v < ch).pop(), hi = chs.find(v => v != null && v > ch); if (lo == null) return L; if (hi == null) return L + pw; return pos(lo) + (pos(hi) - pos(lo)) * (ch - lo) / (hi - lo); };
+  const Y = r => T + (1 - (r + 95) / 60) * ph;
+  x.clearRect(0, 0, W, Hh); x.font = `600 11px ${css('--sans')}`; x.fillStyle = css('--dim'); x.textAlign = 'right'; x.textBaseline = 'middle';
+  [-90, -70, -50].forEach(r => { const y = Y(r); x.strokeStyle = css('--line2'); x.beginPath(); x.moveTo(L, y + .5); x.lineTo(W - R, y + .5); x.stroke(); x.fillText(r, L - 6, y); });
+  if (five) { const g = chs.indexOf(null); [g, chs.lastIndexOf(null)].forEach(i => { x.fillStyle = css('--s2'); x.fillRect(L + i / chs.length * pw, T, pw / chs.length, ph); }); }
+  x.textAlign = 'center'; x.textBaseline = 'alphabetic'; x.fillStyle = css('--dim');
+  chs.forEach(c => { if (c != null && (five ? [36, 52, 100, 116, 132, 149, 165].includes(c) : c % 2)) x.fillText(c, pos(c), Hh - 6); });
+  const glow = css('--glow') === '1';
+  [...aps].sort((a, b) => a.r - b.r).forEach(a => {
+    const col = css(a.c), half = (a.w / (five ? 20 : 5)) * (five ? pw / chs.length : pw / chs.length) / 2 * (five ? 1 : .9);
+    const cx = five ? (a.w >= 80 ? pos(a.ch) + (a.w === 80 ? 1.5 : 3.5) * pw / chs.length : pos(a.ch)) : pos(a.ch), y = Y(a.r), base = T + ph, sl = Math.min(10, half * .3);
+    x.beginPath(); x.moveTo(cx - half, base); x.lineTo(cx - half + sl, y); x.lineTo(cx + half - sl, y); x.lineTo(cx + half, base);
+    x.fillStyle = col + (a.conn ? '38' : '22'); x.fill(); x.save(); if (glow && a.conn) { x.shadowColor = col; x.shadowBlur = 10; } x.strokeStyle = col; x.lineWidth = a.conn ? 2.6 : 1.5; x.stroke(); x.restore();
+  });
+}
+
+/* Devices */
+const DEV = [
+  { n: 'Router', ip: '192.0.2.1', ms: 2.1, i: 'router', src: 'brána', ports: [[53, 'DNS'], [80, 'HTTP'], [443, 'HTTPS'], [8291, 'Winbox']] },
+  { n: 'NAS-DEMO', ip: '192.0.2.4', ms: 3.2, i: 'nas', src: 'NetBIOS', group: 'EXAMPLE', ports: [[80, 'HTTP'], [139, 'NetBIOS'], [443, 'HTTPS'], [445, 'SMB'], [2049, 'NFS'], [5000, 'DSM'], [5001, 'DSM TLS']] },
+  { n: 'dns.example.org', ip: '192.0.2.6', ms: 8.2, i: 'chip', src: 'PTR', ports: [[53, 'DNS'], [80, 'HTTP'], [443, 'HTTPS']] },
+  { n: 'build-host.local', ip: '192.0.2.12', ms: 4.4, i: 'laptop', src: 'mDNS', ports: [[22, 'SSH']] },
+  { n: 'Obývák TV', ip: '192.0.2.21', ms: 12, i: 'tv', src: 'UPnP', ports: [[8008, 'Cast'], [8009, 'Cast TLS']] },
+  { n: 'Xiaomi 15', ip: '192.0.2.30', ms: null, i: 'phone', src: 'tento telefon', ports: [] },
+  { n: '192.0.2.2', ip: '192.0.2.2', ms: 38, i: 'chip', src: null, ports: [] }
+];
+function vDevices() {
+  if (S.devIdx != null) return vDevice(DEV[S.devIdx]);
+  return `<div class="view">
+    ${seg('lan', [['dev', 'Zařízení'], ['tools', 'Nástroje']], 'dev')}
+    <div class="hdr"><div><h1>Síť</h1><div class="sub"><span class="mono">192.0.2.0/24</span> · Example-WiFi</div></div><button class="ibtn" aria-label="Hledat znovu">${ic('refresh')}</button></div>
+    <div class="summary"><span class="tag acc"><i class="d"></i>16 zařízení</span><span class="tag">auto · povoleno</span><span class="label">jména a služby…</span></div>
+    <div class="progress" aria-label="Zjišťuji jména"></div>
+    <section class="panel" style="gap:0">${DEV.map((d, k) => `<button class="lrow" data-dev="${k}"><span class="ico ${k === 0 ? 'acc' : ''}">${ic(d.i)}</span><span style="min-width:0"><span class="t" style="display:block">${d.n}</span><span class="s" style="display:block"><span class="mono">${d.ip}</span>${d.src ? ' · ' + d.src : ''}</span></span><span class="end"><span class="ms num">${d.ms == null ? '' : fmt(d.ms, d.ms < 10 ? 1 : 0) + ' ms'}</span>${ic('chev')}</span></button>`).join('')}</section>
+    <div class="note">${ic('info')}<span>Android od verze 10 nedává aplikacím MAC adresy ostatních zařízení.</span></div>
+  </div>`;
+}
+function vDevice(d) {
+  const ids = [['NetBIOS', d.src === 'NetBIOS' ? d.n : null], ['mDNS', d.src === 'mDNS' ? d.n : null], ['Reverzní DNS', d.src === 'PTR' ? d.n : null], ['Pracovní skupina', d.group || null], ['UPnP', d.src === 'UPnP' ? 'Android TV · Sony' : null]];
+  const known = ids.filter(i => i[1]), miss = ids.filter(i => !i[1]).map(i => i[0]);
+  return `<div class="view">
+    <button class="back" id="back">${ic('chev')}Zařízení v síti</button>
+    <div class="dhero"><span class="ico acc">${ic(d.i)}</span><div><h2>${d.n}</h2><div class="sub mono" style="color:var(--muted);font-size:13px">${d.ip}</div></div></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Ping (10×)</span><span class="v num">${d.ms == null ? '–' : fmt(d.ms, 1)}<small>ms</small></span></div>
+      <div class="stat"><span class="label">Ztráta</span><span class="v" style="color:var(--ok)">0 %</span></div>
+      <div class="stat"><span class="label">Odpověď</span><span class="v">ICMP</span></div>
+    </div>
+    <section class="panel"><div class="ptitle"><h2>Identifikace</h2></div>
+      <div class="rows">${known.length ? known.map(i => `<div class="row"><span class="k">${i[0]}</span><span class="v">${i[1]}</span></div>`).join('') : '<div class="row"><span class="k">Zařízení se neohlásilo jménem</span><span></span></div>'}</div>
+      ${miss.length ? `<div class="missing">Nezjištěno: ${miss.join(', ')}</div>` : ''}
+    </section>
+    <section class="panel"><div class="ptitle"><h2>Otevřené porty</h2><span class="meta">${d.ports.length} ze 105</span></div>
+      ${d.ports.length ? `<div class="ports">${d.ports.map(p => `<div class="port open"><b class="num">${p[0]}</b><span>${p[1]}</span></div>`).join('')}</div>` : '<div class="missing">Žádný z běžných portů není otevřený.</div>'}
+      <button class="btn tonal sm" style="justify-self:start">${ic('refresh')}Skenovat znovu</button>
+    </section>
+    <div class="actions"><button class="btn primary">${ic('route')}Trasa</button><button class="btn ghost">${ic('terminal')}SSH</button></div>
+  </div>`;
+}
+
+/* SSH & WoL */
+function vSsh() {
+  const P = [['PVE', 'server-demo', 'root@192.0.2.10', 'klíč'], ['NAS', 'nas-demo', 'admin@192.0.2.4', 'klíč'], ['MT', 'router-demo', 'tester@192.0.2.1 :2222', 'heslo']];
+  return `<div class="view">
+    <div class="hdr"><div><h1>SSH</h1><div class="sub">3 profily · klíč Ed25519 v Keystore</div></div><button class="btn primary sm">${ic('plus')}Profil</button></div>
+    <section class="panel"><div class="ptitle"><h2>Profily</h2><span class="meta">ukázka</span></div><div>
+      ${P.map(p => `<div class="profile"><span class="mono-tile">${p[0]}</span><div style="min-width:0"><div class="t" style="font-weight:700">${p[1]}</div><div class="s mono" style="font-size:12px;color:var(--muted)">${p[2]}</div></div><button class="btn tonal sm">Připojit</button></div>`).join('')}
+    </div></section>
+    <section class="panel"><div class="lrow" style="border:0;padding:0"><span class="ico">${ic('key')}</span><span><span class="t" style="display:block">Klíč telefonu</span><span class="s" style="display:block">netkit@xiaomi15 · sdílet veřejnou část</span></span><span class="end">${ic('chev')}</span></div></section>
+    <section class="panel" style="background:#05090C;border-color:#16232F"><div class="mono" style="font-size:12.5px;line-height:1.6;color:#B8F5E9">root@pve:~# uptime<br><span style="color:#8FA3B1">17:38:02 up 41 days,  load average: 0.21, 0.18, 0.15</span><br>root@pve:~# <span style="background:#2DD4BF;color:#05090C">&nbsp;</span></div></section>
+  </div>`;
+}
+function vWol() {
+  const D = [['build-host', '02:00:5E:…:01 · broadcast 192.0.2.255', 'pc'], ['NAS-DEMO', '02:00:5E:…:02 · port 9', 'nas']];
+  return `<div class="view">
+    <div class="hdr"><div><h1>Wake-on-LAN</h1><div class="sub">Jen vlastní zařízení</div></div><button class="btn ghost sm">${ic('plus')}Zařízení</button></div>
+    ${D.map(([n, s, k]) => { const st = S.wol[k]; return `<section class="panel"><div class="wolcard"><div><h3>${n}</h3><div class="s mono" style="font-size:12px">${s}</div><div style="margin-top:8px">${st === 'done' ? '<span class="tag ok"><i class="d"></i>odesláno · odpovídá na 22</span>' : st === 'busy' ? '<span class="tag info"><i class="d"></i>čekám na odpověď…</span>' : '<span class="tag">spí</span>'}</div></div><button class="wake ${st || ''}" data-wol="${k}" aria-label="Probudit ${n}">${ic('power')}</button></div></section>`; }).join('')}
+    <div class="note">${ic('info')}<span>Magický paket jde přes Wi-Fi na broadcast podsítě. Po probuzení aplikace ověří dostupnost zvoleného portu.</span></div>
+  </div>`;
+}
+
+/* Fullscreen chart */
+/* Expanded chart, layout adopted from the Claude Design variant: header controls, plot card, side column with stats and events. */
+const FS_TITLE = { signal: 'Signál (RSSI)', tput: 'Provoz zařízení', lat: 'Latence' };
+function vFs() {
+  return `<div class="fs" id="fs">
+    <div class="fs-top">
+      <button class="fs-close" id="fsclose" aria-label="Zavřít graf">${ic('close')}</button>
+      <div class="fs-title"><h2>${FS_TITLE[S.metric]}</h2><span>Example-WiFi · k. 100</span></div>
+      <span class="grow"></span>
+      <div class="pills" role="tablist">${[['signal', 'Signál'], ['tput', 'Provoz'], ['lat', 'Latence']].map(([k, l]) => `<button role="tab" aria-selected="${S.metric === k}" data-metric="${k}">${l}</button>`).join('')}</div>
+      <div class="mini-seg" role="tablist" aria-label="Časové okno">${[[60, '1 min'], [300, '5 min'], [900, '15 min']].map(([w, l]) => `<button role="tab" aria-selected="${S.win === w}" data-win="${w}">${l}</button>`).join('')}</div>
+      <div class="zoomctl" aria-label="Přiblížení"><button data-zoom="-1" aria-label="Oddálit">−</button><span class="num" id="zv">${fmt(S.zoom, 1)}×</span><button data-zoom="1" aria-label="Přiblížit">+</button></div>
+    </div>
+    <div class="fs-body">
+      <div class="fs-plot"><canvas id="fsc" aria-label="Graf ${FS_TITLE[S.metric]}, tažením odečtete hodnotu"></canvas></div>
+      <aside class="fs-side">
+        <div class="fs-card fs-hint">Táhněte po grafu pro odečet. Sevřením nebo kolečkem přiblížíte, při přiblížení posunete tažením se Shiftem.</div>
+        <div id="fss" style="display:grid;gap:10px"></div>
+        <div class="evlist" id="fse"></div>
+      </aside>
+    </div>
+  </div>`;
+}
+function fsStats() {
+  const el = $('#fss'); if (!el) return; const M = METRICS[S.metric], win = Math.round(S.win / S.zoom), end = N - 1 - Math.round(S.pan), start = Math.max(0, end - win + 1), d = S.metric === 'signal' ? 0 : 1;
+  el.innerHTML = M.series().map(s => { const a = s.v.slice(start, end + 1); const mn = Math.min(...a), mx = Math.max(...a), av = a.reduce((p, c) => p + c, 0) / a.length; return `<div class="fs-card"><h3><i class="${s.dash ? 'dash' : ''}" style="--c:${s.c}"></i>${s.name}</h3><div class="mma"><span>min<b class="num">${fmt(mn, d)}</b></span><span>průměr<b class="num">${fmt(av, d)}</b></span><span>max<b class="num">${fmt(mx, d)}</b></span></div></div>`; }).join('');
+  const ev = EV.filter(e => e.i >= start && e.i <= end);
+  $('#fse').innerHTML = ev.length ? ev.slice().reverse().map(e => `<div class="ev" title="${e.t}"><i style="--c:var(${EVK[e.k].c})"></i><span>${EVK[e.k].l}</span><span>${ago(e.i)}</span></div>`).join('') : '<div class="ev"><i style="--c:var(--dim)"></i><span>V okně nejsou události</span><span></span></div>';
+  const zv = $('#zv'); if (zv) zv.textContent = fmt(S.zoom, 1) + '×';
+}
+function drawFs() { const c = $('#fsc'); if (!c) return; drawChart(c, S.metric, { big: 1, win: S.win / S.zoom, pan: S.pan, scrubX: S.scrub, scrubbing: S.scrub != null }); fsStats(); }
+function bindFs() {
+  const c = $('#fsc'); if (!c) return; const pts = new Map(); let pinch0 = null, pan0 = 0, x0 = 0, dragging = false;
+  const clampPan = () => { const win = S.win / S.zoom; S.pan = Math.max(0, Math.min(N - win, S.pan)); };
+  c.addEventListener('wheel', e => { e.preventDefault(); S.zoom = Math.max(1, Math.min(10, S.zoom * (e.deltaY < 0 ? 1.15 : 1 / 1.15))); clampPan(); drawFs(); }, { passive: false });
+  c.addEventListener('pointerdown', e => { c.setPointerCapture(e.pointerId); pts.set(e.pointerId, e.clientX); if (pts.size === 2) { const v = [...pts.values()]; pinch0 = { d: Math.abs(v[0] - v[1]), z: S.zoom }; } else { x0 = e.clientX; pan0 = S.pan; dragging = e.pointerType === 'mouse' && e.button === 0 && e.shiftKey; } if (!dragging) { S.scrub = e.offsetX; drawFs(); } });
+  c.addEventListener('pointermove', e => {
+    if (pts.has(e.pointerId)) pts.set(e.pointerId, e.clientX);
+    if (pts.size === 2 && pinch0) { const v = [...pts.values()]; S.zoom = Math.max(1, Math.min(10, pinch0.z * Math.abs(v[0] - v[1]) / Math.max(20, pinch0.d))); S.scrub = null; clampPan(); drawFs(); return; }
+    if (dragging) { const w = c.getBoundingClientRect().width; S.pan = pan0 + (e.clientX - x0) / w * (S.win / S.zoom); clampPan(); drawFs(); return; }
+    if (e.pointerType === 'mouse' || pts.size === 1) { S.scrub = e.offsetX; drawFs(); }
+  });
+  const up = e => { pts.delete(e.pointerId); if (pts.size < 2) pinch0 = null; dragging = false; if (e.pointerType !== 'mouse') { S.scrub = null; drawFs(); } };
+  c.addEventListener('pointerup', up); c.addEventListener('pointercancel', up); c.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { S.scrub = null; drawFs(); } });
+}
+
+/* ---------- render ---------- */
+function render() {
+  phone.querySelectorAll('.fs').forEach(e => e.remove());
+  if (S.fs) { phone.style.setProperty('--fw', '915px'); phone.style.setProperty('--fh', '412px'); }
+  else { phone.style.setProperty('--fw', '412px'); phone.style.setProperty('--fh', '915px'); }
+  fit();
+  const v = { signal: vSignal, spectrum: vSpectrum, devices: vDevices, ssh: vSsh, wol: vWol }[S.tab]();
+  screen.innerHTML = v.startsWith('<div class="view">') ? v : `<div class="view">${v}</div>`;
+  renderNav();
+  if (S.fs) { phone.insertAdjacentHTML('beforeend', vFs()); bindFs(); requestAnimationFrame(drawFs); }
+  requestAnimationFrame(() => { placeThumbs(); drawChart($('#live'), S.metric); drawSpec(); heroLayout(); });
+}
+function heroLayout() { const h = $('#hero'); if (h) h.classList.toggle('stack', h.getBoundingClientRect().width < 320); }
+function fit() { const avail = Math.min(window.innerWidth - 40, 960), fw = S.fs ? 915 : 412, fh = S.fs ? 412 : 915; const wide = window.innerWidth > 900; const k = Math.min(1, (wide ? avail - 420 : avail) / fw, (window.innerHeight - 40) / fh); const kk = Math.max(.4, k); phone.style.setProperty('--k', kk); scaler.style.setProperty('--k', kk); scaler.style.setProperty('--fw', fw + 'px'); scaler.style.setProperty('--fh', fh + 'px'); }
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  if (t.matches('.dir')) { phone.dataset.dir = t.dataset.dir; document.querySelectorAll('.dir').forEach(b => b.setAttribute('aria-pressed', b === t)); render(); return; }
+  if (t.matches('.tg')) { phone.dataset.mode = t.dataset.mode; document.querySelectorAll('.tg').forEach(b => b.setAttribute('aria-pressed', b === t)); render(); return; }
+  if (!phone.contains(t)) return;
+  if (t.dataset.tab) { S.tab = t.dataset.tab; S.devIdx = null; S.fs = false; screen.scrollTop = 0; render(); return; }
+  const sg = t.closest('.seg'); if (sg && t.dataset.v) { if (sg.dataset.seg === 'sig') { S.seg = t.dataset.v; sg.querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', b === t)); placeThumbs(); setTimeout(render, RM ? 0 : 180); } else { sg.querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', b === t)); placeThumbs(); } return; }
+  if (t.dataset.metric) { S.metric = t.dataset.metric; S.zoom = 1; S.pan = 0; render(); return; }
+  if (t.id === 'expand') { S.fs = true; S.zoom = 1; S.pan = 0; S.scrub = null; render(); return; }
+  if (t.id === 'fsclose') { S.fs = false; render(); return; }
+  if (t.dataset.win) { S.win = +t.dataset.win; S.zoom = 1; S.pan = 0; render(); return; }
+  if (t.dataset.zoom) { S.zoom = Math.max(1, Math.min(10, S.zoom * (+t.dataset.zoom > 0 ? 1.5 : 1 / 1.5))); S.pan = Math.max(0, Math.min(N - S.win / S.zoom, S.pan)); drawFs(); return; }
+  if (t.id === 'sbtn') { runSpeed(); return; }
+  if (t.dataset.srv) { S.speed.server = t.dataset.srv; render(); return; }
+  if (t.dataset.band) { if (t.dataset.band === '6') return; S.band = t.dataset.band; S.heatSel = t.dataset.band === '5' ? 100 : 6; render(); return; }
+  if (t.dataset.ch) { S.heatSel = +t.dataset.ch; render(); return; }
+  if (t.dataset.dev) { S.devIdx = +t.dataset.dev; screen.scrollTop = 0; render(); return; }
+  if (t.id === 'back') { S.devIdx = null; render(); return; }
+  if (t.dataset.wol) { const k = t.dataset.wol; if (S.wol[k]) { S.wol[k] = null; render(); return; } S.wol[k] = 'busy'; render(); setTimeout(() => { S.wol[k] = 'done'; render(); }, 2400); return; }
+});
+addEventListener('resize', () => { fit(); placeThumbs(); drawChart($('#live'), S.metric); drawSpec(); if (S.fs) drawFs(); heroLayout(); });
+
+/* live tick */
+setInterval(() => {
+  push();
+  const d = new Date(); $('#clock').textContent = d.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' });
+  if (S.tab !== 'signal' || S.seg !== 'live') { if (S.fs) drawFs(); return; }
+  const r = H.rssi[N - 1], [ql, qt] = quality(r);
+  tween($('#rssi'), Math.abs(Math.round(r))); const q = $('#q'); if (q) { q.textContent = ql; q.style.color = `var(--${qt})`; }
+  const g = $('#gauge svg'); if (g) { const f = Math.max(0, Math.min(1, (r + 90) / 60)), arc = 2 * Math.PI * 62 * 240 / 360, a = g.querySelector('.arc-v'); a.setAttribute('stroke-dashoffset', arc * (1 - f)); a.setAttribute('stroke', `var(--${qt})`); }
+  tween(screen.querySelector('[data-n="signal"]'), Math.round(r)); tween(screen.querySelector('[data-n="tput"]'), H.down[N - 1], 1); tween(screen.querySelector('[data-n="lat"]'), H.net[N - 1], 1);
+  tween(screen.querySelector('[data-n="gw"]'), H.gw[N - 1], 1); tween(screen.querySelector('[data-n="net"]'), H.net[N - 1], 1);
+  drawChart($('#live'), S.metric); if (S.fs) drawFs();
+}, 1000);
+
+document.fonts?.ready.then(render);
+render();
+})();
+</script>

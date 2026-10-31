@@ -1,0 +1,25 @@
+<resources>
+    <!-- Device identification (M2, DevicesScreen.kt): mDNS, SSDP/UPnP and name source. -->
+    <string name="lan_devid_chip_netbios">NetBIOS</string>
+    <string name="lan_devid_chip_mdns">mDNS</string>
+    <string name="lan_devid_chip_ptr">PTR</string>
+    <string name="lan_devid_identifying">identifying names and services…</string>
+    <string name="lan_devid_section">Identification</string>
+    <string name="lan_devid_running">identifying…</string>
+    <string name="lan_devid_missing">Not found: %1$s.</string>
+    <string name="lan_devid_services">mDNS services</string>
+    <string name="lan_devid_upnp">UPnP</string>
+    <string name="lan_devid_upnp_name">Name</string>
+    <string name="lan_devid_upnp_manufacturer">Manufacturer</string>
+    <string name="lan_devid_upnp_model">Model</string>
+    <string name="lan_devid_upnp_type">Device type</string>
+    <string name="lan_devid_upnp_server">Server (SSDP)</string>
+    <string name="lan_devid_upnp_usn">USN</string>
+    <string name="lan_devid_upnp_presentation">Web interface</string>
+    <string name="lan_devid_upnp_open">Open in browser</string>
+    <string name="lan_devid_upnp_open_failed">Cannot open the address: no browser installed.</string>
+    <string name="lan_devid_upnp_no_description">The UPnP description was not fetched (address outside the own subnet or not the sender, not http, or no answer within 2 s).</string>
+    <string name="lan_devid_incomplete">Identification did not finish, so mDNS and UPnP are unknown.</string>
+    <string name="lan_devid_pending">mDNS and UPnP are checked after a completed device search.</string>
+    <string name="lan_devid_info_detail">Liveness: ICMP ping; where the system or a VPN does not allow ICMP, TCP probes to ports 80, 443, 22 and 445 (a refused connection counts too). Names: NetBIOS, mDNS (.local, Apple, Linux/Avahi, printers) and reverse DNS (PTR), shown in this order; a device without a name is shown by its IP address. After a completed search, live devices are also asked over mDNS (names and services) and SSDP/UPnP (name, manufacturer, model); a UPnP description is fetched only from the device\'s own address in the own subnet. Android 10 and newer does not give apps the MAC address or network card vendor of other devices. Only the current Wi-Fi subnet is searched, at most a /24.</string>
+</resources>

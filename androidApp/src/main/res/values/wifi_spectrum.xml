@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Obrazovka Spektrum M2/M3 (WifiScreen.kt, SpectrumChart.kt). -->
+<resources>
+    <string name="wifi_spectrum_tab_networks">Sítě</string>
+    <string name="wifi_spectrum_age_seconds">sken před %1$d s</string>
+    <string name="wifi_spectrum_age_minutes">sken před %1$d min</string>
+    <string name="wifi_spectrum_age_none">bez skenu</string>
+    <string name="wifi_spectrum_age_unconfirmed">sken nepotvrzen</string>
+    <string name="wifi_spectrum_allow_location">Povolit přesnou polohu</string>
+    <string name="wifi_spectrum_wifi_settings">Nastavení Wi-Fi</string>
+    <string name="wifi_spectrum_more">mimo graf: %1$d</string>
+    <string name="wifi_spectrum_connected">připojeno</string>
+    <string name="wifi_band_connected_auto">pásmo připojeného AP, automatická volba</string>
+    <string name="wifi_spectrum_excluded_chip">mimo skóre</string>
+    <string name="wifi_spectrum_channel_short">k. %1$d</string>
+    <string name="wifi_spectrum_dbm_unit">dBm</string>
+    <string name="wifi_spectrum_description">Spektrum %1$s: AP v pásmu %2$d, v grafu %3$d. Osa signálu od %4$d do %5$d dBm.</string>
+    <string name="wifi_spectrum_trace_description">%1$d. %2$s · %3$s · %4$d dBm</string>
+    <string name="wifi_spectrum_trace_connected">%1$s · připojeno</string>
+    <string name="wifi_spectrum_utilization">vytížení %1$d %%</string>
+    <string name="wifi_spectrum_connection_details">Podrobnosti připojení</string>
+    <string name="wifi_spectrum_health_details">vybrat kanál</string>
+    <string name="wifi_spectrum_age_scanning">skenuji…</string>
+    <string name="wifi_spectrum_stale_expired">Data jsou starší než 5 minut. Zdraví kanálů a doporučení jsou skryté.</string>
+    <string name="wifi_spectrum_stale_unconfirmed">Sken nebyl potvrzen, zobrazená data jsou z cache.</string>
+    <string name="wifi_spectrum_chart_title">Kanály</string>
+    <string name="wifi_spectrum_chart_meta">%1$d AP · RSSI ze skenu</string>
+    <string name="wifi_spectrum_sorted_signal">podle signálu</string>
+    <string name="wifi_spectrum_sorted_name">podle názvu</string>
+    <string name="wifi_spectrum_sorted_channel">podle kanálu</string>
+    <string name="wifi_spectrum_filter">Filtr</string>
+    <string name="wifi_spectrum_network_details">zobrazit podrobnosti sítě</string>
+    <string name="wifi_width_80_plus_80_short">80+80 MHz</string>
+    <string name="wifi_security_wpa2_wpa3_short">WPA2/3</string>
+    <string name="wifi_security_owe_transition_short">OWE/otevřená</string>
+    <string name="wifi_label_frequency">Frekvence</string>
+    <string name="wifi_label_center">Střed kanálu</string>
+    <string name="wifi_label_width">Šířka</string>
+    <string name="wifi_label_standard">Standard</string>
+    <string name="wifi_label_security">Zabezpečení</string>
+    <string name="wifi_label_age">Stáří</string>
+    <string name="wifi_label_bss_load">BSS Load</string>
+    <string name="wifi_label_signal">Signál</string>
+    <string name="wifi_label_channel">Kanál</string>
+    <string name="wifi_label_rates">RX / TX</string>
+    <string name="wifi_standard_value">802.11%1$s</string>
+    <string name="wifi_rates_value">%1$s / %2$s Mb/s</string>
+    <string name="wifi_health_recommended">doporučeno: %1$d</string>
+    <string name="wifi_health_channel_title">Kanál %1$d</string>
+    <string name="wifi_health_channel_dfs">Kanál %1$d · DFS</string>
+    <string name="wifi_health_in_range">%1$d AP v dosahu</string>
+    <string name="wifi_health_no_neighbours">žádné cizí AP</string>
+    <string name="wifi_health_state">Stav</string>
+    <string name="wifi_health_pressure_label">Překryv sousedů</string>
+    <string name="wifi_health_utilization_label">Vytížení (BSS Load)</string>
+    <string name="wifi_health_scale_free">volný</string>
+    <string name="wifi_health_scale_busy">rušený</string>
+    <string name="wifi_spectrum_note_summary">Graf vychází z RSSI a šířky kanálu z posledního skenu, nejde o spektrální analyzátor.</string>
+    <plurals name="wifi_spectrum_networks">
+        <item quantity="one">%d síť</item>
+        <item quantity="few">%d sítě</item>
+        <item quantity="many">%d sítě</item>
+        <item quantity="other">%d sítí</item>
+    </plurals>
+</resources>

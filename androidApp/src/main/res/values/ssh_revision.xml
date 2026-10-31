@@ -1,0 +1,35 @@
+<resources>
+    <string name="ssh_close_all">Zavřít všechny relace</string>
+    <string name="ssh_close_all_confirm">Zavřít všechny otevřené SSH relace?</string>
+    <string name="ssh_secure_screen">Zakázat snímky obrazovky</string>
+    <string name="ssh_ime_privacy">Klávesnici žádáme o vypnutí návrhů a učení. Některé klávesnice mohou požadavek ignorovat.</string>
+    <string name="ssh_recover">Archivovat poškozené úložiště</string>
+    <string name="ssh_recover_confirm">Archivovat původní SSH metadata a začít s prázdným seznamem? Profily a důvěra budou prázdné; původní soubor zůstane v soukromém archivu. Šifrovaná tajemství se nemažou. U novějšího schématu nejprve zkuste aktualizovat aplikaci.</string>
+    <string name="ssh_archive_path">Původní data: %1$s</string>
+    <string name="ssh_rejected_fingerprint">Poslední odmítnutý otisk: %1$s</string>
+    <string name="ssh_error_host_changed">Klíč serveru se změnil. Připojení bylo odmítnuto.</string>
+    <string name="ssh_error_authentication">Autentizace selhala. Ověřte uživatele a přihlašovací údaje.</string>
+    <string name="ssh_error_algorithms">Se serverem není společný povolený algoritmus. Bezpečnostní politika nebyla oslabena.</string>
+    <string name="ssh_error_dns">Název serveru se nepodařilo přeložit.</string>
+    <string name="ssh_error_timeout">Vypršel čas připojení nebo odpovědi.</string>
+    <string name="ssh_error_connection">Síťové spojení selhalo.</string>
+    <string name="ssh_error_import_rsa">RSA klíč musí mít alespoň 3072 bitů.</string>
+    <string name="ssh_error_import_dsa">DSA klíče nejsou povolené.</string>
+    <string name="ssh_error_import_phrase">Klíč se nepodařilo odemknout zadanou passphrase.</string>
+    <string name="ssh_error_import_format">Nepodporovaný nebo poškozený formát klíče.</string>
+    <string name="ssh_error_secret">Uložené tajemství nelze dešifrovat. Klíč v Keystore nebyl nahrazen; přihlašovací údaje zadejte znovu v profilu.</string>
+    <string name="ssh_network_lost">Spojení nejspíš ztraceno</string>
+    <string name="ssh_reconnect">Znovu připojit</string>
+    <string name="ssh_connection_summary">Jen autorizované servery · výchozí trasa včetně VPN</string>
+    <string name="ssh_no_trusted_hosts">Zatím není uložen žádný ověřený server.</string>
+    <string name="ssh_copy_fingerprint">Kopírovat otisk</string>
+    <string name="ssh_direct_input">Klepněte a pište přímo do terminálu</string>
+    <string name="ssh_more_keys">Další klávesy</string>
+    <string name="ssh_key_insert">Ins</string>
+    <string name="ssh_key_delete">Del</string>
+    <string name="ssh_shift_tab">Shift+Tab</string>
+    <string name="ssh_function_key">F%1$d</string>
+    <string name="ssh_fallback_input">Záložní vstup / vložení</string>
+    <string name="ssh_session_options">Možnosti SSH relací</string>
+    <string name="ssh_terminal_options">Možnosti terminálu</string>
+</resources>

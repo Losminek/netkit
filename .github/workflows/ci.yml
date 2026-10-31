@@ -1,0 +1,76 @@
+# Pull request checks (D24): unit tests, lint, debug build and the offline Python/shell checks.
+# Informative, not a required status: the workspace sync pushes straight to main (docs/revize.md).
+# Independent review before merging stays mandatory (CLAUDE.md). Actions are pinned to full SHAs,
+# the same ones verified for release.yml in the official action repositories.
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  android:
+    name: Tests, lint, debug build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Forbidden imports in shared commonMain
+        run: |
+          if grep -rE "^import (java|javax|android)\." shared/src/commonMain; then
+            echo "::error::shared/src/commonMain must not import java, javax or android"
+            exit 1
+          fi
+
+      - name: Test, lint and build
+        run: >-
+          ./gradlew --no-daemon --dependency-verification strict
+          testDebugUnitTest :shared:allTests lintDebug assembleDebug
+
+  tools:
+    name: Python and shell checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # paramiko is not on the runner: the SSH fixture (tools/testsrv/m1_fixture.py) imports it, directly
+      # in test_m1_fixture_server and through m1_provision in test_m1_provision and test_run_m1_checks.
+      # Those three run locally (docs/testovani.md).
+      - name: Python unit tests (standard library only)
+        run: |
+          for test in tools/test_*.py; do
+            case $test in
+              tools/test_m1_fixture_server.py | tools/test_m1_provision.py | tools/test_run_m1_checks.py) continue ;;
+            esac
+            python3 -I -m unittest discover -s tools -p "$(basename "$test")"
+          done
+
+      - name: ShellCheck
+        run: shellcheck tools/*.sh

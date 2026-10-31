@@ -1,0 +1,60 @@
+<resources>
+    <string name="lan_icmp_unavailable">ICMP is unavailable on this network. The system or VPN rejected the socket. Discovery can still use TCP; no reply does not establish host status.</string>
+    <string name="lan_probe_counts">TCP: open %1$d · refused (RST) %2$d · timeout %3$d · error %4$d</string>
+    <string name="lan_trace_confirmation">The default network differs from the selected Wi-Fi (it may be VPN or mobile data). Traceroute uses a system process without Network binding and could travel outside Wi-Fi. Run with this limitation?</string>
+    <string name="lan_trace_outside_wifi">May have travelled outside Wi-Fi</string>
+    <string name="lan_network_note">Network routing and Android limitations</string>
+    <string name="lan_wifi_label">Wi-Fi</string>
+    <string name="lan_confirmation_details">Entered: %1$s\nTarget: %2$s\nNetwork: %3$s\nHosts: %4$d · ports: %5$d</string>
+    <string name="lan_reason_outside">The target is not entirely inside the selected Wi-Fi subnet.</string>
+    <string name="lan_reason_non_private">The range includes an address outside private, shared or link-local blocks.</string>
+    <string name="lan_reason_hosts">The range exceeds 254 hosts.</string>
+    <string name="lan_reason_ports">The selection exceeds 254 TCP ports.</string>
+    <string name="lan_confirm_authorized">Continue only with owner authorization. Probes may be logged by a firewall.</string>
+    <string name="lan_ping_statistics">Latency and packet loss</string>
+    <string name="lan_ping_visible_window">last 120</string>
+    <string name="lan_ping_sample">Sample %1$d · elapsed %2$d ms</string>
+    <string name="lan_export_title">Export results</string>
+    <string name="lan_unknown_hop">*</string>
+    <string name="lan_missing_value">—</string>
+    <string name="lan_rtt">%1$s ms</string>
+    <string name="lan_hop">Hop</string>
+    <string name="lan_address">Address</string>
+    <string name="lan_latency">Latency</string>
+    <string name="lan_graph_time">%1$d s</string>
+    <string name="lan_header">Tools</string>
+    <string name="lan_more">More actions</string>
+    <string name="lan_export_open">Export results…</string>
+    <string name="lan_results_title">Results</string>
+    <string name="lan_row_actions">Actions for %1$s</string>
+    <string name="lan_chip_running_plain">running</string>
+    <string name="lan_chip_running">running · processed %1$d</string>
+    <string name="lan_chip_running_total">running · %1$d/%2$d</string>
+    <string name="lan_chip_failed">error</string>
+    <plurals name="lan_chip_finished">
+        <item quantity="one">done · %d result</item>
+        <item quantity="other">done · %d results</item>
+    </plurals>
+    <plurals name="lan_chip_cancelled">
+        <item quantity="one">cancelled · %d result</item>
+        <item quantity="other">cancelled · %d results</item>
+    </plurals>
+    <string name="lan_metric_min">Min</string>
+    <string name="lan_metric_avg">Avg</string>
+    <string name="lan_metric_max">Max</string>
+    <string name="lan_metric_loss">Loss</string>
+    <string name="lan_unit_ms">ms</string>
+    <string name="lan_unit_percent" formatted="false">%</string>
+    <string name="lan_ping_jitter">jitter %1$s ms</string>
+    <string name="lan_trace_no_reply">no reply</string>
+    <string name="lan_trace_echo">echo</string>
+    <string name="lan_trace_silent_range">hops %1$s–%2$s</string>
+    <plurals name="lan_trace_silent">
+        <item quantity="one">%d hop not responding</item>
+        <item quantity="other">%d hops not responding</item>
+    </plurals>
+    <string name="lan_no_network">The phone is not connected to any network.</string>
+    <string name="lan_network_changed">The network changed or is unavailable. Run the tool again.</string>
+    <string name="lan_local_needs_wifi">The address is in a local network. Connect to Wi-Fi or a VPN.</string>
+    <string name="lan_route_label">Measured over</string>
+</resources>

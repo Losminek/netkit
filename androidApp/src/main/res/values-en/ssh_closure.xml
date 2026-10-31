@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ssh_error_host_rejected">Host key verification was rejected. The connection was not established.</string>
+    <string name="ssh_prompt_pending">SSH is waiting for host verification or authentication. The prompt expires within 3 minutes.</string>
+    <string name="ssh_open_pending">Open SSH</string>
+</resources>

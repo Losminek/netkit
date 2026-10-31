@@ -1,0 +1,7 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- AGP updates the first declaration to testInstrumentationRunner. Keep both explicit. -->
+    <instrumentation android:name="cz.netkit.app.test.M1Instrumentation"
+        android:targetPackage="cz.netkit.app" android:functionalTest="true" />
+    <instrumentation android:name="cz.netkit.app.test.NetKitInstrumentation"
+        android:targetPackage="cz.netkit.app" android:functionalTest="true" />
+</manifest>

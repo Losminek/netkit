@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="wifi_signal_segment_live">Live</string>
+    <string name="wifi_signal_live">live · %1$d s</string>
+    <string name="wifi_signal_paused">paused</string>
+
+    <string name="wifi_signal_issue_permission">Without precise location permission Android hides the SSID and BSSID. Signal and latency are still measured, but roaming cannot be detected.</string>
+    <string name="wifi_signal_allow_location">Allow precise location</string>
+    <string name="wifi_signal_open_app_settings">Open app settings</string>
+    <string name="wifi_signal_open_location_settings">Turn on location</string>
+    <string name="wifi_signal_settings_failed">Settings could not be opened. Open them manually in the system.</string>
+
+    <string name="wifi_signal_connected_state">Connected</string>
+    <string name="wifi_signal_channel">channel %1$d</string>
+    <string name="wifi_signal_hidden_ssid">Hidden network</string>
+    <string name="wifi_signal_not_connected">Not connected to Wi-Fi</string>
+    <string name="wifi_signal_access_point">Access point</string>
+    <string name="wifi_signal_bssid_unknown">BSSID not available</string>
+    <string name="wifi_signal_no_value">—</string>
+    <string name="wifi_signal_band_24">2.4 GHz</string>
+    <string name="wifi_signal_band_channel">%1$s · ch %2$d</string>
+    <string name="wifi_signal_phy">PHY ↓/↑</string>
+    <string name="wifi_signal_gateway">Gateway</string>
+
+    <string name="wifi_signal_metric_signal">Signal</string>
+    <string name="wifi_signal_metric_traffic">Traffic</string>
+    <string name="wifi_signal_metric_latency">Latency</string>
+    <string name="wifi_signal_series_rx">Receive</string>
+    <string name="wifi_signal_series_tx">Transmit</string>
+    <string name="wifi_signal_expand">Expand</string>
+    <string name="wifi_signal_fullscreen_subtitle">%1$s · ch %2$d</string>
+    <string name="wifi_signal_chart_signal">Signal strength chart for the last %1$d min, currently %2$s dBm, quality %3$s</string>
+    <string name="wifi_signal_chart_throughput">Device traffic chart for the last %1$d min: receive %2$s Mb/s, transmit %3$s Mb/s</string>
+    <string name="wifi_signal_chart_latency">Latency chart for the last %1$d min: gateway %2$s ms, internet %3$s ms</string>
+
+    <string name="wifi_signal_latency_gateway">Gateway</string>
+    <string name="wifi_signal_latency_internet">Internet</string>
+    <string name="wifi_signal_packet_loss">Packet loss</string>
+    <string name="wifi_signal_pair_targets">gateway / internet</string>
+    <string name="wifi_signal_internet_target">internet</string>
+    <string name="wifi_signal_change_target">Change target</string>
+    <string name="wifi_signal_target_title">Latency targets</string>
+    <string name="wifi_signal_dns_name_label">Name for the DNS query</string>
+    <string name="wifi_signal_target_label">IPv4 address</string>
+    <string name="wifi_signal_target_hint">The target receives one ICMP echo per second and the name is resolved by the network’s DNS server, only while this screen is open. Enter only targets you are allowed to test.</string>
+    <string name="wifi_signal_save">Save</string>
+    <string name="wifi_signal_cancel">Cancel</string>
+
+    <string name="wifi_signal_roaming">Roaming</string>
+    <string name="wifi_signal_roaming_channel">ch %1$d → %2$d</string>
+    <string name="wifi_signal_band_24_short">2.4</string>
+    <string name="wifi_signal_roaming_gap">after outage</string>
+    <string name="wifi_signal_ago">%1$s ago</string>
+    <string name="wifi_signal_ago_seconds">%1$d s</string>
+    <string name="wifi_signal_ago_minutes">%1$d min</string>
+    <string name="wifi_signal_ago_hours">%1$d h</string>
+
+    <string name="wifi_signal_sources_summary">Where the data comes from and its limits</string>
+    <string name="wifi_signal_sources_detail">RSSI and the negotiated (PHY) rate are reported by the Wi-Fi driver, usually refreshed every few seconds, so the chart can repeat a value. The modem reports the mobile signal (RSRP, RSRQ, SINR) only on a 2 dB change and at most every 3 s, so its chart is stepped. Receive and transmit are computed from whole-device counters (Wi-Fi, mobile data, VPN, tethering). Latency is measured by ICMP echo once per second to the Wi-Fi gateway and to the chosen target over the active network, DNS every 10 s through the resolver of the active network. The public IP comes from Cloudflare (1.1.1.1/cdn-cgi/trace) and the provider from Team Cymru over DNS, so both services see your public IP. Turn the lookup off in the menu of the Connection card. Everything runs only while this screen is open and the app is in the foreground. History keeps the last 15 minutes in memory only. Vertical lines in the chart mark roaming and a data SIM switch (blue), packet loss (red) and a channel or standard change (orange).</string>
+</resources>

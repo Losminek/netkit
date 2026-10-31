@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Rychlostní test (M2, vzhled M3) v záložce Signál. Metoda: docs/funkce/speedtest.md. -->
+<resources>
+    <string name="speed_segment_speed">Rychlost</string>
+    <string name="speed_title">Rychlost</string>
+    <string name="speed_live">měřím</string>
+
+    <!-- Server -->
+    <string name="speed_server_section">Server</string>
+    <string name="speed_server_librespeed">LibreSpeed · %1$s↓ %2$s↑ spojení</string>
+    <string name="speed_server_ndt7">Nejbližší server · výsledky veřejné</string>
+    <string name="speed_server_custom">vlastní</string>
+    <string name="speed_server_add">Vlastní server…</string>
+    <string name="speed_server_remove">Odebrat vlastní</string>
+    <string name="speed_custom_title">Vlastní LibreSpeed server</string>
+    <string name="speed_custom_label">Adresa (https://…)</string>
+    <string name="speed_custom_hint">Kořen instalace LibreSpeed, např. https://rychlost.example.cz/. Aplikace volá backend/garbage.php, backend/empty.php a backend/getIP.php. Jen HTTPS.</string>
+    <string name="speed_custom_save">Uložit</string>
+    <string name="speed_custom_cancel">Zrušit</string>
+    <string name="speed_url_error_empty">Zadejte adresu serveru.</string>
+    <string name="speed_url_error_too_long">Adresa je příliš dlouhá.</string>
+    <string name="speed_url_error_not_https">Jen https://. Nešifrované http aplikace nepoužívá.</string>
+    <string name="speed_url_error_credentials">Adresa nesmí obsahovat jméno ani heslo.</string>
+    <string name="speed_url_error_query">Adresa nesmí obsahovat ? ani #.</string>
+    <string name="speed_url_error_host">Neplatný název serveru.</string>
+    <string name="speed_url_error_port">Neplatný port (1–65535).</string>
+    <string name="speed_url_error_path">Neplatná cesta. Zadejte kořen instalace, ne soubor .php.</string>
+
+    <!-- Ovládání a stav (fáze pod ciferníkem) -->
+    <string name="speed_start">Spustit test</string>
+    <string name="speed_restart">Měřit znovu</string>
+    <string name="speed_stop">Zastavit</string>
+    <string name="speed_phase_idle">Připraveno</string>
+    <string name="speed_phase_preparing">Příprava…</string>
+    <string name="speed_phase_locating">Hledám server…</string>
+    <string name="speed_phase_latency">Měřím latenci…</string>
+    <string name="speed_phase_download">Stahování</string>
+    <string name="speed_phase_upload">Odesílání</string>
+    <string name="speed_phase_done">Hotovo · stahování</string>
+    <string name="speed_phase_failed">Chyba</string>
+    <string name="speed_phase_cancelled">Zastaveno</string>
+    <string name="speed_dial_description">Rychlost %1$s Mbit/s</string>
+    <string name="speed_cancelled_note">Test byl zastaven, výsledek se neuloží.</string>
+
+    <!-- Chyby -->
+    <string name="speed_error_network_lost">Připojení se během testu odpojilo nebo změnilo. Výsledek je neúplný.</string>
+    <string name="speed_error_dns">Název serveru se nepodařilo přeložit přes DNS Wi-Fi sítě.</string>
+    <string name="speed_error_connect">Server neodpovídá nebo spojení spadlo.</string>
+    <string name="speed_error_tls">Zabezpečené spojení (TLS) selhalo: neplatný nebo nedůvěryhodný certifikát serveru.</string>
+    <string name="speed_error_timeout">Server neodpověděl v časovém limitu.</string>
+    <string name="speed_error_http">Server vrátil HTTP %1$d. Je to opravdu LibreSpeed (backend/…)?</string>
+    <string name="speed_error_protocol">Server porušil protokol testu.</string>
+    <string name="speed_error_not_librespeed">Server odpovídá, ale ne jako LibreSpeed (místo dat vrací webovou stránku nebo jen pár bajtů). Zadejte kořen instalace LibreSpeed, ve kterém je adresář backend/.</string>
+    <string name="speed_streams_degraded">Část paralelních spojení selhala (stahování %1$s, odesílání %2$s funkčních). Výsledek je dolní odhad a uloží se jako neúplný; server může omezovat počet spojení.</string>
+    <string name="speed_error_no_capacity">M-Lab je teď bez volné kapacity. Zkuste to později.</string>
+    <string name="speed_error_no_server">M-Lab nevrátil žádný použitelný zabezpečený server.</string>
+    <string name="speed_error_no_data">Ze serveru nepřišla žádná data.</string>
+    <string name="speed_store_failed">Historii testů se nepodařilo načíst nebo uložit; začíná se znovu.</string>
+
+    <!-- Výsledek -->
+    <string name="speed_tile_latency">Latence</string>
+    <string name="speed_download">Stahování</string>
+    <string name="speed_upload">Odesílání</string>
+    <string name="speed_unit_mbps" translatable="false">Mbit/s</string>
+    <string name="speed_unit_ms" translatable="false">ms</string>
+    <string name="speed_no_value" translatable="false">—</string>
+    <string name="speed_chart_section">Průběh</string>
+    <string name="speed_legend_download">Stahování · špička %1$s</string>
+    <string name="speed_legend_upload">Odesílání · špička %1$s</string>
+    <string name="speed_chart_description">Graf rychlosti v Mbit/s, stahování %1$s, odesílání %2$s.</string>
+
+    <!-- Latence -->
+    <string name="speed_latency_section">Latence pod zátěží</string>
+    <string name="speed_latency_idle">Bez zátěže</string>
+    <string name="speed_latency_idle_server">Min. RTT (TCP serveru)</string>
+    <string name="speed_latency_download">Při stahování</string>
+    <string name="speed_latency_download_server">RTT při stahování</string>
+    <string name="speed_latency_upload">Při odesílání</string>
+    <string name="speed_latency_value">%1$s ms · jitter %2$s ms</string>
+    <string name="speed_latency_loaded_value">%1$s ms (+%2$s)</string>
+    <string name="speed_latency_loss_label">Bez odpovědi</string>
+    <string name="speed_latency_loss">%1$d z %2$d</string>
+    <string name="speed_bufferbloat">Bufferbloat %1$s</string>
+
+    <!-- NDT7 pohled serveru -->
+    <string name="speed_server_view">Pohled serveru (M-Lab)</string>
+    <string name="speed_server_app_download">Stahování (aplikace)</string>
+    <string name="speed_server_tcp_download">Stahování (TCP)</string>
+    <string name="speed_server_retrans">Opakované přenosy</string>
+    <string name="speed_server_bbr">Odhad BBR</string>
+    <string name="speed_server_app_upload">Odesílání (server)</string>
+    <string name="speed_mbps_value">%1$s Mbit/s</string>
+    <string name="speed_percent_value">%1$s %%</string>
+
+    <!-- Kontext -->
+    <string name="speed_context_section">Kontext měření</string>
+    <string name="speed_context_engine">Metoda</string>
+    <string name="speed_engine_librespeed">LibreSpeed</string>
+    <string name="speed_engine_ndt7">NDT7 (M-Lab)</string>
+    <string name="speed_context_server">Server</string>
+    <string name="speed_context_isp">Veřejná IP</string>
+    <string name="speed_context_ssid">Wi-Fi</string>
+    <string name="speed_context_hidden_ssid">skrytá nebo neznámá</string>
+    <string name="speed_context_band">Pásmo</string>
+    <string name="speed_context_rssi">RSSI na začátku</string>
+    <string name="speed_context_rssi_value">%1$s dBm</string>
+    <string name="speed_context_link">PHY RX / TX na začátku</string>
+    <string name="speed_context_link_during">PHY během testu</string>
+    <string name="speed_context_link_value">%1$s / %2$s Mb/s</string>
+    <string name="speed_context_time">Čas</string>
+
+    <!-- Jediná vysvětlivka obrazovky -->
+    <string name="speed_note_summary">Jak se měří a co výsledek omezuje</string>
+    <string name="speed_note_detail">Měří se rychlost od telefonu k serveru přes aktivní připojení: Wi-Fi, mobilní data, ethernet nebo VPN. Na měřené síti (mobilní data) se před testem zobrazí odhad spotřeby dat. Strop tvoří PHY rychlost spojení (reálně asi 60–70 %), vytížení kanálu, router, linka ISP i uplink serveru (rychlost.zelina.eu je server kolegy na Proxmoxu, M-Lab je sdílená infrastruktura). Jeden test přenese stovky MB až jednotky GB.\n\nLibreSpeed: 6 paralelních HTTPS stahování a 3 odesílání náhodných dat, každý směr 10 s, první 2–4 s náběhu se nezapočítávají. Latence je HTTP dotaz na empty.php přes udržované spojení (medián, jitter = průměrný rozdíl po sobě jdoucích), zahrnuje zpracování na serveru a není to ICMP ping.\n\nNDT7: jedno spojení WebSocket, server ukončí test do 10 s, aplikace nejpozději po 15 s. Vlastní ping nemá, latence je z TCP_INFO serveru (MinRTT a RTT během stahování). Server měří celý test včetně náběhu, klient bez prvních sekund, rozdíl je proto očekávaný; odesílání podle serveru je přesnější. Pro srovnání pusťte oba enginy.\n\nHistorie drží posledních 20 výsledků jen v telefonu, mimo zálohu. IP adresa se neukládá.</string>
+
+    <!-- Souhlas M-Lab -->
+    <string name="speed_consent_title">M-Lab zveřejňuje výsledky</string>
+    <string name="speed_consent_text">Test NDT7 běží na serverech Measurement Lab. M-Lab ukládá každý test včetně veřejné IP adresy, ze které test proběhl, a zveřejňuje ho jako otevřená data (vědecký výzkum internetu). IP adresu tak uvidí kdokoli, kdo data M-Lab čte. Pokud to nevadí, pokračujte; souhlas si aplikace zapamatuje. Bez souhlasu použijte LibreSpeed.</string>
+    <string name="speed_consent_accept">Rozumím, spustit</string>
+    <string name="speed_consent_decline">Zpět</string>
+
+    <!-- Historie -->
+    <string name="speed_history_section">Historie</string>
+    <string name="speed_history_meta">posledních %1$d</string>
+    <string name="speed_history_empty">Zatím žádný uložený test.</string>
+    <string name="speed_history_today">dnes %1$s</string>
+    <string name="speed_history_yesterday">včera %1$s</string>
+    <string name="speed_history_row">%1$s ↓ · %2$s ↑</string>
+    <string name="speed_history_partial">neúplný</string>
+    <string name="speed_history_clear">Smazat historii</string>
+    <string name="speed_subtitle_network">Měří se přes: %1$s</string>
+    <string name="speed_error_no_network">Telefon není připojen k žádné síti.</string>
+    <string name="speed_context_operator">Operátor</string>
+    <string name="speed_context_standard">Standard</string>
+    <string name="speed_context_signal">Signál na začátku</string>
+    <string name="speed_context_network">Síť</string>
+    <string name="speed_metered_title">Test na měřené síti</string>
+    <string name="speed_metered_cellular">Test spotřebuje přibližně %1$s MB mobilních dat.</string>
+    <string name="speed_metered_other">Síť je označená jako měřená. Test spotřebuje přibližně %1$s MB dat.</string>
+    <string name="speed_metered_from_history">Odhad podle posledního výsledku na tomto typu sítě. Vždy jde o plný test.</string>
+    <string name="speed_metered_default">Na tomto typu sítě zatím není výsledek, odhad je konzervativní. Vždy jde o plný test.</string>
+    <string name="speed_metered_accept">Spustit test</string>
+    <string name="speed_metered_decline">Zpět</string>
+</resources>

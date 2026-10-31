@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- NetKit "Trasa": four hops rising to a lit destination. Kept inside the 66dp safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <path android:pathData="M33,71L46,61L59,65L74,40" android:strokeColor="#8C2DD4BF" android:strokeWidth="4"
+        android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000" />
+    <path android:pathData="M33,66.5a4.5,4.5 0,1 1,0 9a4.5,4.5 0,1 1,0 -9z" android:fillColor="#FF13212E" android:strokeColor="#FF7A91A5" android:strokeWidth="3" />
+    <path android:pathData="M46,56.5a4.5,4.5 0,1 1,0 9a4.5,4.5 0,1 1,0 -9z" android:fillColor="#FF13212E" android:strokeColor="#FF95A8B9" android:strokeWidth="3" />
+    <path android:pathData="M59,60.5a4.5,4.5 0,1 1,0 9a4.5,4.5 0,1 1,0 -9z" android:fillColor="#FF13212E" android:strokeColor="#FFE3ECF3" android:strokeWidth="3" />
+    <path android:pathData="M74,29a11,11 0,1 1,0 22a11,11 0,1 1,0 -22z" android:fillColor="#2E2DD4BF" />
+    <path android:pathData="M74,33.5a6.5,6.5 0,1 1,0 13a6.5,6.5 0,1 1,0 -13z" android:fillColor="#FF2DD4BF" />
+</vector>

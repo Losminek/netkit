@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Obrazovka „Přehled“ (dříve Signál: živá telemetrie Wi-Fi M2, vzhled M3, mobilní síť a cesta M4). Texty stavů a problémů: wifi_live_* v strings_wifi.xml, karta cesty overview.xml, mobilní síť cellular.xml. -->
+<resources>
+    <string name="wifi_signal_segment_live">Živě</string>
+    <string name="wifi_signal_live">živě · %1$d s</string>
+    <string name="wifi_signal_paused">pozastaveno</string>
+
+    <!-- Problémy a akce -->
+    <string name="wifi_signal_issue_permission">Bez oprávnění k přesné poloze Android skryje SSID a BSSID. Signál a latence se měří dál, roaming ale nelze rozpoznat.</string>
+    <string name="wifi_signal_allow_location">Povolit přesnou polohu</string>
+    <string name="wifi_signal_open_app_settings">Otevřít nastavení aplikace</string>
+    <string name="wifi_signal_open_location_settings">Zapnout polohu</string>
+    <string name="wifi_signal_settings_failed">Nastavení se nepodařilo otevřít. Otevřete je ručně v systému.</string>
+
+    <!-- Hlavička a hlavní panel -->
+    <string name="wifi_signal_connected_state">Připojeno</string>
+    <string name="wifi_signal_channel">kanál %1$d</string>
+    <string name="wifi_signal_hidden_ssid">Skrytá síť</string>
+    <string name="wifi_signal_not_connected">Nepřipojeno k Wi-Fi</string>
+    <string name="wifi_signal_access_point">Přístupový bod</string>
+    <string name="wifi_signal_bssid_unknown">BSSID není k dispozici</string>
+    <string name="wifi_signal_standard" translatable="false">Wi-Fi %1$s</string>
+    <string name="wifi_signal_standard_legacy" translatable="false">802.11a/b/g</string>
+    <string name="wifi_signal_standard_ad" translatable="false">802.11ad</string>
+    <string name="wifi_signal_no_value">—</string>
+    <string name="wifi_signal_band_24">2,4 GHz</string>
+    <string name="wifi_signal_band_5" translatable="false">5 GHz</string>
+    <string name="wifi_signal_band_6" translatable="false">6 GHz</string>
+    <string name="wifi_signal_band_channel">%1$s · ch %2$d</string>
+    <string name="wifi_signal_phy">PHY ↓/↑</string>
+    <string name="wifi_signal_phy_tx_unit" translatable="false">/ %1$s Mb/s</string>
+    <string name="wifi_signal_ipv4" translatable="false">IPv4</string>
+    <string name="wifi_signal_gateway">Brána</string>
+    <string name="wifi_signal_unit_mbps" translatable="false">Mb/s</string>
+    <string name="wifi_signal_unit_dbm" translatable="false">dBm</string>
+    <string name="wifi_signal_unit_ms" translatable="false">ms</string>
+
+    <!-- Graf -->
+    <string name="wifi_signal_metric_signal">Signál</string>
+    <string name="wifi_signal_metric_traffic">Provoz</string>
+    <string name="wifi_signal_metric_latency">Latence</string>
+    <string name="wifi_signal_series_rssi" translatable="false">RSSI</string>
+    <string name="wifi_signal_series_rx">Příjem</string>
+    <string name="wifi_signal_series_tx">Odesílání</string>
+    <string name="wifi_signal_expand">Rozbalit</string>
+    <string name="wifi_signal_fullscreen_subtitle">%1$s · k. %2$d</string>
+    <string name="wifi_signal_chart_signal">Graf síly signálu za posledních %1$d min, aktuálně %2$s dBm, kvalita %3$s</string>
+    <string name="wifi_signal_chart_throughput">Graf provozu zařízení za posledních %1$d min: příjem %2$s Mb/s, odesílání %3$s Mb/s</string>
+    <string name="wifi_signal_chart_latency">Graf latence za posledních %1$d min: brána %2$s ms, internet %3$s ms</string>
+
+    <!-- Latence -->
+    <string name="wifi_signal_latency_gateway">Brána</string>
+    <string name="wifi_signal_latency_internet">Internet</string>
+    <string name="wifi_signal_dns_label" translatable="false">DNS</string>
+    <string name="wifi_signal_packet_loss">Ztráta paketů</string>
+    <string name="wifi_signal_jitter" translatable="false">Jitter</string>
+    <string name="wifi_signal_pair_targets">brána / internet</string>
+    <string name="wifi_signal_internet_target">internet</string>
+    <string name="wifi_signal_change_target">Změnit cíl</string>
+    <string name="wifi_signal_target_title">Cíle latence</string>
+    <string name="wifi_signal_dns_name_label">Jméno pro dotaz DNS</string>
+    <string name="wifi_signal_target_label">Adresa IPv4</string>
+    <string name="wifi_signal_target_hint">Na cíl odchází jedno ICMP echo za sekundu a jméno se překládá DNS serverem sítě, jen dokud je obrazovka otevřená. Zadávejte jen cíle, které smíte testovat.</string>
+    <string name="wifi_signal_save">Uložit</string>
+    <string name="wifi_signal_cancel">Zrušit</string>
+
+    <!-- Roaming -->
+    <string name="wifi_signal_roaming">Roaming</string>
+    <string name="wifi_signal_roaming_bssids" translatable="false">%1$s → %2$s</string>
+    <string name="wifi_signal_roaming_channel">k. %1$d → %2$d</string>
+    <string name="wifi_signal_roaming_band" translatable="false">%1$s → %2$s GHz</string>
+    <string name="wifi_signal_band_24_short">2,4</string>
+    <string name="wifi_signal_band_5_short" translatable="false">5</string>
+    <string name="wifi_signal_band_6_short" translatable="false">6</string>
+    <string name="wifi_signal_roaming_gap">po výpadku</string>
+    <string name="wifi_signal_ago">před %1$s</string>
+    <string name="wifi_signal_ago_seconds">%1$d s</string>
+    <string name="wifi_signal_ago_minutes">%1$d min</string>
+    <string name="wifi_signal_ago_hours">%1$d h</string>
+
+    <!-- Zápatí: jediná vysvětlivka obrazovky -->
+    <string name="wifi_signal_sources_summary">Odkud data pocházejí a jaké mají limity</string>
+    <string name="wifi_signal_sources_detail">RSSI a vyjednanou rychlost (PHY) hlásí ovladač Wi-Fi a obnovuje je obvykle jednou za několik sekund, proto se hodnota v grafu může opakovat. Mobilní signál (RSRP, RSRQ, SINR) posílá modem jen při změně o 2 dB a nejvýš jednou za 3 s, graf je proto schodovitý. Příjem a odesílání se počítají z čítačů celého zařízení (Wi-Fi, mobilní data, VPN, tethering). Latence se měří ICMP echem jednou za sekundu na bránu Wi-Fi a na zvolený cíl přes aktivní síť, DNS každých 10 s přes resolver aktivní sítě. Veřejnou IP vrací Cloudflare (1.1.1.1/cdn-cgi/trace) a poskytovatele Team Cymru přes DNS; obě služby tak vidí vaši veřejnou IP. Zjišťování vypnete v nabídce karty Připojení. Vše běží jen tehdy, když je obrazovka otevřená a aplikace v popředí. Historie drží posledních 15 minut jen v paměti. Svislé čáry v grafu značí roaming a přepnutí datové SIM (modrá), ztrátu paketů (červená) a změnu kanálu nebo standardu (oranžová).</string>
+</resources>

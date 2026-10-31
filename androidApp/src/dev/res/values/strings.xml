@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dev build (cz.netkit.app.dev, D21): distinct name next to the release app. -->
+    <string name="app_name" translatable="false">NetKit DEV</string>
+</resources>

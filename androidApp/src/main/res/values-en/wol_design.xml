@@ -1,0 +1,21 @@
+<resources>
+    <string name="wol_add_compact">Device</string>
+    <string name="wol_chip_sending">sending…</string>
+    <string name="wol_chip_checking">waiting for reply…</string>
+    <string name="wol_chip_already">already up</string>
+    <string name="wol_chip_no_response">no response</string>
+    <string name="wol_chip_unavailable">check unavailable</string>
+    <string name="wol_chip_cancelled">cancelled</string>
+    <string name="wol_target_short_auto">Wi-Fi broadcast</string>
+    <string name="wol_port_short">UDP %1$d</string>
+    <string name="wol_section_device">Device</string>
+    <string name="wol_section_repeat">Repetition</string>
+    <string name="wol_section_probe">Wake check</string>
+    <string name="wol_section_note">Note</string>
+    <string name="wol_state_idle">not checked</string>
+    <string name="wol_state_failed">not sent</string>
+    <string name="wol_state_unverified">not verified</string>
+    <string name="wol_state_responds_port">responds on %1$d</string>
+    <string name="wol_state_responds_ping">responds to ping</string>
+    <string name="wol_state_probe_cancelled">check cancelled</string>
+</resources>

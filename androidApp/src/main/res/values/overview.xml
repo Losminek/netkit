@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Přehled (M4 A3): karta cesty, veřejná IP a hlavička podle typu připojení. -->
+<resources>
+    <string name="overview_path_title">Připojení</string>
+    <string name="overview_menu">Možnosti připojení</string>
+    <string name="overview_refresh">Obnovit</string>
+    <string name="overview_lookup_toggle">Zjišťovat veřejnou IP</string>
+
+    <!-- Uzly cesty -->
+    <string name="overview_provider">Poskytovatel</string>
+    <string name="overview_provider_loading">zjišťuji veřejnou IP…</string>
+    <string name="overview_provider_unavailable">veřejná IP nedostupná</string>
+    <string name="overview_provider_disabled">zjišťování vypnuto</string>
+    <string name="overview_carrier_nat">za NAT operátora</string>
+    <string name="overview_asn" translatable="false">AS%1$d</string>
+    <string name="overview_this_phone">Tento telefon</string>
+    <string name="overview_no_address">bez adresy</string>
+
+    <!-- Hlavička -->
+    <string name="overview_via">přes %1$s</string>
+
+    <!-- DNS řádek (O-5) -->
+    <string name="overview_dns_private_auto">Soukromé DNS</string>
+</resources>

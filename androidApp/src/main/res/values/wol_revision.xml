@@ -1,0 +1,25 @@
+<resources>
+    <string name="wol_repeat_count">Počet paketů (1–10)</string>
+    <string name="wol_repeat_interval">Interval paketů v ms (50–2000)</string>
+    <string name="wol_probe_enabled">Ověřit probuzení</string>
+    <string name="wol_probe_delay">Doba ověřování v sekundách (1–120)</string>
+    <string name="wol_sort_name">Seřadit podle názvu</string>
+    <string name="wol_move_up">Nahoru</string>
+    <string name="wol_move_down">Dolů</string>
+    <string name="wol_actions">Správa zařízení</string>
+    <string name="wol_import">Importovat (JSON nebo CSV)</string>
+    <string name="wol_import_title">Import zařízení</string>
+    <string name="wol_import_confirm">Importovat</string>
+    <string name="wol_export">Exportovat JSON (NetKit)</string>
+    <string name="wol_export_csv">Exportovat CSV (Wake On Lan)</string>
+    <string name="wol_export_confirm">Exportovat</string>
+    <string name="wol_export_default_group" translatable="false">NetKit</string>
+    <string name="wol_export_csv_note">CSV pro aplikaci Wake On Lan nepřenáší poznámky, počet opakování ani zpoždění kontroly. Skupina se vezme z poznámky „Skupina: …“, ostatní zařízení půjdou do skupiny NetKit.</string>
+    <string name="wol_import_preview">Počet přidaných zařízení: %1$d. Počet přepsaných zařízení: %2$d. Potvrdit import?</string>
+    <string name="wol_import_failed">Import odmítnut. Ověřte celý soubor a limit 1 MiB. Seznam se nezměnil.</string>
+    <string name="wol_export_failed">Export selhal. Zkontrolujte také cílový dokument, pokud poskytovatel odmítl jeho odstranění.</string>
+    <string name="wol_export_done">Seznam byl exportován.</string>
+    <string name="wol_export_warning">Export obsahuje adresy a názvy vaší sítě. Vyberte důvěryhodné úložiště.</string>
+    <string name="wol_authorized">Jen vlastní zařízení</string>
+    <string name="wol_network_note">Paket jde přes Wi-Fi mimo VPN</string>
+</resources>

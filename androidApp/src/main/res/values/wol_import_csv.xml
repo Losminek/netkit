@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="wol_import_skipped">Přeskočeno neplatných zařízení: %1$d</string>
+    <string name="wol_import_secure_on_dropped">Počet zařízení s heslem SecureOn: %1$d. Hesla se nepřenesou; NetKit SecureOn nepodporuje.</string>
+</resources>

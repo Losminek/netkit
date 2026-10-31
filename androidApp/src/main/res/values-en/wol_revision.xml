@@ -1,0 +1,24 @@
+<resources>
+    <string name="wol_repeat_count">Packet count (1–10)</string>
+    <string name="wol_repeat_interval">Packet interval in ms (50–2000)</string>
+    <string name="wol_probe_enabled">Check wake-up</string>
+    <string name="wol_probe_delay">Check duration in seconds (1–120)</string>
+    <string name="wol_sort_name">Sort by name</string>
+    <string name="wol_move_up">Move up</string>
+    <string name="wol_move_down">Move down</string>
+    <string name="wol_actions">Manage devices</string>
+    <string name="wol_import">Import (JSON or CSV)</string>
+    <string name="wol_import_title">Import devices</string>
+    <string name="wol_import_confirm">Import</string>
+    <string name="wol_export">Export JSON (NetKit)</string>
+    <string name="wol_export_csv">Export CSV (Wake On Lan)</string>
+    <string name="wol_export_confirm">Export</string>
+    <string name="wol_export_csv_note">The CSV for the Wake On Lan app does not carry notes, repeat count or check delay. The group comes from a “Group: …” note; other devices go to the NetKit group.</string>
+    <string name="wol_import_preview">Devices to add: %1$d. Devices to overwrite: %2$d. Confirm import?</string>
+    <string name="wol_import_failed">Import rejected. Check the entire file and the 1 MiB limit. The list was not changed.</string>
+    <string name="wol_export_failed">Export failed. Check the target document if its provider refused removal.</string>
+    <string name="wol_export_done">Device list exported.</string>
+    <string name="wol_export_warning">The export contains names and addresses from your network. Choose trusted storage.</string>
+    <string name="wol_authorized">Own devices only</string>
+    <string name="wol_network_note">Packets go over Wi-Fi outside the VPN</string>
+</resources>

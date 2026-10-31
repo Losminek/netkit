@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="wol_import_group_note">Group: %1$s</string>
+    <string name="wol_import_size">Import exceeds the 1 MiB limit. The list is unchanged.</string>
+    <string name="wol_import_utf8">The file is not valid UTF-8. The list is unchanged.</string>
+    <string name="wol_import_format">Invalid JSON format or field type. The list is unchanged.</string>
+    <string name="wol_import_schema">Unsupported or missing schema; versions 1 and 2 are supported.</string>
+    <string name="wol_import_unknown_field">Import contains an unknown field. The list is unchanged.</string>
+    <string name="wol_import_duplicate_id">Import contains duplicate device IDs. The list is unchanged.</string>
+    <string name="wol_import_invalid_device">Invalid device: check addresses, ranges, field lengths (name 100, note 1000, host 253, ID 64 characters) and nonnegative timestamps.</string>
+    <plurals name="wol_import_duplicate_mac">
+        <item quantity="one">Warning: %1$d additional entry uses the same MAC under another ID.</item>
+        <item quantity="other">Warning: %1$d additional entries use the same MAC under another ID.</item>
+    </plurals>
+    <string name="wol_cancel_probe">Cancel check</string>
+    <string name="wol_import_blocked">Cannot accept the import now: finish editing or sending first. The list was not changed.</string>
+    <string name="wol_transfer_cancelled">Transfer cancelled.</string>
+    <string name="wol_document_unavailable">Document selection is unavailable. Check your file provider application.</string>
+    <string name="wol_cancel_transfer">Cancel transfer</string>
+    <string name="wol_dismiss_message">Dismiss message</string>
+    <string name="wol_import_add_item">Will add: %1$s</string>
+    <string name="wol_import_replace_item">Will replace record: %1$s</string>
+    <string name="wol_import_target_warning">The target is not a verified private IPv4 address. A hostname will resolve when used; verify that it is correct.</string>
+</resources>

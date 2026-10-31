@@ -1,0 +1,179 @@
+# Published release -> verify the signed assets and latest.json -> rebuild the web (D14, D22, D26).
+# tools/sign_release.sh puts netkit-X.Y.Z.apk, latest.json and SHA256SUMS into the draft before it is
+# published (immutable releases lock the assets). The app reads latest.json from the web and, as a
+# fallback, from releases/latest/download/latest.json; the web (Losminek/osobni-web, Cloudflare Workers
+# Builds from its main) copies it when its build runs. That build is started by a Workers Builds Deploy
+# Hook (secret OSOBNI_WEB_DEPLOY_HOOK, environment `release`); the job then polls <web>/latest.json
+# until it serves the new version. No GitHub or Cloudflare token for the web repo exists (D26).
+# The first published release skips the hook: the web switches netkitReleased by its own PR.
+# Actions are pinned to full SHAs.
+#
+# workflow_dispatch(tag) runs only the verification, e.g. against a draft before publishing (D24 dry run).
+name: Publish
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (vX.Y.Z), may be a draft; only verifies, never notifies the web"
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+# Explicit bash = `bash --noprofile --norc -eo pipefail {0}`: a failing command inside a pipeline
+# (e.g. a verification piped to tee) fails the step instead of being masked by the last command.
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  verify:
+    name: Verify signed APK and latest.json
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      # Drafts are only visible with push access; the job never writes.
+      contents: write
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+      version: ${{ steps.version.outputs.version }}
+      web: ${{ steps.version.outputs.web }}
+    steps:
+      # A published release is verified against its tag; a manual run against the dispatched branch
+      # (a draft has no tag yet), so the fingerprint and web come from that branch.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.release.tag_name || github.sha }}
+          persist-credentials: false
+
+      - name: Tag matches netkitVersion
+        id: version
+        env:
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          tools/check_release_version.sh "$TAG"
+          {
+            echo "tag=$TAG"
+            echo "version=${TAG#v}"
+            echo "web=$(sed -n 's/^netkitWebBase=//p' gradle.properties)"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Download release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ steps.version.outputs.tag }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          mkdir assets
+          gh release download "$TAG" --dir assets \
+            --pattern "netkit-${VERSION}.apk" --pattern latest.json --pattern SHA256SUMS
+          ls -l assets
+
+      # The expected fingerprint comes from docs/distribuce.md §2 and the web from gradle.properties
+      # at the tagged commit; an unfilled field fails the run, so the web never hears of an unverified APK.
+      - name: Verify checksum, signature, certificate and latest.json
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          APKSIGNER="$ANDROID_HOME/build-tools/35.0.0/apksigner" AAPT2="$ANDROID_HOME/build-tools/35.0.0/aapt2" \
+            tools/verify_release_assets.sh assets "$VERSION" | tee -a "$GITHUB_STEP_SUMMARY"
+
+  rebuild-web:
+    name: Rebuild the web (Deploy Hook) and wait for latest.json
+    needs: verify
+    if: github.event_name == 'release' && !github.event.release.draft && !github.event.release.prerelease
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: release
+    permissions:
+      # Only to count published releases (first-release check); never writes.
+      contents: read
+    steps:
+      # The web refuses an existing release until its own PR sets netkitReleased: true, so the hook on
+      # the very first release would only produce a failing web build. Later releases always rebuild.
+      - name: First published release?
+        id: first
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          # All pages (--paginate applies --jq per page): one line per stable published release.
+          ids=$(gh api --paginate "repos/$GH_REPO/releases?per_page=100" \
+            --jq '.[] | select(.draft == false and .prerelease == false) | .id')
+          published=$(printf '%s\n' "$ids" | grep -c '^[0-9][0-9]*$' || true)
+          if [[ ! "$published" =~ ^[0-9]+$ ]] || (( published < 1 )); then
+            echo "Unexpected count of published releases: $published" >&2
+            exit 1
+          fi
+          if (( published == 1 )); then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::First published release: Deploy Hook skipped. Merge netkitReleased: true in osobni-web, then check latest.json (docs/distribuce.md §2)."
+            echo "First release: web not rebuilt by NetKit, see docs/distribuce.md §2." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # POST only queues the build; success is the web serving the new version. Never print the hook URL
+      # (it is the credential) and never use set -x. curl does not follow redirects (-L absent).
+      - name: Rebuild personal web and wait for NetKit version
+        if: steps.first.outputs.skip == 'false'
+        timeout-minutes: 17
+        env:
+          OSOBNI_WEB_DEPLOY_HOOK: ${{ secrets.OSOBNI_WEB_DEPLOY_HOOK }}
+          EXPECTED_VERSION: ${{ needs.verify.outputs.version }}
+          WEB_BASE: ${{ needs.verify.outputs.web }}
+        run: |
+          set -euo pipefail
+          : "${OSOBNI_WEB_DEPLOY_HOOK:?Missing secret OSOBNI_WEB_DEPLOY_HOOK in environment release}"
+          case "$OSOBNI_WEB_DEPLOY_HOOK" in
+            https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/*) ;;
+            *) echo "OSOBNI_WEB_DEPLOY_HOOK is not a Workers Builds Deploy Hook URL" >&2; exit 1 ;;
+          esac
+          if [[ ! "$EXPECTED_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid expected NetKit version" >&2
+            exit 1
+          fi
+          if [[ ! "$WEB_BASE" =~ ^https://[a-z0-9.-]+/netkit$ ]]; then
+            echo "Invalid netkitWebBase at the tag" >&2
+            exit 1
+          fi
+          manifest_url="$WEB_BASE/latest.json"
+          hook_response=$(mktemp)
+          manifest=$(mktemp)
+          trap 'rm -f "$hook_response" "$manifest"' EXIT
+          curl -fsS --proto '=https' -X POST "$OSOBNI_WEB_DEPLOY_HOOK" \
+            --connect-timeout 5 --max-time 20 > "$hook_response"
+          jq -e '.success == true' "$hook_response" > /dev/null
+          echo "Web build queued; waiting for $manifest_url to serve $EXPECTED_VERSION"
+
+          deadline=$((SECONDS + 900))
+          while (( SECONDS < deadline )); do
+            remaining=$((deadline - SECONDS))
+            request_timeout=10
+            if (( remaining < request_timeout )); then request_timeout=$remaining; fi
+            if status=$(curl -fsS --proto '=https' --connect-timeout 5 \
+                --max-time "$request_timeout" -H 'Cache-Control: no-cache' \
+                -o "$manifest" -w '%{http_code}' "$manifest_url") \
+                && [[ "$status" == 200 ]] \
+                && jq -e --arg version "$EXPECTED_VERSION" \
+                  '.schema == 1 and .versionName == $version' "$manifest" > /dev/null; then
+              echo "NetKit $EXPECTED_VERSION is available on the web" | tee -a "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            remaining=$((deadline - SECONDS))
+            if (( remaining <= 0 )); then break; fi
+            delay=15
+            if (( remaining < delay )); then delay=$remaining; fi
+            sleep "$delay"
+          done
+          echo "Timed out waiting for NetKit $EXPECTED_VERSION on the web; inspect Cloudflare Workers Builds" >&2
+          exit 1

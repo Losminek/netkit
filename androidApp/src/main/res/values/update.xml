@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kontrola aktualizací (D14) a obrazovka O aplikaci (zadání 21). Upozornění na skenování je lan_safety. -->
+<resources>
+    <!-- Karta v Přehledu -->
+    <string name="update_available_title">Dostupná verze %1$s</string>
+    <string name="update_released">Vydáno %1$s</string>
+    <string name="update_download">Stáhnout</string>
+    <string name="update_dismiss">Skrýt do další verze</string>
+    <string name="update_install_hint">Stáhne se v prohlížeči, instalaci potvrdíte sami.</string>
+
+    <!-- Menu Přehledu -->
+    <string name="overview_more">Další možnosti</string>
+    <string name="about_title">O aplikaci</string>
+
+    <!-- O aplikaci -->
+    <string name="about_back">Zpět</string>
+    <string name="about_tagline">Wi-Fi, zařízení v síti, SSH a Wake-on-LAN v jedné aplikaci.</string>
+    <string name="about_version">Verze %1$s (%2$d)</string>
+    <string name="about_updates_title">Aktualizace</string>
+    <string name="about_updates_toggle">Kontrolovat aktualizace</string>
+    <string name="about_updates_toggle_detail">Nejvýš jednou denně, jen při otevřené aplikaci</string>
+    <string name="about_check_now">Zkontrolovat teď</string>
+    <string name="about_checking">Kontroluji…</string>
+    <string name="about_last_check">Naposledy %1$s</string>
+    <string name="about_last_check_github">Naposledy %1$s, přes GitHub</string>
+    <string name="about_never_checked">Zatím nezkontrolováno</string>
+    <string name="about_up_to_date">Máte aktuální verzi.</string>
+    <string name="about_requires_android">Verze %1$s vyžaduje novější Android.</string>
+    <string name="about_check_unreachable">Zdroj aktualizací je nedostupný.</string>
+    <string name="about_check_invalid">Zdroj aktualizací vrátil neplatnou odpověď.</string>
+    <string name="about_updates_not_configured">Tento build nemá nastavený web pro aktualizace.</string>
+    <string name="about_updates_note_summary">Co kontrola posílá</string>
+    <string name="about_updates_note_detail">Aplikace načte malý soubor latest.json přes HTTPS z %1$s. Když web neodpoví, zkusí vydání na GitHubu (github.com, soubor ze serveru githubusercontent.com). Bez identifikátorů a cookies; server vidí vaši IP adresu, čas a verzi aplikace. Novou verzi stáhnete a nainstalujete sami v prohlížeči.</string>
+    <string name="about_updates_note_detail_web">Aplikace načte malý soubor latest.json z %1$s přes HTTPS, bez identifikátorů a cookies. Web vidí vaši IP adresu, čas a verzi aplikace. Novou verzi stáhnete a nainstalujete sami v prohlížeči.</string>
+    <string name="about_updates_note_detail_github">Aplikace načte malý soubor latest.json přes HTTPS z vydání na GitHubu (github.com, soubor ze serveru githubusercontent.com), bez identifikátorů a cookies. GitHub vidí vaši IP adresu, čas a verzi aplikace. Novou verzi stáhnete a nainstalujete sami v prohlížeči.</string>
+    <string name="about_project_title">Projekt</string>
+    <string name="about_web">Web projektu</string>
+    <string name="about_source">Zdrojový kód</string>
+    <string name="about_privacy">Zásady ochrany soukromí</string>
+    <string name="about_oss_licenses">Licence open source</string>
+    <string name="about_oss_licenses_detail">Knihovny a písma v aplikaci</string>
+    <string name="about_license">Licence aplikace</string>
+    <string name="about_license_name" translatable="false">Apache-2.0</string>
+    <string name="about_open_failed">Odkaz nejde otevřít, chybí prohlížeč.</string>
+
+    <!-- Licence open source -->
+    <string name="oss_intro">NetKit obsahuje tyto komponenty třetích stran. Klepnutím zobrazíte úplný text licence.</string>
+    <string name="oss_meta" translatable="false">%1$s · %2$s</string>
+    <string name="oss_loading">Načítám…</string>
+    <string name="oss_load_failed">Text licence nejde načíst.</string>
+</resources>

@@ -1,0 +1,49 @@
+NetKit
+Copyright 2026 NetKit contributors
+https://github.com/Losminek/netkit
+Kontakt: info@losak.cz
+
+Vlastní kód projektu je pod Apache License 2.0 (LICENSE).
+Tento soupis nemění licence komponent třetích stran.
+
+JSch (fork mwiede) 2.28.0 — BSD-3-Clause.
+Copyright (c) 2002-2015 Atsuhiko Yamanaka, JCraft,Inc.
+Obsahuje JZlib (BSD-3-Clause) a jBCrypt (ISC).
+Přesné atribuce a úplné texty: docs/licenses/jsch-META-INF_LICENSE*.txt.
+JSch 0.0.* historicky používal LGPL; to není licence používané verze 2.28.0.
+
+Bouncy Castle bcprov-jdk18on 1.83 — licence Bouncy Castle (MIT).
+Copyright (c) 2000-2023 The Legion of the Bouncy Castle Inc.
+Úplný text: docs/licenses/bouncycastle-LICENSE.html.
+
+OkHttp 5.3.2 a Okio 3.16.4 — Apache-2.0, Square a přispěvatelé projektu.
+Public Suffix List (přibalený v okhttp-android, neupravený) — MPL-2.0,
+zdrojová podoba https://publicsuffix.org/list/; text licence v aplikaci (O aplikaci →
+Licence open source) a androidApp/src/main/assets/licenses/MPL-2.0.txt.
+AndroidX (Compose, Material, Activity, Lifecycle, DataStore, Startup,
+ProfileInstaller, Annotation, Collection, Core, Arch, SavedState a další
+moduly uvedené v inventáři) — Apache-2.0, Android Open Source Project.
+Kotlin, kotlinx.coroutines, kotlinx.serialization, JetBrains annotations —
+Apache-2.0, JetBrains a přispěvatelé.
+Guava listenablefuture — Apache-2.0, Google a přispěvatelé.
+JSpecify — Apache-2.0, JSpecify contributors.
+Gradle Wrapper a Android Gradle Plugin — Apache-2.0.
+TestNG a JCommander (testovací závislosti) — Apache-2.0.
+SLF4J API (testovací závislost) — MIT; docs/licenses/slf4j-api-META-INF_LICENSE.txt.
+jQuery WebJar (prostředek testovacích reportů) — MIT, OpenJS Foundation
+and other contributors; https://jquery.org/license/.
+
+Manrope — Copyright 2018 The Manrope Project Authors; SIL OFL 1.1.
+JetBrains Mono — Copyright 2020 The JetBrains Mono Project Authors; SIL OFL 1.1.
+Úplné licence dodané společně s fonty:
+androidApp/src/main/assets/licenses/manrope-OFL.txt
+androidApp/src/main/assets/licenses/jetbrains-mono-OFL.txt
+Fonty zůstávají pod OFL, licence aplikace je nepřelicencovává.
+
+Úplný soupis souřadnic a verzí včetně variant a testovacích závislostí:
+docs/project-license-inventory.tsv
+Zdroje, datum a metoda ověření každého POM:
+docs/public-license-verification.tsv a docs/zavislosti.md.
+
+Cloudflare, Team Cymru, LibreSpeed servery a M-Lab jsou externí služby.
+Kód LibreSpeed ani GPL kód aplikace ConnectBot se do NetKitu nepřebírá.

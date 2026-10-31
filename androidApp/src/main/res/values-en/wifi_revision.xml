@@ -1,0 +1,37 @@
+<resources>
+    <string name="wifi_security_wpa2_wpa3">WPA2/WPA3 (transition mode)</string>
+    <string name="wifi_security_owe_transition">OWE (transition mode, open connections allowed)</string>
+    <string name="wifi_recommendation_limits">Only an overlap estimate for observed bands. Regional rules, DFS and hidden interference are not verified. Without the connection BSSID, its AP cannot be excluded automatically; use manual selection or the matching SSID option.</string>
+
+    <string name="wifi_precise_required">Only approximate location is allowed. Scanning needs precise location; change it in app permissions.</string>
+    <string name="wifi_permission_permanent">Permission is denied and the system is not offering another dialog. Allow precise location in app settings.</string>
+    <string name="wifi_settings_failed">Could not open settings. Open them manually in the system.</string>
+    <string name="wifi_scan_failure">Scan failed. Check Wi-Fi, permissions and system Location, then try again.</string>
+    <string name="wifi_ssid_filter">Filter by SSID</string>
+    <string name="wifi_no_filter_results">No networks match the filter.</string>
+    <string name="wifi_app_settings">App settings</string>
+    <string name="wifi_location_settings">Location settings</string>
+    <string name="wifi_bssid_label">BSSID</string>
+    <string name="wifi_age_seconds">%1$d s</string>
+    <string name="wifi_ipv4_label">IPv4</string>
+    <string name="wifi_gateway_label">Default gateway</string>
+    <string name="wifi_dns_label">DNS servers</string>
+    <string name="wifi_graph_snapshot">The chart shows the last available AP dataset; individual APs do not disappear as it ages. RSSI is not a spectrum measurement.</string>
+    <string name="wifi_no_band_data">This dataset contains no APs in this band.</string>
+    <string name="wifi_frequency_axis">Frequency (MHz)</string>
+    <string name="wifi_history_select">Further scans add to the RSSI history (up to 90 samples).</string>
+    <string name="wifi_recommendation_width">Width for 5 and 6 GHz (2.4 GHz always 20 MHz, channels 1/6/11)</string>
+    <string name="wifi_dataset_unknown">The time of a confirmed scan is unknown.</string>
+    <string name="wifi_no_recommendation">This dataset contains no neighbouring APs for a recommendation.</string>
+    <string name="wifi_recommendation_detail">%1$s: center channel %2$d · %3$d MHz · score %4$s mW</string>
+    <string name="wifi_dfs_warning">The candidate overlaps DFS spectrum; availability depends on region and radar detection.</string>
+    <string name="wifi_dataset_aging">Data is no longer fresh. The chart and recommendations still use the last confirmed scan.</string>
+    <string name="wifi_dataset_expired">The confirmed scan is over 5 minutes old. Recommendations are hidden; scan again.</string>
+    <string name="wifi_dataset_unconfirmed">A confirmed scan is required for recommendations. Cached data remains labelled.</string>
+    <string name="wifi_exclude_connected_ssid">Exclude the connected network’s SSID from scores</string>
+    <string name="wifi_own_ap">My AP (manual selection)</string>
+    <string name="wifi_ap_excluded">Excluded from scores: connected AP or your selection.</string>
+    <string name="wifi_own_ap_detail">The connected BSSID is excluded automatically. A matching SSID may belong to your mesh or to someone else; enable this exclusion only with that knowledge. You can also mark individual APs as yours. These choices affect scores, not the list or chart. They are not saved permanently.</string>
+    <string name="wifi_graph_limit">Plotted: %1$d; not plotted: %2$d. The list and scores include all APs.</string>
+    <string name="wifi_graph_legend_numbered">%1$d. %2$s · %3$s · %4$d dBm</string>
+</resources>

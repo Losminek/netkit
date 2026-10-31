@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chart_close">Close chart</string>
+    <string name="chart_hint">Drag one finger over the chart to read values. Use two fingers to zoom and pan through history.</string>
+    <string name="chart_now">now</string>
+    <string name="chart_minutes_ago">−%1$d min</string>
+    <string name="chart_seconds_ago">−%1$d s</string>
+    <string name="chart_window_minutes">%1$d min</string>
+    <string name="chart_zoom_value">%1$s×</string>
+    <string name="chart_zoom_in">Zoom in</string>
+    <string name="chart_pan_older">Move back in history</string>
+    <string name="chart_pan_newer">Move towards newest</string>
+    <string name="chart_zoom_out">Zoom out</string>
+    <string name="chart_event_roaming">Roaming</string>
+    <string name="chart_event_packet_loss">Packet loss</string>
+    <string name="chart_event_channel_change">Channel change</string>
+    <string name="chart_event_rat_change">Standard change</string>
+    <string name="chart_event_data_sim">Data SIM switch</string>
+    <string name="chart_min">min</string>
+    <string name="chart_avg">average</string>
+    <string name="chart_max">max</string>
+    <string name="chart_events">Events</string>
+    <string name="chart_no_events">No events in this window</string>
+    <string name="chart_no_metrics">No metric</string>
+    <string name="chart_description">Time series chart: %1$s</string>
+    <string name="chart_missing">—</string>
+</resources>

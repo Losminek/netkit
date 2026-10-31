@@ -1,0 +1,25 @@
+<resources>
+    <!-- Identifikace zařízení (M2, DevicesScreen.kt): mDNS, SSDP/UPnP a zdroj jména. -->
+    <string name="lan_devid_chip_netbios">NetBIOS</string>
+    <string name="lan_devid_chip_mdns">mDNS</string>
+    <string name="lan_devid_chip_ptr">PTR</string>
+    <string name="lan_devid_identifying">zjišťuji jména a služby…</string>
+    <string name="lan_devid_section">Identifikace</string>
+    <string name="lan_devid_running">zjišťuji…</string>
+    <string name="lan_devid_missing">Nezjištěno: %1$s.</string>
+    <string name="lan_devid_services">Služby mDNS</string>
+    <string name="lan_devid_upnp">UPnP</string>
+    <string name="lan_devid_upnp_name">Název</string>
+    <string name="lan_devid_upnp_manufacturer">Výrobce</string>
+    <string name="lan_devid_upnp_model">Model</string>
+    <string name="lan_devid_upnp_type">Typ zařízení</string>
+    <string name="lan_devid_upnp_server">Server (SSDP)</string>
+    <string name="lan_devid_upnp_usn">USN</string>
+    <string name="lan_devid_upnp_presentation">Webové rozhraní</string>
+    <string name="lan_devid_upnp_open">Otevřít v prohlížeči</string>
+    <string name="lan_devid_upnp_open_failed">Adresu nelze otevřít: chybí prohlížeč.</string>
+    <string name="lan_devid_upnp_no_description">Popis UPnP se nestáhl (adresa mimo vlastní podsíť nebo jiná než odesílatel, není http, nebo bez odpovědi do 2 s).</string>
+    <string name="lan_devid_incomplete">Identifikace nebyla dokončena, mDNS a UPnP nejsou známé.</string>
+    <string name="lan_devid_pending">mDNS a UPnP se zjistí po dokončeném hledání zařízení.</string>
+    <string name="lan_devid_info_detail">Živost: ICMP ping, kde systém nebo VPN ICMP nedovolí, TCP sondy na porty 80, 443, 22 a 445 (stačí i odmítnutí spojení). Jména: NetBIOS, mDNS (.local, Apple, Linux/Avahi, tiskárny) a reverzní DNS (PTR); zobrazí se v tomto pořadí, zařízení bez jména jen IP adresou. Po dokončeném hledání se živých zařízení ještě zeptá mDNS (jména a služby) a SSDP/UPnP (název, výrobce, model); popis UPnP se stahuje jen z adresy zařízení ve vlastní podsíti. MAC adresu a výrobce síťové karty jiných zařízení Android 10 a novější aplikacím neposkytuje. Prohledává se jen podsíť aktuální Wi-Fi, nejvýše /24.</string>
+</resources>

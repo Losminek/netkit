@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="overview_path_title">Connection</string>
+    <string name="overview_menu">Connection options</string>
+    <string name="overview_refresh">Refresh</string>
+    <string name="overview_lookup_toggle">Look up public IP</string>
+
+    <string name="overview_provider">Provider</string>
+    <string name="overview_provider_loading">looking up the public IP…</string>
+    <string name="overview_provider_unavailable">public IP unavailable</string>
+    <string name="overview_provider_disabled">lookup off</string>
+    <string name="overview_carrier_nat">behind carrier NAT</string>
+    <string name="overview_this_phone">This phone</string>
+    <string name="overview_no_address">no address</string>
+
+    <string name="overview_via">via %1$s</string>
+
+    <string name="overview_dns_private_auto">Private DNS</string>
+</resources>

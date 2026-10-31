@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="net_kind_wifi">Wi-Fi</string>
+    <string name="net_kind_cellular">Mobilní data</string>
+    <string name="net_kind_ethernet">Ethernet</string>
+    <string name="net_kind_vpn">VPN</string>
+    <string name="net_kind_other">Jiná síť</string>
+    <string name="net_kind_none">Bez připojení</string>
+</resources>

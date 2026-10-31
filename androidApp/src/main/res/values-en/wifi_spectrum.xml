@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spectrum screen M2/M3 (WifiScreen.kt, SpectrumChart.kt). -->
+<resources>
+    <string name="wifi_spectrum_tab_networks">Networks</string>
+    <string name="wifi_spectrum_age_seconds">scanned %1$d s ago</string>
+    <string name="wifi_spectrum_age_minutes">scanned %1$d min ago</string>
+    <string name="wifi_spectrum_age_none">no scan</string>
+    <string name="wifi_spectrum_age_unconfirmed">scan unconfirmed</string>
+    <string name="wifi_spectrum_allow_location">Allow precise location</string>
+    <string name="wifi_spectrum_wifi_settings">Wi-Fi settings</string>
+    <string name="wifi_spectrum_more">not drawn: %1$d</string>
+    <string name="wifi_spectrum_connected">connected</string>
+    <string name="wifi_band_connected_auto">connected AP’s band, automatic choice</string>
+    <string name="wifi_spectrum_excluded_chip">not scored</string>
+    <string name="wifi_spectrum_channel_short">ch %1$d</string>
+    <string name="wifi_spectrum_dbm_unit">dBm</string>
+    <string name="wifi_spectrum_description">Spectrum %1$s: %2$d APs in the band, %3$d in the chart. Signal axis from %4$d to %5$d dBm.</string>
+    <string name="wifi_spectrum_trace_description">%1$d. %2$s · %3$s · %4$d dBm</string>
+    <string name="wifi_spectrum_trace_connected">%1$s · connected</string>
+    <string name="wifi_spectrum_utilization">utilization %1$d%%</string>
+    <string name="wifi_spectrum_connection_details">Connection details</string>
+    <string name="wifi_spectrum_health_details">select channel</string>
+    <string name="wifi_spectrum_age_scanning">scanning…</string>
+    <string name="wifi_spectrum_stale_expired">Data is over 5 minutes old. Channel health and recommendations are hidden.</string>
+    <string name="wifi_spectrum_stale_unconfirmed">The scan was not confirmed; the data shown is cached.</string>
+    <string name="wifi_spectrum_chart_title">Channels</string>
+    <string name="wifi_spectrum_chart_meta">%1$d AP · RSSI from scan</string>
+    <string name="wifi_spectrum_sorted_signal">by signal</string>
+    <string name="wifi_spectrum_sorted_name">by name</string>
+    <string name="wifi_spectrum_sorted_channel">by channel</string>
+    <string name="wifi_spectrum_filter">Filter</string>
+    <string name="wifi_spectrum_network_details">show network details</string>
+    <string name="wifi_width_80_plus_80_short">80+80 MHz</string>
+    <string name="wifi_security_wpa2_wpa3_short">WPA2/3</string>
+    <string name="wifi_security_owe_transition_short">OWE/open</string>
+    <string name="wifi_label_frequency">Frequency</string>
+    <string name="wifi_label_center">Channel centre</string>
+    <string name="wifi_label_width">Width</string>
+    <string name="wifi_label_standard">Standard</string>
+    <string name="wifi_label_security">Security</string>
+    <string name="wifi_label_age">Age</string>
+    <string name="wifi_label_bss_load">BSS Load</string>
+    <string name="wifi_label_signal">Signal</string>
+    <string name="wifi_label_channel">Channel</string>
+    <string name="wifi_label_rates">RX / TX</string>
+    <string name="wifi_standard_value">802.11%1$s</string>
+    <string name="wifi_rates_value">%1$s / %2$s Mbps</string>
+    <string name="wifi_health_recommended">recommended: %1$d</string>
+    <string name="wifi_health_channel_title">Channel %1$d</string>
+    <string name="wifi_health_channel_dfs">Channel %1$d · DFS</string>
+    <string name="wifi_health_in_range">APs in range: %1$d</string>
+    <string name="wifi_health_no_neighbours">no other APs</string>
+    <string name="wifi_health_state">Status</string>
+    <string name="wifi_health_pressure_label">Neighbour overlap</string>
+    <string name="wifi_health_utilization_label">Utilization (BSS Load)</string>
+    <string name="wifi_health_scale_free">free</string>
+    <string name="wifi_health_scale_busy">busy</string>
+    <string name="wifi_spectrum_note_summary">The chart uses RSSI and channel width from the last scan; it is not a spectrum analyzer.</string>
+    <plurals name="wifi_spectrum_networks">
+        <item quantity="one">%d network</item>
+        <item quantity="other">%d networks</item>
+    </plurals>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ssh_error_host_rejected">Ověření klíče serveru bylo odmítnuto. Připojení nebylo navázáno.</string>
+    <string name="ssh_prompt_pending">SSH čeká na ověření klíče nebo přihlášení. Výzva vyprší nejpozději za 3 minuty.</string>
+    <string name="ssh_open_pending">Otevřít SSH</string>
+</resources>

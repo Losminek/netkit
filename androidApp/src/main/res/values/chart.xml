@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chart_close">Zavřít graf</string>
+    <string name="chart_hint">Táhněte jedním prstem po grafu pro odečet. Dvěma prsty přiblížíte a posunete historii.</string>
+    <string name="chart_now">teď</string>
+    <string name="chart_minutes_ago">−%1$d min</string>
+    <string name="chart_seconds_ago">−%1$d s</string>
+    <string name="chart_window_minutes">%1$d min</string>
+    <string name="chart_zoom_value">%1$s×</string>
+    <string name="chart_zoom_in">Přiblížit</string>
+    <string name="chart_pan_older">Posunout do historie</string>
+    <string name="chart_pan_newer">Posunout k nejnovějším</string>
+    <string name="chart_zoom_out">Oddálit</string>
+    <string name="chart_event_roaming">Roaming</string>
+    <string name="chart_event_packet_loss">Ztráta paketů</string>
+    <string name="chart_event_channel_change">Změna kanálu</string>
+    <string name="chart_event_rat_change">Změna standardu</string>
+    <string name="chart_event_data_sim">Přepnutí datové SIM</string>
+    <string name="chart_min">min</string>
+    <string name="chart_avg">průměr</string>
+    <string name="chart_max">max</string>
+    <string name="chart_events">Události</string>
+    <string name="chart_no_events">V okně nejsou události</string>
+    <string name="chart_no_metrics">Žádná metrika</string>
+    <string name="chart_description">Časový graf: %1$s</string>
+    <string name="chart_missing">—</string>
+</resources>

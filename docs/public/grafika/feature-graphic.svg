@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
+<title>NetKit — Vaše síť. Přehledně.</title>
+<desc>Propagační grafika s motivem čtyř síťových uzlů z launcher ikony. Bez údajů ze skutečné sítě.</desc>
+<rect width="1024" height="500" fill="#0C131A"/>
+<rect x="652" y="86" width="280" height="304" rx="24" fill="#141E28"/>
+<g transform="translate(652 98) scale(2.592592593)"><path d="M33,71L46,61L59,65L74,40" fill="#000000" fill-opacity="0.0" stroke="#2DD4BF" stroke-opacity="0.5490196078431373" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M33,66.5a4.5,4.5 0,1 1,0 9a4.5,4.5 0,1 1,0 -9z" fill="#13212E" fill-opacity="1.0" stroke="#7A91A5" stroke-opacity="1.0" stroke-width="3" />
+<path d="M46,56.5a4.5,4.5 0,1 1,0 9a4.5,4.5 0,1 1,0 -9z" fill="#13212E" fill-opacity="1.0" stroke="#95A8B9" stroke-opacity="1.0" stroke-width="3" />
+<path d="M59,60.5a4.5,4.5 0,1 1,0 9a4.5,4.5 0,1 1,0 -9z" fill="#13212E" fill-opacity="1.0" stroke="#E3ECF3" stroke-opacity="1.0" stroke-width="3" />
+<path d="M74,29a11,11 0,1 1,0 22a11,11 0,1 1,0 -22z" fill="#2DD4BF" fill-opacity="0.1803921568627451" />
+<path d="M74,33.5a6.5,6.5 0,1 1,0 13a6.5,6.5 0,1 1,0 -13z" fill="#2DD4BF" fill-opacity="1.0" /></g>
+<g font-family="Manrope" fill="#E8F1F5">
+<text x="92" y="204" font-size="76" font-weight="700" letter-spacing="-2">NetKit</text>
+<text x="96" y="258" font-size="28" font-weight="500">Vaše síť. Přehledně.</text>
+</g>
+<g fill="#1A2633">
+<rect x="96" y="318" width="84" height="44" rx="12"/>
+<rect x="192" y="318" width="76" height="44" rx="12"/>
+<rect x="280" y="318" width="76" height="44" rx="12"/>
+<rect x="368" y="318" width="80" height="44" rx="12"/>
+</g>
+<g font-family="Manrope" font-weight="600" font-size="18" fill="#2DD4BF" text-anchor="middle">
+<text x="138" y="347">Wi-Fi</text><text x="230" y="347">LAN</text>
+<text x="318" y="347">SSH</text><text x="408" y="347">WoL</text>
+</g>
+</svg>

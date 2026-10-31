@@ -1,0 +1,66 @@
+<resources>
+    <string name="lan_icmp_unavailable">ICMP na této síti není dostupné. Systém nebo VPN socket odmítl. Discovery může dále použít TCP; bez odpovědi nelze určit stav hostu.</string>
+    <string name="lan_probe_counts">TCP: otevřeno %1$d · odmítnuto (RST) %2$d · timeout %3$d · chyba %4$d</string>
+    <string name="lan_trace_confirmation">Výchozí síť není vybraná Wi-Fi (může být VPN nebo mobilní síť). Traceroute spouští systémový ping bez vazby na Network a mohl by jít mimo Wi-Fi. Spustit i s tímto omezením?</string>
+    <string name="lan_trace_outside_wifi">Mohlo jít mimo Wi-Fi</string>
+    <string name="lan_network_note">Síťová cesta a omezení Androidu</string>
+    <string name="lan_wifi_label">Wi-Fi</string>
+    <string name="lan_confirmation_details">Zadáno: %1$s\nCíl: %2$s\nSíť: %3$s\nHostů: %4$d · portů: %5$d</string>
+    <string name="lan_reason_outside">Cíl není celý v podsíti vybrané Wi-Fi.</string>
+    <string name="lan_reason_non_private">Rozsah zahrnuje adresu mimo privátní, sdílené nebo link-local bloky.</string>
+    <string name="lan_reason_hosts">Rozsah přesahuje 254 hostů.</string>
+    <string name="lan_reason_ports">Výběr přesahuje 254 TCP portů.</string>
+    <string name="lan_confirm_authorized">Pokračujte jen s oprávněním vlastníka. Sondy mohou být zaznamenány firewallem.</string>
+    <string name="lan_ping_statistics">Odezva a ztrátovost</string>
+    <string name="lan_ping_visible_window">posledních 120</string>
+    <string name="lan_ping_sample">Vzorek %1$d · od začátku %2$d ms</string>
+    <string name="lan_export_title">Export výsledků</string>
+    <string name="lan_unknown_hop">*</string>
+    <string name="lan_missing_value">—</string>
+    <string name="lan_rtt">%1$s ms</string>
+    <string name="lan_hop">Hop</string>
+    <string name="lan_address">Adresa</string>
+    <string name="lan_latency">Odezva</string>
+    <string name="lan_graph_time">%1$d s</string>
+    <string name="lan_header">Nástroje</string>
+    <string name="lan_more">Další akce</string>
+    <string name="lan_export_open">Exportovat výsledky…</string>
+    <string name="lan_results_title">Výsledky</string>
+    <string name="lan_row_actions">Akce pro %1$s</string>
+    <string name="lan_chip_running_plain">běží</string>
+    <string name="lan_chip_running">běží · zpracováno %1$d</string>
+    <string name="lan_chip_running_total">běží · %1$d/%2$d</string>
+    <string name="lan_chip_failed">chyba</string>
+    <plurals name="lan_chip_finished">
+        <item quantity="one">hotovo · %d výsledek</item>
+        <item quantity="few">hotovo · %d výsledky</item>
+        <item quantity="many">hotovo · %d výsledku</item>
+        <item quantity="other">hotovo · %d výsledků</item>
+    </plurals>
+    <plurals name="lan_chip_cancelled">
+        <item quantity="one">zrušeno · %d výsledek</item>
+        <item quantity="few">zrušeno · %d výsledky</item>
+        <item quantity="many">zrušeno · %d výsledku</item>
+        <item quantity="other">zrušeno · %d výsledků</item>
+    </plurals>
+    <string name="lan_metric_min">Min</string>
+    <string name="lan_metric_avg">Průměr</string>
+    <string name="lan_metric_max">Max</string>
+    <string name="lan_metric_loss">Ztráta</string>
+    <string name="lan_unit_ms">ms</string>
+    <string name="lan_unit_percent" formatted="false">%</string>
+    <string name="lan_ping_jitter">jitter %1$s ms</string>
+    <string name="lan_trace_no_reply">neodpovídá</string>
+    <string name="lan_trace_echo">echo</string>
+    <string name="lan_trace_silent_range">hopy %1$s–%2$s</string>
+    <plurals name="lan_trace_silent">
+        <item quantity="one">%d hop neodpovídá</item>
+        <item quantity="few">%d hopy neodpovídají</item>
+        <item quantity="many">%d hopu neodpovídá</item>
+        <item quantity="other">%d hopů neodpovídá</item>
+    </plurals>
+    <string name="lan_no_network">Telefon není připojen k žádné síti.</string>
+    <string name="lan_network_changed">Síť se změnila nebo není dostupná. Spusťte nástroj znovu.</string>
+    <string name="lan_local_needs_wifi">Adresa je v místní síti, připojte se k Wi-Fi nebo VPN.</string>
+    <string name="lan_route_label">Měří se přes</string>
+</resources>

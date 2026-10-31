@@ -1,0 +1,32 @@
+<resources>
+    <!-- Devices screen (M2, DevicesScreen.kt): additions to lan_devices_* in strings_lan.xml. -->
+    <string name="lan_devices_ui_loading">Reading Wi-Fi…</string>
+    <string name="lan_devices_ui_network_ssid">%1$s · %2$s</string>
+    <string name="lan_devices_ui_refresh_cd">Discover devices again</string>
+    <string name="lan_devices_ui_consent_legal">Scanning someone else\'s network without the administrator\'s permission may break the law or your provider\'s terms.</string>
+    <string name="lan_devices_ui_consent_manual">Manual discovery with the refresh button is always available, even without consent.</string>
+    <string name="lan_devices_ui_consent_change">Change</string>
+    <string name="lan_devices_ui_scan_running">searching · %1$d/%2$d</string>
+    <plurals name="lan_devices_ui_scan_found">
+        <item quantity="one">%d device</item>
+        <item quantity="other">%d devices</item>
+    </plurals>
+    <string name="lan_devices_ui_scan_cancelled">cancelled · results incomplete</string>
+    <string name="lan_devices_ui_dismiss">Dismiss</string>
+    <string name="lan_devices_ui_chip_gateway">gateway</string>
+    <string name="lan_devices_ui_chip_self">this phone</string>
+    <string name="lan_devices_ui_chip_stale">recently</string>
+    <string name="lan_devices_ui_info_summary">What this screen detects</string>
+    <string name="lan_devices_ui_method">Reply</string>
+    <string name="lan_devices_ui_ping_range">min %1$s · max %2$s ms</string>
+    <string name="lan_devices_ui_loss">Loss</string>
+    <string name="lan_devices_ui_ping_unavailable">ICMP unavailable</string>
+    <string name="lan_devices_ui_section_ports">Open ports</string>
+    <string name="lan_devices_ui_ports_hint">Quick TCP test of common ports (%1$d), without reading banners.</string>
+    <string name="lan_devices_ui_ports_again">Scan again</string>
+    <string name="lan_devices_ui_ports_cancelled">The port scan was cancelled; the list is incomplete.</string>
+    <string name="lan_devices_ui_open_ssh">SSH</string>
+    <string name="lan_devices_ui_title">Network</string>
+    <string name="lan_devices_ui_ping_tile">Ping (%1$d×)</string>
+    <string name="lan_devices_ui_ports_meta">%1$d of %2$d</string>
+</resources>

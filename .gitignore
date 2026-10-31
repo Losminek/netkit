@@ -1,0 +1,43 @@
+# Claude Code / Codex lokální nastavení a worktrees
+.claude/settings.local.json
+CLAUDE.local.md
+.claude/worktrees/
+**/.claude/worktrees/
+.codex/
+*~
+.DS_Store
+
+# Gradle / Android
+.gradle/
+.kotlin/
+build/
+**/build/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.hprof
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Podpisové klíče a tajemství — nikdy do repa
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+keystore.properties
+secrets.properties
+.env
+.env.*
+
+# Lokální artefakty testů (screenshoty z emulátoru, logy, APK s otiskem)
+artifacts/
+.playwright-mcp/
+__pycache__/
+*.pyc

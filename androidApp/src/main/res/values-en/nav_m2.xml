@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tab_signal">Overview</string>
+    <string name="tab_spectrum">Spectrum</string>
+    <string name="tab_devices">Devices</string>
+    <string name="lan_segment_devices">Devices</string>
+    <string name="lan_segment_tools">Tools</string>
+</resources>

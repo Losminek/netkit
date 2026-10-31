@@ -1,0 +1,34 @@
+<resources>
+    <!-- Obrazovka Zařízení (M2, DevicesScreen.kt): doplňkové texty k lan_devices_* ve strings_lan.xml. -->
+    <string name="lan_devices_ui_loading">Načítám Wi-Fi…</string>
+    <string name="lan_devices_ui_network_ssid">%1$s · %2$s</string>
+    <string name="lan_devices_ui_refresh_cd">Vyhledat zařízení znovu</string>
+    <string name="lan_devices_ui_consent_legal">Prohledávání cizí sítě bez svolení správce může porušovat zákon nebo podmínky poskytovatele.</string>
+    <string name="lan_devices_ui_consent_manual">Ruční vyhledání tlačítkem obnovit je dostupné vždy, i bez souhlasu.</string>
+    <string name="lan_devices_ui_consent_change">Změnit</string>
+    <string name="lan_devices_ui_scan_running">hledám · %1$d/%2$d</string>
+    <plurals name="lan_devices_ui_scan_found">
+        <item quantity="one">%d zařízení</item>
+        <item quantity="few">%d zařízení</item>
+        <item quantity="many">%d zařízení</item>
+        <item quantity="other">%d zařízení</item>
+    </plurals>
+    <string name="lan_devices_ui_scan_cancelled">zrušeno · výsledky neúplné</string>
+    <string name="lan_devices_ui_dismiss">Zavřít</string>
+    <string name="lan_devices_ui_chip_gateway">brána</string>
+    <string name="lan_devices_ui_chip_self">tento telefon</string>
+    <string name="lan_devices_ui_chip_stale">nedávno</string>
+    <string name="lan_devices_ui_info_summary">Co obrazovka zjišťuje</string>
+    <string name="lan_devices_ui_method">Odpověď</string>
+    <string name="lan_devices_ui_ping_range">min %1$s · max %2$s ms</string>
+    <string name="lan_devices_ui_loss">Ztráta</string>
+    <string name="lan_devices_ui_ping_unavailable">ICMP nedostupné</string>
+    <string name="lan_devices_ui_section_ports">Otevřené porty</string>
+    <string name="lan_devices_ui_ports_hint">Rychlý TCP test běžných portů (%1$d), bez čtení banneru.</string>
+    <string name="lan_devices_ui_ports_again">Skenovat znovu</string>
+    <string name="lan_devices_ui_ports_cancelled">Sken portů byl zrušen; seznam je neúplný.</string>
+    <string name="lan_devices_ui_open_ssh">SSH</string>
+    <string name="lan_devices_ui_title">Síť</string>
+    <string name="lan_devices_ui_ping_tile">Ping (%1$d×)</string>
+    <string name="lan_devices_ui_ports_meta">%1$d ze %2$d</string>
+</resources>

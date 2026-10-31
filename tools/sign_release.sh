@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Signs a NetKit release draft locally and prepares every asset the app and the web need (F7).
 #
-#   tools/sign_release.sh X.Y.Z --keystore PATH --alias NAME [--notes-cs TEXT] [--notes-en TEXT]
+#   tools/sign_release.sh X.Y.Z --keystore PATH --alias NAME --notes-en TEXT [--notes-cs TEXT]
 #                         [--unsigned PATH] [--upload] [--drop-mapping]
 #   tools/sign_release.sh --print-fingerprint --keystore PATH --alias NAME
 #
@@ -69,6 +69,8 @@ if [[ $print_fp -eq 1 ]]; then
     exit 0
 fi
 [[ -n $version ]] || usage
+# latest.json is immutable once published and the English UI shows notes.en: no Czech fallback.
+[[ -n $notes_en ]] || fail "--notes-en is required (English one-line note for latest.json)"
 [[ -x $apksigner && -x $zipalign ]] || fail "apksigner/zipalign not found in $build_tools (set ANDROID_HOME, APKSIGNER, ZIPALIGN)"
 
 tag="v$version"

@@ -347,6 +347,7 @@ file	tools/m1_provision.py	tools/m1_provision.py
 file	tools/make_public_export.sh	tools/make_public_export.sh
 file	tools/netkit_ssh_export.py	tools/netkit_ssh_export.py
 file	tools/public/CLAUDE.md	CLAUDE.md
+file	tools/public/README.cs.md	README.cs.md
 file	tools/public/README.md	README.md
 file	tools/public/toolchain.md	docs/toolchain.md
 file	tools/public_export.manifest	tools/public_export.manifest

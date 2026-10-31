@@ -1,65 +1,49 @@
 # NetKit
 
-Síťová diagnostika pro Android 10 a novější, napsaná v Kotlinu a Jetpack Compose.
-Aplikace má české a anglické rozhraní. Sdílená logika je připravena pro Kotlin
-Multiplatform; iOS aplikace zatím není k dispozici.
+**English** · [Česky](README.cs.md)
 
-## Funkce
+Network toolkit for Android 10+: Wi-Fi analyzer, LAN scanner, SSH client and Wake-on-LAN
+in one app. Kotlin and Jetpack Compose, Czech and English UI, no account, ads or analytics.
 
-- Přehled aktivní sítě, Wi-Fi signálu a mobilního připojení včetně dual SIM.
-- Wi-Fi spektrum, kanály, zabezpečení a průběh signálu.
-- Vyhledání zařízení v LAN, ping, DNS, TCP porty a traceroute.
-- SSH profily, ověřování host keys a terminál s omezenou podporou VT/ANSI.
-- Wake-on-LAN, import a export zařízení v JSON/CSV.
-- Měření rychlosti přes LibreSpeed nebo M-Lab NDT7, latence a historie výsledků.
-- Volitelné zjištění veřejné IP a poskytovatele přes Cloudflare a Team Cymru.
+## Features
 
-**Skenujte jen vlastní nebo výslovně povolené sítě.** Rychlostní test přenáší
-větší objem dat. Externí služby při požadavku vidí vaši veřejnou IP adresu.
+- Overview of the active network, Wi-Fi signal and mobile connection (dual SIM).
+- Wi-Fi spectrum, channels, security and live signal charts.
+- LAN device discovery, ping, DNS, TCP ports and traceroute.
+- SSH profiles with host key verification and a terminal (limited VT/ANSI, not a full xterm).
+- Wake-on-LAN with JSON/CSV import and export.
+- Speed tests via LibreSpeed or M-Lab NDT7, with history.
+- Optional public IP and provider lookup (Cloudflare, Team Cymru).
 
-## Omezení a stažení
+**Scan only networks you own or are explicitly allowed to test.** External services see your
+public IP address; a speed test can transfer a lot of data.
 
-Výsledky discovery a měření závisí na oprávněních, výrobci telefonu, dostupnosti
-Android API a filtraci v síti. Emulátor neověří reálné Wi-Fi skenování, rádiové
-údaje ani WoL broadcast. SSH terminál není úplná implementace xterm.
+## Download
 
-Balíčky budou dostupné v [GitHub Releases](https://github.com/Losminek/netkit/releases)
-a na stránce projektu <https://www.daniel.losak.cz/netkit> (stažení, otisky, postup instalace).
-Zásady ochrany soukromí: <https://www.daniel.losak.cz/netkit/privacy>.
-Tento zdrojový snapshot sám o sobě neznamená publikované či fyzicky ověřené vydání.
-Instalace a aktualizace APK probíhá ručně; release podpisový klíč není součástí repozitáře.
+Signed APK from [GitHub Releases](https://github.com/Losminek/netkit/releases/latest) or the
+[project page](https://www.daniel.losak.cz/netkit) (checksums and install steps). The app checks
+for new versions at most once a day (can be turned off); installing an update is up to you.
 
-## Sestavení
+Signing certificate SHA-256, check with `apksigner verify --print-certs netkit-X.Y.Z.apk`:
+`74:F3:95:FD:D9:FC:58:98:BF:20:0E:C4:23:5B:66:67:05:D1:35:9D:66:0C:84:5C:04:29:70:EF:08:D5:CB:8C`
 
-Potřebujete JDK 21, Android SDK Platform 35 a Build Tools 35.0.0.
-Verze Gradlu a závislostí jsou připnuté v repozitáři; SDK instalujte samostatně.
+Privacy policy: <https://www.daniel.losak.cz/netkit/privacy>.
+
+## Build
+
+Requires JDK 21, Android SDK Platform 35 and Build Tools 35.0.0.
 
 ```bash
-export JAVA_HOME="<cesta-k-jdk-21>"
-export ANDROID_HOME="<cesta-k-android-sdk>"
-export PATH="$JAVA_HOME/bin:$PATH"
+export JAVA_HOME="<path-to-jdk-21>" ANDROID_HOME="<path-to-android-sdk>"
 ./gradlew --no-daemon --dependency-verification strict testDebugUnitTest lintDebug assembleDebug
 ```
 
-Výstup: `androidApp/build/outputs/apk/debug/androidApp-debug.apk`.
-Varianta `assembleDev` používá identitu `cz.netkit.app.dev`, a může tak existovat
-vedle release aplikace. Debug APK používá vývojový podpis.
-Podrobnosti: [toolchain](docs/toolchain.md), [testování](docs/testovani.md).
+`assembleDev` builds `cz.netkit.app.dev`, which installs next to the release app.
+Project documentation in [`docs/`](docs/) is in Czech ([toolchain](docs/toolchain.md),
+[architecture](docs/architektura.md), [security](docs/bezpecnost.md)).
 
-## Struktura a dokumentace
+## License
 
-- `androidApp/`: Android API, Compose UI, platformní implementace a testy.
-- `shared/`: přenositelné modely a logika, společné testy.
-- `docs/`: [architektura](docs/architektura.md), specifikace funkcí, design,
-  [bezpečnost](docs/bezpecnost.md), [závislosti](docs/zavislosti.md).
-- `gradle/`: wrapper, katalog verzí a verification metadata.
-- `tools/`: testovací nástroje, SSH pomocník a `make_public_export.sh` pro čistý export
-  podle `public_export.manifest`; postup v [public-export.md](docs/public-export.md).
-- `LICENSE`, `NOTICE`, `SECURITY.md`, `CHANGELOG.md`: licence, atribuce a informace k vydáním.
-
-## Licence
-
-Vlastní kód NetKitu je pod [Apache License 2.0](LICENSE).
-Komponenty třetích stran mají vlastní licence; viz [NOTICE](NOTICE),
-[licenční inventář](docs/project-license-inventory.tsv) a přibalené texty licencí.
-Bezpečnostní hlášení: [SECURITY.md](SECURITY.md).
+NetKit is licensed under the [Apache License 2.0](LICENSE). Third-party components keep their
+own licences: [NOTICE](NOTICE) and [licence inventory](docs/project-license-inventory.tsv).
+Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).

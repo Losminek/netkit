@@ -136,7 +136,7 @@ jobs:
           fi
           {
             echo "Nepodepsaný build ${TAG} z CI. Před publikací (docs/distribuce.md §2) lokálně:"
-            echo "tools/sign_release.sh ${VERSION} --keystore <cesta> --alias <alias> --upload"
+            echo "tools/sign_release.sh ${VERSION} --keystore <cesta> --alias <alias> --notes-en \"<English note>\" --upload"
             echo "(podpis, latest.json, SHA256SUMS, poznámky z CHANGELOG), zkontrolovat draft a publikovat."
           } > notes.md
           gh release create "$TAG" --draft --verify-tag --title "NetKit ${VERSION}" --notes-file notes.md dist/*

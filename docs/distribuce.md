@@ -42,7 +42,7 @@ Archiv výsledků researche: interní pracovní záznam (interní záznam).
   3. Správce lokálně: `tools/sign_release.sh X.Y.Z --keystore <cesta> --alias <alias> --upload`
      stáhne nepodepsané APK z draftu a ověří jeho hash, zarovná (16 KB stránky), podepíše (hesla se zadávají
      interaktivně do `apksigner`), porovná otisk s řádkem výše, vytvoří `latest.json`
-     (`tools/release_latest_json.py`, poznámka z první odrážky verze v `CHANGELOG.md` nebo `--notes-cs/--notes-en`),
+     (`tools/release_latest_json.py`, česká poznámka z první odrážky verze v `CHANGELOG.md` nebo `--notes-cs`, anglická povinně `--notes-en`; u 1.0.0 se chyběla a `latest.json` se opravoval v draftu),
      nový `SHA256SUMS`, spustí `verify_release_assets.sh` a nahraje vše do draftu včetně poznámek
      (nepodepsané APK odebere, mapping s `--drop-mapping`). Nepublikuje; publikaci dělá správce
      (`gh release edit vX.Y.Z --draft=false` nebo na GitHubu).

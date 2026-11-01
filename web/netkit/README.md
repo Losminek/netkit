@@ -15,6 +15,7 @@ kopii, ze které se stránka nerenderuje, a `latest.json` se teď tvoří u rele
 | `<SITE_URL>/netkit` | stránka projektu (Stáhnout, ověření, instalace, soukromí) | lidé; `pageUrl` v `latest.json` |
 | `<SITE_URL>/netkit/privacy` | zásady ochrany soukromí, **závazné znění** (předloha oddílů 1–9 `docs/public/privacy-cs.md`) | odkaz v aplikaci (O aplikaci), obchod Play |
 | `<SITE_URL>/netkit/latest.json` | kopie `latest.json` z posledního release | aplikace, nejvýš 1× za 24 h |
+| `<SITE_URL>/en/netkit`, `<SITE_URL>/en/netkit/privacy` | anglická stránka a informativní překlad zásad (od 2026-10-31, web je drží stabilní) | aplikace mimo češtinu (O aplikaci, tlačítko Stáhnout); `pageUrl` v `latest.json` zůstává `/netkit` |
 
 `SITE_URL` je `https://www.daniel.losak.cz` (od 2026-10-31). `<SITE_URL>/netkit` je přesně `netkitWebBase` v `gradle.properties`. Změna domény nebo cesty po vydání
 znamená, že starší instalace najdou aktualizace už jen přes zálohu na GitHubu (D22). Proto adresu

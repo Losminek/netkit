@@ -214,6 +214,9 @@ Oficiální zdroje pro tuto opravu ověřené 2026-10-26:
 
 ## 8. Import profilů z PC
 
+Tento oddíl popisuje formát v1 z PC skriptu. Importní dialog nyní přijímá
+také v2 a starý export telefonu; jejich přenos nastavení a omezení popisuje §9.
+
 PC skript `tools/netkit_ssh_export.py` (jen standardní knihovna Pythonu 3.12) převede
 aliasy z `~/.ssh/config` na importní soubor `netkit-ssh-profiles` v1 (formát je závazně
 popsaný v interní pracovní záznam) a volitelně rozdá veřejný klíč telefonu.
@@ -272,3 +275,64 @@ Při změně hostu, portu nebo uživatele existujícího profilu import odpojí 
 
 Testy: `tools/test_netkit_ssh_export.py` (syntetické configy, podvržený `ssh -G` runner,
 žádné skutečné připojení). Fyzický průchod importu na telefonu ověřuje správce.
+
+## 9. Výměnný formát v2, starý export a pořadí profilů
+
+Android exportuje `netkit-ssh-profiles.json`: `format: "netkit-ssh-profiles"`,
+`schema: 2`, `source: "netkit-android"`, pole `profiles` a prázdné `skipped`.
+Každý profil obsahuje `alias`, `host`, `port`, `username`, `authentication`
+(`PASSWORD`, `KEY`, `INTERACTIVE`), `startupCommand` a `keepaliveSeconds`.
+Pořadí pole je pořadí v aplikaci. Import navíc přijímá volitelné `group` jako
+metadata náhledu; skupiny se v aplikaci neukládají.
+
+Export neobsahuje lokální ID, `secretRef`, `keyRef`, klíče ani důvěru serverů.
+Obsahuje však cíle, uživatelská jména a startovací příkazy: před přenosem ověřte,
+že příkaz sám neobsahuje citlivé údaje. Limity importu jsou 256 KiB, 200 profilů
+(a nejvýše 200 přeskočených řádků), omezená hloubka JSON a allowlist polí.
+Před otevřením systémového dialogu pro vytvoření souboru se připraví a ověří
+neměnný export. Duplicitní jména (včetně jejich výčtu) nebo překročení 256 KiB
+mají konkrétní CS/EN hlášku a dialog se neotevře; nevznikne prázdný soubor.
+Stejná jména při uložení profilů zůstávají povolená. Změny profilů během
+otevřeného dialogu neovlivní již připravený export. Pokud Android během SAF
+ukončí proces a snapshot se ztratí, po návratu se export znovu vytvoří z
+aktuálního úložiště. Duplicity/velikost se znovu ověří před otevřením cíle
+pro zápis a zobrazí stejnou konkrétní chybu. Soubor, který už vytvořil SAF,
+může při této chybě zůstat prázdný; aplikace ho neotevře ani nepřepíše.
+Varování exportu a smazaného profilu lze zavřít tlačítkem OK.
+
+Import přijímá také v1 z PC skriptu (§8) a původní export telefonu: objekt bez
+`format`, `schema: 1`, pole profilů s `name` místo aliasu a starými ID.
+Staré ID se nepřebírá. `hostKeys`, `keys`, `rejectedHostKeys` musí být prázdné
+seznamy a reference `secretRef`/`keyRef` null (nebo chybět); jinak se celý soubor
+odmítne. **Nejde o import zálohy úložiště nebo důvěry serverů.**
+
+Párování používá přesnou shodu aliasu a jména. V1 mění pouze host, port a
+uživatele. V2 a starý export navíc aktualizují ověřování, startovací příkaz a
+keepalive; náhled ukazuje každý změněný údaj jako „před → po“. Změna příkazu
+má varování, protože se příkaz spustí po potvrzení připojení. Změna cíle
+(host/port/uživatel) odpojí uložené heslo jako v §8. Existující `keyRef` se
+podle rozhodnutí správce 2026-11-01 zachovává i při změně cíle. Při změně
+samotného typu ověřování se ale nepoužívaná reference odpojí: odchod z KEY
+odstraní `keyRef`, odchod z PASSWORD odstraní `secretRef` a po úspěšném zápisu
+smaže uložené heslo. Náhled při aktualizaci na KEY bez existujícího klíče
+výslovně požaduje jeho výběr. U nového profilu v1 ukazuje ověřování podle
+aktuální volby klíče v importním dialogu.
+
+Nové profily se přidají na konec v pořadí souboru; existující profily si
+ponechají pozici. Vybraný lokální klíč dostanou nové v1 profily a nové
+v2/legacy profily typu `KEY`. Ostatním typům v2 se ověřování výběrem klíče
+nemění. Bez výběru zůstane nový v2/legacy `KEY` bez přiřazeného klíče.
+Připojení i reconnect v tom případě nevytvoří transport a nabídnou přechod
+do editoru. Totéž platí pro odkaz na již neexistující klíč. Editor výslovně
+vyžádá výběr; vždy při chybějícím přiřazení nabídne „Vytvořit klíč“, i s jinými klíči v seznamu. Návrat z Klíčů
+zachovává netajná rozepsaná pole, nikoli heslo. Reconnect použije přesný profil potvrzený v dialogu, včetně
+cíle a startovacího příkazu. Smazaný profil odmítne chybou bez nabídky editoru,
+aby editace neobnovila již smazaný profil.
+
+Řádek správy profilu nabízí úpravu, smazání a šipky nahoru/dolů ve stylu WoL.
+Na kraji seznamu a během operace jsou příslušné šipky zakázané; mají CS/EN
+popisky pro TalkBack. Pořadí se ukládá v seznamu profilů, přežije restart,
+promítne se do exportu a nemění se běžnou editací profilu.
+
+Implementační a testovací důkazy jsou v reportu 32 (interní záznam);
+fyzické přijetí zůstává v checklistu správce.

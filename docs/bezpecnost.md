@@ -549,3 +549,64 @@ logika `shared/.../update/UpdateInfo.kt` a `UpdateFetch.kt` (`nextRedirect`, `ch
   náhled schránky, **nebrání vložení ani čtení oprávněnou aplikací**. Veřejný SSH klíč,
   fingerprint a LAN výsledky se tímto příznakem neoznačují; nejde o kopie přihlašovacích
   tajemství. Ověření implementace a neprovedené kontroly: report 30 (interní záznam).
+
+## iOS síťové nástroje (P1, 2026-10-31)
+
+Android pravidla výše se nemění. iOS používá SwiftUI a platformní síťová API:
+
+- `NSLocalNetworkUsageDescription`: uživatelem spuštěné TCP/DNS/ICMP sondy, Bonjour a WoL.
+  `NSBonjourServices` uvádí konkrétní `_ssh._tcp`; aplikace neprohlíží všechny typy služeb.
+- `NSLocationWhenInUseUsageDescription`: vysvětlení pro aktuální Wi-Fi. Access Wi-Fi Information
+  entitlement není přidaný; bez něj se zobrazí nedostupnost údajů a nevyžaduje se nepoužitelná poloha.
+- Restricted multicast entitlement není přidaný ani vyžádaný. WoL broadcast je odmítnut před
+  odesláním; povolen je pouze unicast ve zjištěné podsíti vybraného Wi-Fi rozhraní, bez mobilního
+  fallbacku. Změna pozorované síťové cesty ruší operace. Změnu AP bez změny rozhraní nelze
+  bez potřebných oprávnění spolehlivě identifikovat.
+- TCP: jediný zadaný cíl, maximálně 64 portů, čtyři současná spojení, konečné timeouty.
+  ICMP je datagramový, bez raw socketů. Síťové nástroje vyžadují potvrzení vlastní/povolené sítě;
+  nic se nespouští automaticky. Zrušení operace a opuštění obrazovky ukončuje její transporty.
+- DNS i názvy Bonjour jsou nedůvěryhodné: sdílené parsery a sanitizace, kontrola dotazu/odpovědi,
+  omezená velikost odpovědi. Odmítnutá či zkrácená DNS zpráva se nezobrazuje jako úspěšná odpověď.
+- Speedtest používá HTTPS/WSS, odmítá přesměrování a omezuje velikost odpovědí i fronty.
+  Každý start potvrzuje datovou zátěž; NDT7 navíc uchování a veřejné zveřejnění výsledku včetně IP
+  u M-Lab. Přístupové tokeny ani úplná přístupová URL se neukládají a nelogují. Žádná analytika
+  aplikace, reklamy nebo sledování. Dobrovolné měření M-Lab přesto představuje externí sběr dat,
+  který je uveden v privacy manifestu a upozornění uživatele.
+- Testovací provoz v CI směřuje pouze na loopback nebo do lokálních mocků. Local Network dialog,
+  skutečné oprávnění k Wi-Fi a chování fyzické sítě nejsou simulátorem ověřeny.
+
+Zdroje ověřené 2026-10-31: [Apple TN3179](https://developer.apple.com/documentation/technotes/tn3179-understanding-local-network-privacy),
+[Wi-Fi fetchCurrent](https://developer.apple.com/documentation/networkextension/nehotspotnetwork/fetchcurrent(completionhandler:)),
+[M-Lab NDT](https://www.measurementlab.net/tests/ndt/index.html).
+
+
+## iOS SSH (P2, 2026-10-31)
+
+- `KeychainSecrets` ukládá hesla a raw Ed25519 privátní klíče jako generic-password položky,
+  oddělené service/account, se synchronizací vypnutou a
+  `kSecAttrAccessibleWhenUnlockedThisDeviceOnly`. Identifikátory a limit 256 KiB kontroluje
+  také iOS adaptér společného `SecretStore`. Jen not-found znamená chybějící tajemství;
+  zamčené nebo nedostupné úložiště nezpůsobí plaintext fallback. Pracovní kopie jsou dočasně
+  v paměti Swift/Kotlin/knihovny; negarantujeme vymazání všech jejich kopií.
+- Profily, veřejné klíče a důvěra jsou v app-private `ssh.json`, nikoli tajemství. Soubor je
+  atomický, s complete file protection a v adresáři vyloučeném ze záloh. Vadný/novější obsah
+  ani IO chyba se nepřepíší prázdnou databází. Import používá sdílené limity a compare-before-apply.
+- Host key se ověřuje před předáním uživatelské autentizace. SHA256 otisk se počítá z raw SSH blobu;
+  důvěra porovnává algoritmus, veřejný klíč a přesný normalizovaný endpoint. Unknown confirmation
+  používá jednorázovou bránu s náhodným ID a atomický compare-and-insert. Changed je vždy odmítnut;
+  potvrzovací callback jej nemůže povolit. Reset důvěry vyžaduje zvláštní potvrzení a zavření relace.
+- Oficiální NIOSSH v připnuté verzi nabízí jen bezpečnou podmnožinu společné politiky. RSA/SHA-1,
+  DSA ani staré šifry se nepřidávají pro kompatibilitu. SSH nevypíná VPN a používá systémovou trasu.
+  Časové limity a rušení uzavírají transport; fronta zápisů a přenos na UI mají pevné limity.
+- Schránka terminálu používá `UIPasteboard` s `localOnly`, expirací 60 s a podmíněným vyčištěním,
+  jen pokud se obsah od kopie nezměnil. Omezuje sdílení mezi zařízeními a životnost, nezaručuje
+  ochranu před vložením nebo čtením oprávněnou aplikací. Vkládání řídicích znaků je potvrzené a
+  sanitizované sdílenou funkcí; paste není alternativní cesta k Enter/ESC sekvencím.
+- Žádná SSH tajemství, privátní klíče, autentizační prompty, příkazy ani terminálový výstup se
+  nelogují. Testy používají pouze za běhu generované klíče/hesla a loopback SSH server. Nové
+  entitlementy ani oprávnění se kvůli SSH nepřidávají.
+
+Zdroje: [Keychain accessibility](https://developer.apple.com/documentation/security/ksecattraccessiblewhenunlockedthisdeviceonly),
+[schránka localOnly](https://developer.apple.com/documentation/uikit/uipasteboard/optionskey/localonly),
+[NIOSSH 0.15.1](https://github.com/apple/swift-nio-ssh/tree/0.15.1).
+Stav testů a omezení jsou v [ios.md §10](ios.md#10-ssh-klient-a-terminál-p2-2026-10-31).

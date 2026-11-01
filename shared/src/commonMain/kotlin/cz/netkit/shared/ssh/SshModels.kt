@@ -52,7 +52,7 @@ data class SshData(val schema: Int = 1, val profiles: List<SshProfile> = emptyLi
         } && rejectedHostKeys.map { it.endpoint }.distinct().size == rejectedHostKeys.size
 }
 
-/** Export connection profiles only; local credential references and trust/key metadata stay on device. */
+/** Legacy export sanitizer retained for compatibility tests. Application files use encodeSshProfileExport (v2). */
 fun exportSshProfiles(data: SshData): SshData = SshData(
     profiles = data.profiles.map { it.copy(secretRef = null, keyRef = null) },
 )

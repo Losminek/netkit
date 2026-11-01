@@ -22,7 +22,7 @@ data class SshProfileImportState(
 
 internal fun SshUiState.blocksProfileImport(): Boolean =
     !loaded || storeFailed || busy || profileImportBlockedByDialog ||
-        hostChallenge != null || authChallenge != null || sessions.any { !it.ended }
+        hostChallenge != null || authChallenge != null || keySelectionRequired != null || sessions.any { !it.ended }
 
 /** Main-thread API shared by the ViewModel and JVM tests; store mutations use its operations mutex. */
 internal class SshProfileImportController(

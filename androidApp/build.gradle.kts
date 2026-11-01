@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 /** Release version; versionCode = major*10000 + minor*100 + patch (docs/distribuce.md §2). */
-val netkitVersion = "1.0.0"
+val netkitVersion = "1.0.1"
 val netkitVersionCode = netkitVersion.split('.').map(String::toInt).let { (major, minor, patch) ->
     require(minor in 0..99 && patch in 0..99) { "minor and patch must be 0..99" }
     major * 10000 + minor * 100 + patch

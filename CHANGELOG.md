@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.1 — SSH profily a iOS ve zdrojích (2026-11-01)
+
+- Export SSH profilů v novém formátu v2 (typ ověření, startovací příkaz, keepalive, pořadí; bez hesel a klíčů) a import v1, v2 i starších exportů z telefonu.
+- Pořadí SSH profilů šipkami, náhled změn před importem a varování u startovacího příkazu.
+- Profil s ověřením klíčem bez přiřazeného klíče se nepřipojí a nabídne výběr nebo vytvoření klíče.
+- Export funguje i po ukončení aplikace systémem během výběru souboru; varování lze zavřít.
+- Zdrojový kód iOS verze (SwiftUI nad sdíleným jádrem) je součástí repozitáře; iOS se zatím nevydává.
+
 ## 1.0.0 — první veřejné vydání (2026-10-31)
 
 - První veřejná verze: LAN skener, Wi-Fi analýza, SSH terminál, Wake-on-LAN, rychlostní testy a kontrola aktualizací.

@@ -1,0 +1,2 @@
+"NSLocalNetworkUsageDescription" = "NetKit se připojuje k vámi vybraným zařízením v místní síti.";
+"NSLocationWhenInUseUsageDescription" = "Oprávnění k poloze může NetKitu umožnit zjistit aktuální síť Wi-Fi.";

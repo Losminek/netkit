@@ -1,0 +1,204 @@
+name: iOS
+
+# Public repositories run this automatically (standard runners are free there).
+# The private development repository runs it only manually (macOS minutes count 10x
+# against its quota): Actions > iOS > Run workflow after changes to iosApp/, iosMain
+# or shared code that iosMain calls.
+on:
+  push:
+    branches: [main, "codex/**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  linux:
+    if: github.event_name == 'workflow_dispatch' || github.event.repository.private == false
+    name: Linux Android regression
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Forbidden imports in shared commonMain
+        run: |
+          if grep -rE "^import (java|javax|android)\." shared/src/commonMain; then
+            echo "::error::shared/src/commonMain must not import java, javax or android"
+            exit 1
+          fi
+      - name: Strict tests, lint and debug build without Apple targets
+        run: >-
+          ./gradlew --no-daemon --dependency-verification strict
+          testDebugUnitTest :shared:allTests lintDebug assembleDebug
+
+  simulator:
+    if: github.event_name == 'workflow_dispatch' || github.event.repository.private == false
+    name: ARM iOS simulator
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Verify Apple toolchain and select available iPhone deterministically
+        run: |
+          test "$(uname -m)" = arm64
+          sudo xcode-select -s /Applications/Xcode_16.4.app
+          test "$(xcodebuild -version)" = $'Xcode 16.4\nBuild version 16F6'
+          xcodebuild -version
+          mkdir -p artifacts/ios
+          xcrun simctl list devices available --json > artifacts/ios/simulators.json
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+
+          with open("artifacts/ios/simulators.json", encoding="utf-8") as source:
+              inventory = json.load(source)
+          candidates = []
+          for runtime, devices in inventory["devices"].items():
+              match = re.fullmatch(r"com\.apple\.CoreSimulator\.SimRuntime\.iOS-(\d+)-(\d+)(?:-(\d+))?", runtime)
+              if not match or tuple(int(part or 0) for part in match.groups()) != (18, 5, 0):
+                  continue
+              version = tuple(int(part or 0) for part in match.groups())
+              for device in devices:
+                  if device.get("isAvailable") and device["name"].startswith("iPhone"):
+                      candidates.append((version, device["name"], device["udid"]))
+          if not candidates:
+              raise SystemExit("No available iOS 18.5 iPhone simulator in the selected Xcode")
+          # Pinned iOS 18.5 for Xcode 16.4; stable name/UUID tie-break.
+          newest = max(item[0] for item in candidates)
+          _, name, identifier = min(item for item in candidates if item[0] == newest)
+          print(f"Selected {name}, iOS {newest}, {identifier}")
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as output:
+              output.write(f"IOS_SIMULATOR_ID={identifier}\n")
+          PY
+      - name: Link static shared framework and run Kotlin Native tests
+        run: |
+          ./gradlew --no-daemon --dependency-verification strict -Pnetkit.ios=true \
+            :shared:linkDebugFrameworkIosSimulatorArm64 :shared:iosSimulatorArm64Test
+          framework=shared/build/bin/iosSimulatorArm64/debugFramework/NetKitShared.framework
+          test -s "$framework/NetKitShared"
+          test -s "$framework/Headers/NetKitShared.h"
+          test -s "$framework/Modules/module.modulemap"
+          cp "$framework/Headers/NetKitShared.h" artifacts/ios/NetKitShared.h
+          {
+            ls -lR "$framework"
+            file "$framework/NetKitShared"
+            lipo -archs "$framework/NetKitShared" | grep -w arm64
+          } | tee artifacts/ios/framework.log
+      - name: Resolve only committed Swift package versions
+        run: |
+          lockfile=iosApp/NetKit.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+          test -s "$lockfile"
+          xcodebuild -resolvePackageDependencies -project iosApp/NetKit.xcodeproj -scheme NetKit \
+            -onlyUsePackageVersionsFromResolvedFile -disableAutomaticPackageResolution \
+            2>&1 | tee artifacts/ios/package-resolution.log
+          git diff --exit-code -- "$lockfile"
+      - name: Build simulator app with local ad-hoc signing
+        run: |
+          xcodebuild -project iosApp/NetKit.xcodeproj -scheme NetKit \
+            -configuration Debug -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,id=$IOS_SIMULATOR_ID" \
+            -derivedDataPath build/ios-derived \
+            -resultBundlePath artifacts/ios/build.xcresult \
+            -onlyUsePackageVersionsFromResolvedFile -disableAutomaticPackageResolution \
+            CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES \
+            build 2>&1 | tee artifacts/ios/build.log
+      - name: Build unsigned Release simulator app and reject UI export hook
+        run: |
+          ./gradlew --no-daemon --dependency-verification strict -Pnetkit.ios=true \
+            :shared:linkReleaseFrameworkIosSimulatorArm64
+          xcodebuild -project iosApp/NetKit.xcodeproj -scheme NetKit \
+            -configuration Release -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,id=$IOS_SIMULATOR_ID" \
+            -derivedDataPath build/ios-release-derived \
+            -resultBundlePath artifacts/ios/release-build.xcresult \
+            -onlyUsePackageVersionsFromResolvedFile -disableAutomaticPackageResolution \
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee artifacts/ios/release-build.log
+          python3 - <<'PY'
+          from pathlib import Path
+
+          binary = Path("build/ios-release-derived/Build/Products/Release-iphonesimulator/NetKit.app/NetKit")
+          contents = binary.read_bytes()
+          if not contents:
+              raise SystemExit("Release app executable is empty")
+          if b"netkit-ui-capture-ssh-export" in contents:
+              raise SystemExit("Release app contains the DEBUG UI export hook")
+          print("PASS: Release app excludes the DEBUG UI export hook")
+          PY
+          git diff --exit-code -- iosApp/NetKit.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+      - name: Swift local transport integration and localized launch tests
+        run: |
+          xcodebuild -project iosApp/NetKit.xcodeproj -scheme NetKit \
+            -configuration Debug -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,id=$IOS_SIMULATOR_ID" \
+            -destination-timeout 120 -parallel-testing-enabled NO \
+            -derivedDataPath build/ios-derived \
+            -resultBundlePath artifacts/ios/tests.xcresult \
+            -onlyUsePackageVersionsFromResolvedFile -disableAutomaticPackageResolution \
+            CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES \
+            test 2>&1 | tee artifacts/ios/tests.log
+          git diff --exit-code -- iosApp/NetKit.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+      - name: Inspect local simulator signatures and entitlements
+        if: always()
+        run: |
+          products=build/ios-derived/Build/Products/Debug-iphonesimulator
+          mkdir -p artifacts/ios
+          : > artifacts/ios/defined-symbols.log
+          {
+            if [ -d "$products" ]; then
+              while IFS= read -r -d '' bundle; do
+                printf '\nBundle: %s\n' "$bundle"
+                if ! codesign --display --verbose=4 --entitlements - "$bundle" 2>&1; then
+                  printf 'Signature inspection failed for this bundle.\n'
+                fi
+                printf '\nBundle: %s\n' "$bundle" >> artifacts/ios/defined-symbols.log
+                if executable=$(plutil -extract CFBundleExecutable raw -o - "$bundle/Info.plist" 2>> artifacts/ios/defined-symbols.log); then
+                  case "$executable" in
+                    '' | */*) printf 'Invalid bundle executable name; symbol inspection skipped.\n' >> artifacts/ios/defined-symbols.log ;;
+                    *)
+                      if ! nm -gU "$bundle/$executable" >> artifacts/ios/defined-symbols.log 2>&1; then
+                        printf 'Defined-symbol inspection failed for this executable.\n' >> artifacts/ios/defined-symbols.log
+                      fi
+                      ;;
+                  esac
+                else
+                  printf 'Bundle executable name unavailable; symbol inspection skipped.\n' >> artifacts/ios/defined-symbols.log
+                fi
+              done < <(find "$products" -type d \( -name '*.app' -o -name '*.xctest' \) -print0)
+            else
+              printf 'No simulator build products available for signature inspection.\n'
+              printf 'No simulator build products available for symbol inspection.\n' >> artifacts/ios/defined-symbols.log
+            fi
+          } | tee artifacts/ios/signatures.log
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: ios-simulator-results
+          path: |
+            artifacts/ios/
+            shared/build/reports/tests/iosSimulatorArm64Test/
+            shared/build/test-results/iosSimulatorArm64Test/
+          if-no-files-found: error
+          retention-days: 7

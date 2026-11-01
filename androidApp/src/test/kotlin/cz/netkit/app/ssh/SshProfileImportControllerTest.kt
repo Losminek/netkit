@@ -265,6 +265,7 @@ class SshProfileImportControllerTest {
         assertFalse(ready.blocksProfileImport())
         for (state in listOf(ready.copy(loaded = false), ready.copy(storeFailed = true), ready.copy(busy = true),
             ready.copy(profileImportBlockedByDialog = true),
+            ready.copy(keySelectionRequired = SshProfile("fixture", "Fixture", "192.0.2.10", username = "tester", authentication = SshAuthentication.KEY)),
             ready.copy(authChallenge = AuthChallenge("request", "session", "identity", "", "", emptyList(), emptyList())),
             ready.copy(hostChallenge = HostChallenge("request", "session", TrustedHostKey("endpoint", "algorithm", "public", "SHA256:x"), null)))) {
             assertTrue(state.blocksProfileImport())
@@ -303,4 +304,20 @@ class SshProfileImportControllerTest {
             assertContentEquals(before, file.readBytes())
         } finally { storeScope.coroutineContext[Job]!!.cancelAndJoin(); directory.deleteRecursively() }
     }
+    @Test fun authenticationChangeDeletesDetachedPasswordAfterCommit() = runTest {
+        for (auth in listOf(SshAuthentication.KEY, SshAuthentication.INTERACTIVE)) {
+            val original = SshProfile("saved", "Fixture", "192.0.2.10", username = "tester", secretRef = "saved-secret")
+            val fixture = Fixture(this, SshData(profiles = listOf(original)))
+            val input = encodeSshProfileExport(SshData(profiles = listOf(original.copy(authentication = auth))))
+            fixture.controller.preview { input }; advanceUntilIdle()
+            assertEquals(listOf("saved-secret"), fixture.controller.state.value.pendingProfileImport!!.plan.detachedSecretRefs)
+            assertTrue(fixture.deleted.isEmpty())
+            fixture.beforeDelete = { assertNull(fixture.data.profiles.single().secretRef) }
+            fixture.controller.confirm(null); advanceUntilIdle()
+            assertEquals(listOf("saved-secret"), fixture.deleted)
+            assertEquals(auth, fixture.data.profiles.single().authentication)
+            assertEquals(1, fixture.writes)
+        }
+    }
+
 }

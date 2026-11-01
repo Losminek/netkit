@@ -7,13 +7,15 @@ známé nedostatky a vazby na SHA APK eviduje report 08 (interní záznam).
 
 ## 1. Moduly
 
-- `:shared`: Kotlin Multiplatform s cíli `androidTarget()` a `jvm()`. Společné modely,
+- `:shared`: Kotlin Multiplatform s cíli `androidTarget()` a `jvm()`. Od iOS P0 se na macOS
+  nebo s `-Pnetkit.ios=true` přidávají `iosArm64()` a `iosSimulatorArm64()`. Společné modely,
   čistá logika a WoL controller jsou v `src/commonMain`; testy v `src/commonTest`.
 - `:androidApp`: Compose UI, Android ViewModely, síťové implementace, úložiště,
   JVM testy v `src/test` a emulátorová instrumentace v `src/androidTest`.
 
 Balíčky jsou `cz.netkit.shared.<oblast>` a `cz.netkit.app.<oblast>`, ID aplikace
-`cz.netkit.app`. iOS target není deklarovaný; viz [ios.md](ios.md). Platformní
+`cz.netkit.app`. iOS kostra používá SwiftUI a statický framework `NetKitShared`; stav ověření
+je v [ios.md](ios.md#8-implementace-swiftui--p0-2026-10-31). Platformní
 implementace jsou nyní v `androidApp`, samostatný `shared/src/androidMain` se nepoužívá.
 
 ## 2. Rozdělení odpovědností

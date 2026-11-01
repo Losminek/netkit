@@ -1,0 +1,2 @@
+"NSLocalNetworkUsageDescription" = "NetKit connects to devices you choose on your local network.";
+"NSLocationWhenInUseUsageDescription" = "Location permission can allow NetKit to identify the current Wi-Fi network.";

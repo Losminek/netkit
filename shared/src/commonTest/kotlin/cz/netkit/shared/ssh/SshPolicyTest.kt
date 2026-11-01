@@ -23,7 +23,7 @@ class SshPolicyTest {
         assertFalse(data.copy(profiles = listOf(profile, profile)).valid())
         assertFalse(data.copy(schema = 2).valid())
     }
-    @Test fun productionExportRemovesCredentialReferencesAndAllTrustAndKeyMetadata() {
+    @Test fun legacyExportRemovesCredentialReferencesAndAllTrustAndKeyMetadata() {
         val profile = SshProfile("profile-1", "Fixture", "host.example", username = "user",
             secretRef = "local-ref-1", keyRef = "local-key-1", startupCommand = "status")
         val trusted = TrustedHostKey(profile.endpoint, "ssh-ed25519", "public-data", "SHA256:display")
@@ -32,7 +32,7 @@ class SshPolicyTest {
             rejectedHostKeys = listOf(trusted.copy(publicKey = "rejected-data")))
         val exported = exportSshProfiles(source)
         assertEquals(SshData(profiles = listOf(profile.copy(secretRef = null, keyRef = null))), exported)
-        // Check the serialized structure used by the production serializer, not a substring in a fixture.
+        // Check the legacy serialized structure; v2 is covered by SshProfileExchangeTest.
         val json = Json { encodeDefaults = true }
         val document = json.parseToJsonElement(json.encodeToString(exported)).jsonObject
         val connection = document.getValue("profiles").jsonArray.single().jsonObject

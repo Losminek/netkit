@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ssh_import_profiles">Import profiles from PC</string>
-    <string name="ssh_import_title">Import profiles from PC</string>
+    <string name="ssh_import_profiles">Import profiles</string>
+    <string name="ssh_import_title">Import profiles</string>
     <string name="ssh_import_summary">New: %1$d · changed: %2$d · unchanged: %3$d · skipped: %4$d</string>
     <string name="ssh_import_source">Source: %1$s</string>
     <string name="ssh_import_new">New profiles</string>
-    <string name="ssh_import_updated">Host, port or user will change</string>
+    <string name="ssh_import_updated">Profiles to update</string>
     <string name="ssh_import_skipped">Skipped aliases</string>
     <string name="ssh_import_key">Key for new profiles</string>
-    <string name="ssh_import_no_key">This phone has no key yet. Create one under Keys, distribute its public part with the PC script and import again, or continue with a password.</string>
-    <string name="ssh_import_password">No key, password sign-in</string>
-    <string name="ssh_import_note">The file contains no passwords or keys. Existing profiles keep their authentication method, key and startup command.</string>
+    <string name="ssh_import_no_key">This phone has no key yet. Key-authenticated profiles can be imported; select a key in the profile editor before connecting.</string>
+    <string name="ssh_import_password">No key assignment (v1: password; v2: authentication from file)</string>
+    <string name="ssh_import_note">The selected key applies only to new v1 profiles or new key-authenticated profiles. V2 and legacy exports also transfer authentication, startup command and keepalive. Existing profiles retain their local keys.</string>
     <string name="ssh_import_confirm">Import</string>
     <string name="ssh_cancel_import">Cancel</string>
     <string name="ssh_share_public">Share public key</string>
@@ -34,5 +34,17 @@
     <string name="ssh_import_limit">The import would exceed 200 profiles.</string>
     <string name="ssh_import_stale">Profiles changed in the meantime. Open the file again.</string>
     <string name="ssh_import_format">The file is not in the NetKit profile format.</string>
-    <string name="ssh_import_secret_moves">The saved password will be detached and deleted; you will enter it again when connecting.</string>
+    <string name="ssh_import_secret_moves">The saved password will be detached and deleted.</string>
+    <string name="ssh_select_profile_key">Select a key in the profile editor.</string>
+    <string name="ssh_move_up">Move profile %1$s up</string>
+    <string name="ssh_move_down">Move profile %1$s down</string>
+    <string name="ssh_authentication_label">Authentication</string>
+    <string name="ssh_import_change">%1$s: %2$s → %3$s</string>
+    <string name="ssh_import_startup_warning">The startup command runs after you confirm the connection. Check its contents.</string>
+    <string name="ssh_create_key">Create key</string>
+    <string name="ssh_export_duplicates">Cannot export profiles: multiple profiles share these names (%1$s). Rename them before exporting.</string>
+    <string name="ssh_export_size">Cannot export profiles: the file exceeds 256 KiB. Shorten startup commands or reduce the number of profiles.</string>
+    <string name="ssh_profile_unavailable">The profile was deleted. Cannot reconnect.</string>
+    <string name="ssh_edit_profile">Edit profile %1$s</string>
+    <string name="ssh_delete_profile_action">Delete profile %1$s</string>
 </resources>

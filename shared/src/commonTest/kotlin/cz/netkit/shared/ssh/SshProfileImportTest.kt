@@ -35,7 +35,7 @@ class SshProfileImportTest {
             document().replace("\"username\":\"root\"", "\"username\":42"), document().replace("\"profiles\":[${row()}]", "\"profiles\":{}"))) {
             failure(SshProfileImportFailure.FORMAT) { decode(text) }
         }
-        for (schema in listOf("2", "\"1\"", "null", "{}")) {
+        for (schema in listOf("3", "\"1\"", "null", "{}")) {
             failure(SshProfileImportFailure.SCHEMA) { decode(document().replace("\"schema\":1", "\"schema\":$schema")) }
         }
         val exact = document().padEnd(SSH_PROFILE_IMPORT_LIMIT, ' ')

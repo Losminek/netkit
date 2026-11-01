@@ -56,10 +56,12 @@ import cz.netkit.app.ui.theme.NetKitTheme
 import cz.netkit.app.ui.theme.NetKitType
 import cz.netkit.app.update.UpdateUiState
 import cz.netkit.app.update.UpdateViewModel
+import cz.netkit.app.update.localizedUpdateUrl
 import cz.netkit.app.update.openLink
 import cz.netkit.shared.update.UpdateCheckFailure
 import cz.netkit.shared.update.UpdateSource
 import cz.netkit.shared.update.UpdateStatus
+import cz.netkit.shared.update.localizedWebUrl
 import cz.netkit.shared.update.privacyPolicyUrl
 
 /**
@@ -122,6 +124,7 @@ internal fun SubscreenHeader(title: String, backTag: String, onBack: () -> Unit)
 @Composable
 private fun UpdatesCard(state: UpdateUiState, onToggle: (Boolean) -> Unit, onCheck: () -> Unit, onOpen: (String) -> Unit) {
     val colors = NetKitTheme.colors
+    val language = LocalConfiguration.current.locales[0].language
     SectionCard(stringResource(R.string.about_updates_title)) {
         Row(
             Modifier.fillMaxWidth().heightIn(min = 48.dp)
@@ -143,7 +146,8 @@ private fun UpdatesCard(state: UpdateUiState, onToggle: (Boolean) -> Unit, onChe
         val info = state.info
         FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.small), verticalArrangement = Arrangement.spacedBy(Spacing.small)) {
             if (info != null && state.available && (state.status == UpdateStatus.AVAILABLE || state.status == UpdateStatus.DISMISSED)) {
-                PrimaryButton(stringResource(R.string.update_download), { onOpen(info.openUrl) }, Modifier.testTag("about_update_open"),
+                PrimaryButton(stringResource(R.string.update_download), { onOpen(localizedUpdateUrl(info.openUrl, language)) },
+                    Modifier.testTag("about_update_open"),
                     icon = NetKitIcons.Download, small = true)
             }
             NeutralButton(stringResource(if (state.checking) R.string.about_checking else R.string.about_check_now), onCheck,
@@ -193,15 +197,15 @@ private fun updatesNote(state: UpdateUiState): String? {
 @Composable
 private fun ProjectCard(onOpen: (String) -> Unit, onOpenLicenses: () -> Unit) {
     val language = LocalConfiguration.current.locales[0].language
-    val privacy = remember(language) {
-        privacyPolicyUrl(BuildConfig.UPDATE_BASE_URL.takeIf { BuildConfig.UPDATE_CONFIGURED }, BuildConfig.SOURCE_URL, language)
-    }
+    val webBase = BuildConfig.UPDATE_BASE_URL.takeIf { BuildConfig.UPDATE_CONFIGURED }
+    val privacy = remember(language) { privacyPolicyUrl(webBase, BuildConfig.SOURCE_URL, language) }
+    val webPage = remember(language) { localizedWebUrl(BuildConfig.UPDATE_BASE_URL, webBase, language) }
     SectionCard(stringResource(R.string.about_project_title)) {
         Column {
             var divider = false
             if (BuildConfig.UPDATE_CONFIGURED) {
-                ListRow(stringResource(R.string.about_web), BuildConfig.UPDATE_BASE_URL.removePrefix("https://"), NetKitIcons.Globe,
-                    onClick = { onOpen(BuildConfig.UPDATE_BASE_URL) }, modifier = Modifier.testTag("about_web"))
+                ListRow(stringResource(R.string.about_web), webPage.removePrefix("https://"), NetKitIcons.Globe,
+                    onClick = { onOpen(webPage) }, modifier = Modifier.testTag("about_web"))
                 divider = true
             }
             ListRow(stringResource(R.string.about_source), BuildConfig.SOURCE_URL.removePrefix("https://"), NetKitIcons.Terminal,

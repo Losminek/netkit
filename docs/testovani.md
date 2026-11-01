@@ -672,3 +672,39 @@ nebo veřejné resolvery (1.1.1.1, 8.8.8.8). Výsledek PASS / FAIL + poznámka.
 | M4-39 | WoL → ⋮ → Exportovat CSV (Wake On Lan), uložte do Stažených. | Dialog upozorní, co CSV nepřenáší; vznikne `wol-netkit.csv`. | NOT RUN |
 | M4-40 | Soubor z M4-39 naimportujte v aplikaci Wake On Lan (Mike Webb) do prázdného seznamu, pak jedno zařízení probuďte. | Aplikace import přijme; jména, MAC, broadcast, port, IP a skupiny sedí; paket zařízení probudí. | NOT RUN |
 | M4-41 | Přepněte jazyk telefonu na angličtinu, v NetKitu znovu exportujte CSV. | Skupiny z poznámek „Skupina: …“ zůstanou zachované (nespadnou do „NetKit“). | NOT RUN |
+
+## 14. SSH profily v2 — fyzický checklist (zadání 29)
+
+Pouze správce na fyzickém telefonu. Zapsat
+verzi/commit APK, jazyk, písmo/zobrazení, výsledek a případný screenshot.
+
+| # | Krok | Očekávání | Výsledek |
+|---|---|---|---|
+| SSH2-01 | Exportovat PASSWORD, KEY a INTERACTIVE s odlišným keepalive a neškodným startovacím příkazem; soubor importovat do čisté testovací instalace. | V2, pořadí a přenosná pole shodná; žádné ID/reference/klíče/důvěra serverů. | NOT RUN |
+| SSH2-02 | Importovat starý export telefonu bez referencí a metadat důvěry. | Přenosná pole zachována; nové lokální identity. | NOT RUN |
+| SSH2-03 | Importovat aktualizaci všech šesti polí existujícího profilu. | Každé změněné pole před → po, příkaz zvýrazněný; pozice profilu zachována, změna cíle odpojí heslo. | NOT RUN |
+| SSH2-04 | Šipkami přesunout profily, zkontrolovat kraje, restartovat aplikaci a exportovat. | Pořadí trvá a souhlasí s JSON; krajní šipky neaktivní, TalkBack oznámí směr i jméno. | NOT RUN |
+| SSH2-05 | Importovat nový KEY bez výběru klíče; Připojit a potvrdit. | Výzva k výběru klíče s přechodem do editoru, žádná nová relace ani změna typu na heslo. | NOT RUN |
+| SSH2-06 | Opakovat SSH2-05 s jiným existujícím klíčem v telefonu. | Editor i tak explicitně požaduje přiřazení; po výběru lze uložit. | NOT RUN |
+| SSH2-07 | V editoru KEY bez klíčů klepnout Vytvořit klíč, vygenerovat Ed25519 a vrátit se. | Rozepsaná netajná pole zůstala; lze klíč vybrat a uložit; neukládá se rozepsané heslo. | NOT RUN |
+| SSH2-08 | V Klíčích vygenerovat Ed25519, importovat v1 bez klíče, Upravit → Privátní klíč → vybrat klíč → Uložit. Opakovat import → generování a restart mezi kroky. | Klíč je v editoru viditelný i volitelný, uložení aktivní. Zapsat zvlášť release a DEV/debug APK; případný prázdný blok zachytit včetně vybraného ověřování, klávesnice a velikosti písma. | NOT RUN |
+| SSH2-09 | V CS i EN a se zvětšeným písmem projít náhled, editor a šipky. | Čitelné texty, dostupné akce a posuv; nic se neztratí za klávesnicí. | NOT RUN |
+| SSH2-10 | Reconnect relace, jejíž KEY profil už nemá existující přiřazený klíč (v izolované testovací instalaci). | Stejná výzva do editoru před transportem; původní relace/výpis se nepřepíše. | NOT RUN |
+
+### Doplnění R1 (revize zadání 29)
+
+| # | Krok | Očekávání | Výsledek |
+|---|---|---|---|
+| SSH2-R1-01 | Export dvou profilů stejného jména, pak validních profilů s celkovým JSON nad 256 KiB. | Konkrétní CS/EN hláška (u duplicit jejich jména), SAF se neotevře a nevznikne 0 B soubor; běžné ukládání duplicit funguje. | NOT RUN |
+| SSH2-R1-02 | Import v1 s existujícím klíčem; přepínat klíč / bez klíče. | Náhled nového profilu přepíná KEY/PASSWORD stejně jako následné uložení. | NOT RUN |
+| SSH2-R1-03 | Importem změnit PASSWORD → KEY/INTERACTIVE a KEY → PASSWORD/INTERACTIVE. | Nepoužívaná reference odstraněna, opuštěné heslo smazáno; při KEY bez přiřazení varování. Samotná změna cíle zachová keyRef. | NOT RUN |
+| SSH2-R1-04 | KEY bez přiřazení s jiným klíčem v seznamu; TalkBack nad správou více profilů. | Vytvořit klíč dostupné; Upravit/Smazat oznamují i jméno profilu, monogram jako před změnou v2. | NOT RUN |
+| SSH2-R1-05 | Reconnect a souběžná editace/smazání profilu v izolovaném testu. | Použije se potvrzený cíl/příkaz; smazání vyvolá jen chybu, nenabídne editor obnovující profil. | NOT RUN |
+
+### Doplnění malého kola P3 (po merge zadání 29)
+
+| # | Krok | Očekávání | Výsledek |
+|---|---|---|---|
+| SSH2-P3-01 | Exportovat profily, během SAF ukončit proces aplikace a dokončit výběr cíle. | Export vznikne z aktuálního úložiště i bez připraveného snapshotu. Při duplicitách nebo překročení 256 KiB konkrétní hláška, žádné UNKNOWN; validace před zápisem. | NOT RUN |
+| SSH2-P3-02 | Vyvolat chybu exportu / reconnectu smazaného profilu, klepnout OK. | Hláška i její OK zmizí. | NOT RUN |
+| SSH2-P3-03 | V CS i EN importovat změnu PASSWORD → KEY/INTERACTIVE s uloženým heslem. | Varování říká jen, že heslo bude odpojeno a smazáno; neslibuje jeho opětovné zadání. | NOT RUN |

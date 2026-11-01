@@ -20,7 +20,19 @@ fun validLanHost(host: String): Boolean {
     return safePtrName(host) != null
 }
 
-private val unsafeLanCodePoint = Regex("[\\p{Cc}\\p{Cf}]")
+private fun unsafeLanCodePoint(codePoint: Int): Boolean {
+    if (codePoint <= 0xFFFF) {
+        val category = codePoint.toChar().category
+        return category == CharCategory.CONTROL || category == CharCategory.FORMAT
+    }
+    // All supplementary Cf ranges from Unicode 17.0.0; Cc is confined to BMP.
+    // Native Regex Unicode properties do not reliably classify surrogate pairs.
+    // Verified 2026-10-31: https://www.unicode.org/Public/17.0.0/ucd/extracted/DerivedGeneralCategory.txt
+    return codePoint == 0x110BD || codePoint == 0x110CD ||
+        codePoint in 0x13430..0x1343F || codePoint in 0x1BCA0..0x1BCA3 ||
+        codePoint in 0x1D173..0x1D17A || codePoint == 0xE0001 ||
+        codePoint in 0xE0020..0xE007F
+}
 
 /**
  * Sanitize complete Unicode code points. The limit counts output UTF-16 units;
@@ -35,11 +47,13 @@ fun sanitizeLanText(value: String, maximum: Int = 256): String {
             val first = value[offset]
             val pair = first in '\uD800'..'\uDBFF' && value.getOrNull(offset + 1)?.let { it in '\uDC00'..'\uDFFF' } == true
             val width = if (pair) 2 else 1
-            val codePoint = value.substring(offset, offset + width)
+            val codePoint = if (pair) {
+                0x10000 + ((first.code - 0xD800) shl 10) + (value[offset + 1].code - 0xDC00)
+            } else first.code
             val replacement = when {
                 !pair && first in '\uD800'..'\uDFFF' -> "\uFFFD"
-                unsafeLanCodePoint.matches(codePoint) -> " "
-                else -> codePoint
+                unsafeLanCodePoint(codePoint) -> " "
+                else -> value.substring(offset, offset + width)
             }
             if (length + replacement.length > maximum) break
             append(replacement)

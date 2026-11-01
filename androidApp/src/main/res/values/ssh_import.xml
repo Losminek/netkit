@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ssh_import_profiles">Importovat profily z PC</string>
-    <string name="ssh_import_title">Import profilů z PC</string>
+    <string name="ssh_import_profiles">Importovat profily</string>
+    <string name="ssh_import_title">Import profilů</string>
     <string name="ssh_import_summary">Nové: %1$d · změněné: %2$d · beze změny: %3$d · přeskočené: %4$d</string>
     <string name="ssh_import_source">Zdroj: %1$s</string>
     <string name="ssh_import_new">Nové profily</string>
-    <string name="ssh_import_updated">Změní se host, port nebo uživatel</string>
+    <string name="ssh_import_updated">Aktualizované profily</string>
     <string name="ssh_import_skipped">Přeskočené aliasy</string>
     <string name="ssh_import_key">Klíč pro nové profily</string>
-    <string name="ssh_import_no_key">Telefon zatím nemá vlastní klíč. Vytvořte ho v sekci Klíče, rozdejte jeho veřejnou část skriptem na PC a import opakujte, nebo pokračujte s heslem.</string>
-    <string name="ssh_import_password">Bez klíče, přihlášení heslem</string>
-    <string name="ssh_import_note">Hesla ani klíče soubor neobsahuje. Existující profily si ponechají způsob přihlášení, klíč i startovací příkaz.</string>
+    <string name="ssh_import_no_key">Telefon zatím nemá vlastní klíč. Profily s ověřováním klíčem lze importovat; před připojením vyberte klíč v úpravě profilu.</string>
+    <string name="ssh_import_password">Bez přiřazení klíče (v1: heslo; v2: ověřování ze souboru)</string>
+    <string name="ssh_import_note">Vybraný klíč dostanou jen nové profily v1 nebo nové profily s ověřováním klíčem. V2 a starý export přenesou i ověřování, startovací příkaz a keepalive. Místní klíče existujících profilů zůstávají.</string>
     <string name="ssh_import_confirm">Importovat</string>
     <string name="ssh_cancel_import">Zrušit</string>
     <string name="ssh_share_public">Sdílet veřejný klíč</string>
@@ -34,5 +34,17 @@
     <string name="ssh_import_limit">Po importu by bylo víc než 200 profilů.</string>
     <string name="ssh_import_stale">Profily se mezitím změnily. Otevřete soubor znovu.</string>
     <string name="ssh_import_format">Soubor nemá formát profilů NetKit.</string>
-    <string name="ssh_import_secret_moves">Uložené heslo se odpojí a smaže; při připojení ho zadáte znovu.</string>
+    <string name="ssh_import_secret_moves">Uložené heslo se odpojí a smaže.</string>
+    <string name="ssh_select_profile_key">Vyberte klíč v úpravě profilu.</string>
+    <string name="ssh_move_up">Posunout profil %1$s nahoru</string>
+    <string name="ssh_move_down">Posunout profil %1$s dolů</string>
+    <string name="ssh_authentication_label">Ověřování</string>
+    <string name="ssh_import_change">%1$s: %2$s → %3$s</string>
+    <string name="ssh_import_startup_warning">Startovací příkaz se spustí po potvrzení připojení. Zkontrolujte jeho obsah.</string>
+    <string name="ssh_create_key">Vytvořit klíč</string>
+    <string name="ssh_export_duplicates">Profily nelze exportovat: stejný název používá více profilů (%1$s). Před exportem je přejmenujte.</string>
+    <string name="ssh_export_size">Profily nelze exportovat: soubor překračuje limit 256 KiB. Zkraťte startovací příkazy nebo snižte počet profilů.</string>
+    <string name="ssh_profile_unavailable">Profil byl smazán. Připojení nelze obnovit.</string>
+    <string name="ssh_edit_profile">Upravit profil %1$s</string>
+    <string name="ssh_delete_profile_action">Smazat profil %1$s</string>
 </resources>

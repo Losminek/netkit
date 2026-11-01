@@ -488,3 +488,119 @@ licence; nenahrazují kontrolu licencí v konkrétním release APK.
   nemají aplikační velikostní strop příchozí datové zprávy před callbackem.
   [`RealWebSocket.MAX_QUEUE_SIZE`](https://github.com/square/okhttp/blob/parent-5.3.2/okhttp/src/commonJvmAndroid/kotlin/okhttp3/internal/ws/RealWebSocket.kt#L411-L427)
   omezuje odchozí frontu. Dopad F4 a přesné rozlišení v reportu 30 (interní záznam).
+
+## 6. iOS kostra a CI (P0, 2026-10-31)
+
+P0 nepřidává přímou knihovnu ani Swift Package. SwiftUI, Foundation a XCTest jsou součástí
+Apple SDK používaného jen na macOS runneru. Stávající KMP závislosti nově vyžadují Apple varianty;
+Android/JVM verze a katalog se nemění. Licence knihoven byly ověřeny 2026-10-31:
+
+| Komponenta | Verze | Licence | Oficiální zdroj / účel |
+|---|---|---|---|
+| Kotlin/Native, stdlib a kotlin-test | 2.2.20 | Apache-2.0, soupis přibalených částí v licenci Kotlinu | [Kotlin licence](https://github.com/JetBrains/kotlin/blob/v2.2.20/license/README.md); existující Kotlin plugin, nově native targety |
+| kotlinx-coroutines-core, kotlinx-coroutines-test (iosarm64, iossimulatorarm64) | 1.10.2 | Apache-2.0 | [LICENSE](https://github.com/Kotlin/kotlinx.coroutines/blob/1.10.2/LICENSE.txt), [Maven core](https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core-iosarm64/1.10.2/); existující přímé závislosti |
+| kotlinx-serialization-core, kotlinx-serialization-json (iosarm64, iossimulatorarm64) | 1.9.0 | Apache-2.0 | [LICENSE](https://github.com/Kotlin/kotlinx.serialization/blob/v1.9.0/LICENSE.txt), [Maven JSON](https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-serialization-json-iosarm64/1.9.0/); existující JSON knihovna |
+| atomicfu, atomicfu-iosarm64, atomicfu-iossimulatorarm64 včetně cinterop | 0.26.1 | Apache-2.0 | [LICENSE](https://github.com/Kotlin/kotlinx-atomicfu/blob/0.26.1/LICENSE.txt), [POM](https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/atomicfu/0.26.1/atomicfu-0.26.1.pom); nová native tranzitivní závislost coroutines |
+
+SHA-256 Apple artefaktů a jejich metadat jsou doplněny do `gradle/verification-metadata.xml`.
+Získání z oficiálního Maven Central bylo porovnáno s publikovanými SHA-1 sidecary a u souborů
+odkazovaných z Gradle `.module` také s jejich SHA-256. Toto ověření stejného zdroje není nezávislý
+podpis vydavatele. Přísné ověřování zůstává zapnuté; úplnost grafu pro macOS musí potvrdit CI.
+Swift `Package.resolved` nevzniká, protože projekt nemá Swift balíčky.
+
+### Toolchain CI
+
+Ověřeno v oficiální dokumentaci 2026-10-31; nejde o výsledek spuštěného CI:
+
+| Součást | Zvolená verze | Zdroj |
+|---|---|---|
+| Standardní ARM runner | `macos-15`; dokumentovaný image `20261028.0489.1`, macOS 15.8.2 | [runner image](https://github.com/actions/runner-images/blob/main/images/macos/macos-15-arm64-Readme.md), [mapování labelů](https://docs.github.com/en/actions/reference/runners/github-hosted-runners) |
+| Xcode / iOS simulátor | 16.4, build 16F6 / iOS 18.5 | stejný runner image; [kompatibilita Kotlin 2.2.20](https://kotlinlang.org/docs/multiplatform/multiplatform-compatibility-guide.html) |
+| Linux / Java | `ubuntu-24.04` / Temurin 21 | stejné jako stávající release workflow |
+| GitHub Actions | checkout 7.0.1, setup-java 6.0.1, upload-artifact 7.0.2 | plné SHA převzaté beze změny z [release.yml](../.github/workflows/release.yml) |
+
+Workflow ověřuje architekturu a přesnou výchozí verzi Xcode; při změně image selže, nepřejde tiše
+na jinou verzi. Image jako celek není neměnně připnutý. Dokumentace runneru uvádí potřebný Android
+SDK 35 a build-tools 35.0.0; workflow neinstaluje SDK komponenty. Kotlin/Native toolchain se získává
+standardním Gradle mechanismem na macOS runneru, nikoli na lokálním Linuxu.
+Runner provisioning má [MIT licenci](https://github.com/actions/runner-images/blob/main/LICENSE);
+ta se nevztahuje na Apple SDK, pro které platí
+[Apple SDK agreement](https://www.apple.com/legal/sla/docs/xcode.pdf). SDK se nepřibaluje do repa.
+Distribuce aplikace ani posouzení SSH kryptografie nejsou součástí P0.
+
+## 7. iOS síťové nástroje (P1, 2026-10-31)
+
+Žádná nová knihovna, Swift Package, verze Gradle závislosti ani změna verification metadat.
+Používají se stávající coroutines/serialization a sdílená doména. SwiftUI, Network.framework,
+Foundation/URLSession, NetworkExtension, Security (náhodné bajty) a Darwin jsou systémová API
+SDK Xcode 16.4 / iOS 18.5 z §6; SDK se nepřibaluje. Swift `Package.resolved` nadále není potřeba.
+
+Network.framework obsluhuje TCP, DNS UDP, Bonjour a WoL. POSIX datagramový ICMP je vlastní
+implementace nad veřejným API, bez přibalení či kopírování cizího síťového kódu. Speedtest používá
+URLSession HTTPS/WSS a existující sdílené parsery; neposkytuje ani nevyžaduje placenou službu.
+Runner, Xcode, SHA akcí a Linux build se kvůli P1 nemění. Skutečný stav ověření je v
+[ios.md §9](ios.md#9-síťové-nástroje--p1-ověřeno-v-simulátoru).
+
+
+## 8. iOS SSH (P2, ověřeno 2026-10-31)
+
+SwiftNIO SSH je oficiální SSH protokolová knihovna; aplikace doplňuje životní cyklus, TOFU,
+Keychain a PTY. Přímé i tranzitivní balíčky mají v Xcode `exactVersion`; commitnutý
+`iosApp/NetKit.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved` obsahuje
+verze a revize ze stejných tagů. CI vyžaduje pinované řešení bez automatické aktualizace.
+SwiftPM/Xcode resolve na Linuxu neproběhl; kompatibilitu grafu a sestavení potvrzuje macOS CI.
+
+| Balíček | Verze | Licence | Zdroj na přesném tagu | Datum ověření |
+|---|---|---|---|---|
+| `swift-nio-ssh` | 0.15.1 | Apache-2.0 | [LICENSE.txt](https://github.com/apple/swift-nio-ssh/blob/0.15.1/LICENSE.txt), [Package.swift](https://github.com/apple/swift-nio-ssh/blob/0.15.1/Package.swift) | 2026-10-31 |
+| `swift-nio` | 2.84.0 | Apache-2.0 | [LICENSE.txt](https://github.com/apple/swift-nio/blob/2.84.0/LICENSE.txt), [Package.swift](https://github.com/apple/swift-nio/blob/2.84.0/Package.swift) | 2026-10-31 |
+| `swift-crypto` | 3.12.3 | Apache-2.0 | [LICENSE.txt](https://github.com/apple/swift-crypto/blob/3.12.3/LICENSE.txt), [Package.swift](https://github.com/apple/swift-crypto/blob/3.12.3/Package.swift) | 2026-10-31 |
+| `swift-atomics` | 1.3.0 | Apache-2.0 | [LICENSE.txt](https://github.com/apple/swift-atomics/blob/1.3.0/LICENSE.txt), [Package.swift](https://github.com/apple/swift-atomics/blob/1.3.0/Package.swift) | 2026-10-31 |
+| `swift-collections` | 1.2.0 | Apache-2.0 | [LICENSE.txt](https://github.com/apple/swift-collections/blob/1.2.0/LICENSE.txt), [Package.swift](https://github.com/apple/swift-collections/blob/1.2.0/Package.swift) | 2026-10-31 |
+| `swift-system` | 1.5.0 | Apache-2.0 | [LICENSE.txt](https://github.com/apple/swift-system/blob/1.5.0/LICENSE.txt), [Package.swift](https://github.com/apple/swift-system/blob/1.5.0/Package.swift) | 2026-10-31 |
+| `swift-asn1` | 1.4.0 | Apache-2.0 | [LICENSE.txt](https://github.com/apple/swift-asn1/blob/1.4.0/LICENSE.txt), [Package.swift](https://github.com/apple/swift-asn1/blob/1.4.0/Package.swift) | 2026-10-31 |
+
+Graf: NIOSSH → NIO, Crypto, Atomics; NIO → Atomics, Collections, System; Crypto → ASN1.
+ASN1 se řeší z manifestu Crypto i přesto, že iOS aplikace používá pouze produkt `Crypto`,
+nikoli `_CryptoExtras`. `Crypto` na Apple platformě v této konfiguraci exportuje systémový
+CryptoKit; nevynucujeme BoringSSL backend. NIO obsahuje také MIT llhttp, ale produkt NIOHTTP1
+ani jeho CNIOLLHTTP target tato aplikace nepoužívá. Žádný kód závislostí se nekopíruje do aplikace.
+
+NIOSSH 0.15.1 vyžaduje Swift tools 6.1 (Xcode 16.4); ostatní manifesty nejvýše 5.10.
+Použitelná sada algoritmů je bezpečná podmnožina sdíleného allowlistu: Ed25519 a ECDSA
+P-256/P-384/P-521, ECDH těchto křivek a Curve25519, AES-128/256-GCM. Pořadí preference KEX
+se liší od Androidu. RSA autentizace a RSA host keys nejsou v této knihovně podporovány;
+žádné RSA/SHA-1, DSA ani jiný slabý fallback se nepřidává. PTY a změna velikosti jsou
+součástí NIOSSH channel requests; vlastní vykreslení používá sdílený TerminalBuffer.
+
+Citadel 0.12.1 nebyl přidán: kořenová MIT licence nepokrývá povinný
+[CCitadelBcrypt/bcrypt.c](https://github.com/orlandos-nl/Citadel/blob/0.12.1/Sources/CCitadelBcrypt/bcrypt.c)
+pod ISC (zde není povolená výjimka). Jeho
+[RSA.swift](https://github.com/orlandos-nl/Citadel/blob/0.12.1/Sources/Citadel/Algorithms/RSA.swift)
+navíc používá podpis SSH-RSA/SHA-1, který společná politika odmítá. Nejde o kompromis
+s bezpečností výměnou za širší kompatibilitu. Stav ověření aplikace je v [ios.md](ios.md).
+
+Licence Atomics, Collections a System zahrnují Runtime Library Exception k Apache-2.0.
+NIO NOTICE dále uvádí MIT cpp_magic.h a BSD-3-Clause části FreeBSD; tyto permisivní
+licence byly zkontrolovány v tagu 2.84.0 spolu s [NOTICE](https://github.com/apple/swift-nio/blob/2.84.0/NOTICE.txt).
+
+
+## 9. Offline licence v O aplikaci (P3, ověřeno 2026-11-01)
+
+P3 nepřidává závislosti ani nemění verze. Offline atribuce pokrývají stejných sedm Swift
+balíčků z §8 a Kotlin 2.2.20, coroutines 1.10.2, serialization 1.9.0 a atomicfu 0.26.1 z §6.
+Licenční texty a oznámení byly znovu načteny přes oficiální GitHub API z přesných tagů
+uvedených v těchto tabulkách dne 2026-11-01; nejde o texty pohyblivé větve main.
+
+Offline resource zahrnuje Apache-2.0 včetně Runtime Library Exception tam, kde ji balíček
+uvádí, a příslušná BSD/MIT oznámení. Doplňuje také atribuce částí již používaného Kotlin
+runtime: Boost Software License 1.0 a Unicode notice; nezavádí tím novou závislost.
+Původ těchto částí dokládá [Kotlin license README na v2.2.20](https://github.com/JetBrains/kotlin/blob/v2.2.20/license/README.md)
+(včetně runtime `runtime/src/main/cpp/Utils.cpp`) a [Kotlin/Native third-party licence na v2.2.20](https://github.com/JetBrains/kotlin/tree/v2.2.20/kotlin-native/licenses/third_party):
+Unicode, bounded MPMC queue, Apache Harmony a jeho NOTICE, libbacktrace.
+Licenční hlavička [runtime utf8.h](https://github.com/JetBrains/kotlin/blob/v2.2.20/kotlin-native/runtime/src/main/cpp/utf8.h)
+dokládá Boost licenci této další části. Uvedení těchto textů je atribuce stávajícího runtime,
+nikoli rozšíření povolených licencí pro nové knihovny.
+
+Offline zobrazení nevyžaduje síťový přístup. Stav implementace a dosud neprovedeného P3
+simulátorového ověření je v [ios.md §11](ios.md#11-dokončení--p3-ověřeno-2026-11-01).

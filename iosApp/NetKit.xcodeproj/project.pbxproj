@@ -1,0 +1,669 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		000000000000000000000C01 /* OpenSourceLicenses.txt in Resources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000C00 /* OpenSourceLicenses.txt */; };
+		000000000000000000000001 /* NetKitApp.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 000000000000000000000015 /* NetKitApp.swift */;
+		};
+		000000000000000000000002 /* Localizable.xcstrings in Resources */ = {
+			isa = PBXBuildFile;
+			fileRef = 000000000000000000000016 /* Localizable.xcstrings */;
+		};
+		000000000000000000000003 /* PrivacyInfo.xcprivacy in Resources */ = {
+			isa = PBXBuildFile;
+			fileRef = 000000000000000000000017 /* PrivacyInfo.xcprivacy */;
+		};
+		000000000000000000000004 /* NetKitTests.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 000000000000000000000018 /* NetKitTests.swift */;
+		};
+		000000000000000000000005 /* NetKitUITests.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 000000000000000000000019 /* NetKitUITests.swift */;
+		};
+		000000000000000000000200 /* LanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000100 /* LanView.swift */; };
+		000000000000000000000201 /* PortScan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000101 /* PortScan.swift */; };
+		000000000000000000000202 /* IcmpPing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000102 /* IcmpPing.swift */; };
+		000000000000000000000203 /* WifiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000103 /* WifiView.swift */; };
+		000000000000000000000204 /* SpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000104 /* SpeedView.swift */; };
+		000000000000000000000205 /* WolPlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000105 /* WolPlatform.swift */; };
+		000000000000000000000206 /* WolView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000106 /* WolView.swift */; };
+		000000000000000000000207 /* WolPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000107 /* WolPersistence.swift */; };
+		000000000000000000000307 /* LanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000108 /* LanTests.swift */; };
+		000000000000000000000308 /* SpeedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000109 /* SpeedTests.swift */; };
+		000000000000000000000403 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000400 /* InfoPlist.strings */; };
+		000000000000000000000700 /* NIOSSH in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000600 /* NIOSSH */; };
+		000000000000000000000701 /* NIOCore in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000601 /* NIOCore */; };
+		000000000000000000000702 /* NIOPosix in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000602 /* NIOPosix */; };
+		000000000000000000000703 /* Crypto in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000603 /* Crypto */; };
+		000000000000000000000704 /* NIOFoundationCompat in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000604 /* NIOFoundationCompat */; };
+		000000000000000000000710 /* NIOSSH in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000610 /* NIOSSH */; };
+		000000000000000000000711 /* NIOCore in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000611 /* NIOCore */; };
+		000000000000000000000712 /* NIOPosix in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000612 /* NIOPosix */; };
+		000000000000000000000713 /* Crypto in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000613 /* Crypto */; };
+		000000000000000000000900 /* KeychainSecrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000800 /* KeychainSecrets.swift */; };
+		000000000000000000000901 /* SshMetadataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000801 /* SshMetadataStore.swift */; };
+		000000000000000000000902 /* SshHostKeyValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000802 /* SshHostKeyValidator.swift */; };
+		000000000000000000000903 /* SshTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000803 /* SshTransport.swift */; };
+		000000000000000000000904 /* SshViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000804 /* SshViewModel.swift */; };
+		000000000000000000000905 /* SshKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000805 /* SshKeyboard.swift */; };
+		000000000000000000000906 /* SshView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000806 /* SshView.swift */; };
+		000000000000000000000A04 /* KeychainSecretsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000807 /* KeychainSecretsTests.swift */; };
+		000000000000000000000A05 /* SshMetadataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000808 /* SshMetadataStoreTests.swift */; };
+		000000000000000000000A06 /* LocalSshServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000809 /* LocalSshServer.swift */; };
+		000000000000000000000A07 /* SshIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000080A /* SshIntegrationTests.swift */; };
+		00000000000000000000090B /* SshTerminalRows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000080B /* SshTerminalRows.swift */; };
+		000000000000000000000A0C /* SshTerminalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000000000000000080C /* SshTerminalTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		00000000000000000000002F = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 000000000000000000000030 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 00000000000000000000002C /* NetKit */;
+			remoteInfo = NetKit;
+		};
+		000000000000000000000B01 /* NetKitTests host proxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 000000000000000000000030 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 00000000000000000000002C /* NetKit */;
+			remoteInfo = NetKit;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		000000000000000000000C00 /* OpenSourceLicenses.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = OpenSourceLicenses.txt; sourceTree = "<group>"; };
+		000000000000000000000015 /* NetKitApp.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = NetKitApp.swift;
+			sourceTree = "<group>";
+		};
+		000000000000000000000016 /* Localizable.xcstrings */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.json.xcstrings;
+			path = Localizable.xcstrings;
+			sourceTree = "<group>";
+		};
+		000000000000000000000017 /* PrivacyInfo.xcprivacy */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.xml;
+			path = PrivacyInfo.xcprivacy;
+			sourceTree = "<group>";
+		};
+		000000000000000000000018 /* NetKitTests.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = NetKitTests.swift;
+			sourceTree = "<group>";
+		};
+		000000000000000000000019 /* NetKitUITests.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = NetKitUITests.swift;
+			sourceTree = "<group>";
+		};
+		000000000000000000000023 /* NetKit.app */ = {
+			isa = PBXFileReference;
+			explicitFileType = wrapper.application;
+			path = NetKit.app;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		000000000000000000000024 /* NetKitTests.xctest */ = {
+			isa = PBXFileReference;
+			explicitFileType = wrapper.cfbundle;
+			path = NetKitTests.xctest;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		000000000000000000000025 /* NetKitUITests.xctest */ = {
+			isa = PBXFileReference;
+			explicitFileType = wrapper.cfbundle;
+			path = NetKitUITests.xctest;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		000000000000000000000100 /* LanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanView.swift; sourceTree = "<group>"; };
+		000000000000000000000101 /* PortScan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortScan.swift; sourceTree = "<group>"; };
+		000000000000000000000102 /* IcmpPing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IcmpPing.swift; sourceTree = "<group>"; };
+		000000000000000000000103 /* WifiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WifiView.swift; sourceTree = "<group>"; };
+		000000000000000000000104 /* SpeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedView.swift; sourceTree = "<group>"; };
+		000000000000000000000105 /* WolPlatform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WolPlatform.swift; sourceTree = "<group>"; };
+		000000000000000000000106 /* WolView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WolView.swift; sourceTree = "<group>"; };
+		000000000000000000000107 /* WolPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WolPersistence.swift; sourceTree = "<group>"; };
+		000000000000000000000108 /* LanTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanTests.swift; sourceTree = "<group>"; };
+		000000000000000000000109 /* SpeedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedTests.swift; sourceTree = "<group>"; };
+		000000000000000000000401 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		000000000000000000000402 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		000000000000000000000800 /* KeychainSecrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainSecrets.swift; sourceTree = "<group>"; };
+		000000000000000000000801 /* SshMetadataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SshMetadataStore.swift; sourceTree = "<group>"; };
+		000000000000000000000802 /* SshHostKeyValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SshHostKeyValidator.swift; sourceTree = "<group>"; };
+		000000000000000000000803 /* SshTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SshTransport.swift; sourceTree = "<group>"; };
+		000000000000000000000804 /* SshViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SshViewModel.swift; sourceTree = "<group>"; };
+		000000000000000000000805 /* SshKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SshKeyboard.swift; sourceTree = "<group>"; };
+		000000000000000000000806 /* SshView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SshView.swift; sourceTree = "<group>"; };
+		000000000000000000000807 /* KeychainSecretsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainSecretsTests.swift; sourceTree = "<group>"; };
+		000000000000000000000808 /* SshMetadataStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SshMetadataStoreTests.swift; sourceTree = "<group>"; };
+		000000000000000000000809 /* LocalSshServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalSshServer.swift; sourceTree = "<group>"; };
+		00000000000000000000080A /* SshIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SshIntegrationTests.swift; sourceTree = "<group>"; };
+		00000000000000000000080B /* SshTerminalRows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SshTerminalRows.swift; sourceTree = "<group>"; };
+		00000000000000000000080C /* SshTerminalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SshTerminalTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		000000000000000000000020 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000000700 /* NIOSSH in Frameworks */,
+				000000000000000000000701 /* NIOCore in Frameworks */,
+				000000000000000000000702 /* NIOPosix in Frameworks */,
+				000000000000000000000703 /* Crypto in Frameworks */,
+				000000000000000000000704 /* NIOFoundationCompat in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000021 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000000710 /* NIOSSH in Frameworks */,
+				000000000000000000000711 /* NIOCore in Frameworks */,
+				000000000000000000000712 /* NIOPosix in Frameworks */,
+				000000000000000000000713 /* Crypto in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000022 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		00000000000000000000001B = {
+			isa = PBXGroup;
+			children = (
+				00000000000000000000001C /* NetKit */,
+				00000000000000000000001D /* NetKitTests */,
+				00000000000000000000001E /* NetKitUITests */,
+				00000000000000000000001F /* Products */
+			);
+			sourceTree = "<group>";
+		};
+		00000000000000000000001C /* NetKit */ = {
+			isa = PBXGroup;
+			children = (
+				00000000000000000000080B /* SshTerminalRows.swift */,
+				000000000000000000000800 /* KeychainSecrets.swift */,
+				000000000000000000000801 /* SshMetadataStore.swift */,
+				000000000000000000000802 /* SshHostKeyValidator.swift */,
+				000000000000000000000803 /* SshTransport.swift */,
+				000000000000000000000804 /* SshViewModel.swift */,
+				000000000000000000000805 /* SshKeyboard.swift */,
+				000000000000000000000806 /* SshView.swift */,
+				000000000000000000000015 /* NetKitApp.swift */,
+				000000000000000000000C00 /* OpenSourceLicenses.txt */,
+				000000000000000000000016 /* Localizable.xcstrings */,
+				000000000000000000000017 /* PrivacyInfo.xcprivacy */,
+				000000000000000000000100 /* LanView.swift */,
+				000000000000000000000101 /* PortScan.swift */,
+				000000000000000000000102 /* IcmpPing.swift */,
+				000000000000000000000103 /* WifiView.swift */,
+				000000000000000000000104 /* SpeedView.swift */,
+				000000000000000000000105 /* WolPlatform.swift */,
+				000000000000000000000106 /* WolView.swift */,
+				000000000000000000000107 /* WolPersistence.swift */,
+				000000000000000000000400 /* InfoPlist.strings */
+			);
+			path = NetKit;
+			sourceTree = "<group>";
+		};
+		00000000000000000000001D /* NetKitTests */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000807 /* KeychainSecretsTests.swift */,
+				000000000000000000000808 /* SshMetadataStoreTests.swift */,
+				000000000000000000000809 /* LocalSshServer.swift */,
+				00000000000000000000080A /* SshIntegrationTests.swift */,
+				00000000000000000000080C /* SshTerminalTests.swift */,
+				000000000000000000000018 /* NetKitTests.swift */,
+				000000000000000000000108 /* LanTests.swift */,
+				000000000000000000000109 /* SpeedTests.swift */
+			);
+			path = NetKitTests;
+			sourceTree = "<group>";
+		};
+		00000000000000000000001E /* NetKitUITests */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000019 /* NetKitUITests.swift */
+			);
+			path = NetKitUITests;
+			sourceTree = "<group>";
+		};
+		00000000000000000000001F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000023 /* NetKit.app */,
+				000000000000000000000024 /* NetKitTests.xctest */,
+				000000000000000000000025 /* NetKitUITests.xctest */
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		00000000000000000000002C /* NetKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 000000000000000000000010;
+			buildPhases = (
+				000000000000000000000029 /* Sources */,
+				000000000000000000000020 /* Frameworks */,
+				000000000000000000000026 /* Resources */
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NetKit;
+			packageProductDependencies = (
+				000000000000000000000600 /* NIOSSH */,
+				000000000000000000000601 /* NIOCore */,
+				000000000000000000000602 /* NIOPosix */,
+				000000000000000000000603 /* Crypto */,
+				000000000000000000000604 /* NIOFoundationCompat */,
+			);
+			productName = NetKit;
+			productReference = 000000000000000000000023 /* NetKit.app */;
+			productType = "com.apple.product-type.application";
+		};
+		00000000000000000000002D /* NetKitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 000000000000000000000011;
+			buildPhases = (
+				00000000000000000000002A /* Sources */,
+				000000000000000000000021 /* Frameworks */,
+				000000000000000000000027 /* Resources */
+			);
+			buildRules = (
+			);
+			dependencies = (
+				000000000000000000000B02 /* NetKitTests host dependency */,
+			);
+			name = NetKitTests;
+			packageProductDependencies = (
+				000000000000000000000610 /* NIOSSH */,
+				000000000000000000000611 /* NIOCore */,
+				000000000000000000000612 /* NIOPosix */,
+				000000000000000000000613 /* Crypto */,
+			);
+			productName = NetKitTests;
+			productReference = 000000000000000000000024 /* NetKitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		00000000000000000000002E /* NetKitUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 000000000000000000000012;
+			buildPhases = (
+				00000000000000000000002B /* Sources */,
+				000000000000000000000022 /* Frameworks */,
+				000000000000000000000028 /* Resources */
+			);
+			buildRules = (
+			);
+			dependencies = (
+				000000000000000000000014
+			);
+			name = NetKitUITests;
+			productName = NetKitUITests;
+			productReference = 000000000000000000000025 /* NetKitUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		000000000000000000000030 /* Project object */ = {
+			isa = PBXProject;
+		attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+			TargetAttributes = {
+				00000000000000000000002C /* NetKit */ = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				00000000000000000000002D /* NetKitTests */ = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = 00000000000000000000002C /* NetKit */;
+					};
+				00000000000000000000002E /* NetKitUITests */ = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = 00000000000000000000002C /* NetKit */;
+					};
+				};
+		};
+		buildConfigurationList = 00000000000000000000000F;
+		compatibilityVersion = "Xcode 14.0";
+		developmentRegion = en;
+		knownRegions = (
+			en,
+			cs,
+			Base
+		);
+		mainGroup = 00000000000000000000001B;
+		productRefGroup = 00000000000000000000001F /* Products */;
+		packageReferences = (
+			000000000000000000000500 /* swift-nio-ssh */,
+			000000000000000000000501 /* swift-nio */,
+			000000000000000000000502 /* swift-crypto */,
+			000000000000000000000503 /* swift-atomics */,
+			000000000000000000000504 /* swift-collections */,
+			000000000000000000000505 /* swift-system */,
+			000000000000000000000506 /* swift-asn1 */,
+		);
+		projectDirPath = "";
+		projectRoot = "";
+		targets = (
+			00000000000000000000002C /* NetKit */,
+			00000000000000000000002D /* NetKitTests */,
+			00000000000000000000002E /* NetKitUITests */
+		);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		000000000000000000000026 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000000002 /* Localizable.xcstrings in Resources */,
+				000000000000000000000003 /* PrivacyInfo.xcprivacy in Resources */,
+				000000000000000000000C01 /* OpenSourceLicenses.txt in Resources */,
+				000000000000000000000403 /* InfoPlist.strings in Resources */
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000027 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000028 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		000000000000000000000029 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				00000000000000000000090B /* SshTerminalRows.swift in Sources */,
+				000000000000000000000900 /* KeychainSecrets.swift in Sources */,
+				000000000000000000000901 /* SshMetadataStore.swift in Sources */,
+				000000000000000000000902 /* SshHostKeyValidator.swift in Sources */,
+				000000000000000000000903 /* SshTransport.swift in Sources */,
+				000000000000000000000904 /* SshViewModel.swift in Sources */,
+				000000000000000000000905 /* SshKeyboard.swift in Sources */,
+				000000000000000000000906 /* SshView.swift in Sources */,
+				000000000000000000000001 /* NetKitApp.swift in Sources */,
+				000000000000000000000200 /* LanView.swift in Sources */,
+				000000000000000000000201 /* PortScan.swift in Sources */,
+				000000000000000000000202 /* IcmpPing.swift in Sources */,
+				000000000000000000000203 /* WifiView.swift in Sources */,
+				000000000000000000000204 /* SpeedView.swift in Sources */,
+				000000000000000000000205 /* WolPlatform.swift in Sources */,
+				000000000000000000000206 /* WolView.swift in Sources */,
+				000000000000000000000207 /* WolPersistence.swift in Sources */
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		00000000000000000000002A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000000A0C /* SshTerminalTests.swift in Sources */,
+				000000000000000000000A04 /* KeychainSecretsTests.swift in Sources */,
+				000000000000000000000A05 /* SshMetadataStoreTests.swift in Sources */,
+				000000000000000000000A06 /* LocalSshServer.swift in Sources */,
+				000000000000000000000A07 /* SshIntegrationTests.swift in Sources */,
+				000000000000000000000004 /* NetKitTests.swift in Sources */,
+				000000000000000000000307 /* LanTests.swift in Sources */,
+				000000000000000000000308 /* SpeedTests.swift in Sources */
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		00000000000000000000002B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000000005 /* NetKitUITests.swift in Sources */
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		000000000000000000000014 = {
+			isa = PBXTargetDependency;
+			target = 00000000000000000000002C /* NetKit */;
+			targetProxy = 00000000000000000000002F;
+		};
+		000000000000000000000B02 /* NetKitTests host dependency */ = {
+			isa = PBXTargetDependency;
+			target = 00000000000000000000002C /* NetKit */;
+			targetProxy = 000000000000000000000B01 /* NetKitTests host proxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		000000000000000000000400 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (000000000000000000000401 /* en */, 000000000000000000000402 /* cs */);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		000000000000000000000600 /* NIOSSH */ = {isa = XCSwiftPackageProductDependency; package = 000000000000000000000500 /* swift-nio-ssh */; productName = NIOSSH; };
+		000000000000000000000601 /* NIOCore */ = {isa = XCSwiftPackageProductDependency; package = 000000000000000000000501 /* swift-nio */; productName = NIOCore; };
+		000000000000000000000602 /* NIOPosix */ = {isa = XCSwiftPackageProductDependency; package = 000000000000000000000501 /* swift-nio */; productName = NIOPosix; };
+		000000000000000000000603 /* Crypto */ = {isa = XCSwiftPackageProductDependency; package = 000000000000000000000502 /* swift-crypto */; productName = Crypto; };
+		000000000000000000000604 /* NIOFoundationCompat */ = {isa = XCSwiftPackageProductDependency; package = 000000000000000000000501 /* swift-nio */; productName = NIOFoundationCompat; };
+		000000000000000000000610 /* NIOSSH */ = {isa = XCSwiftPackageProductDependency; package = 000000000000000000000500 /* swift-nio-ssh */; productName = NIOSSH; };
+		000000000000000000000611 /* NIOCore */ = {isa = XCSwiftPackageProductDependency; package = 000000000000000000000501 /* swift-nio */; productName = NIOCore; };
+		000000000000000000000612 /* NIOPosix */ = {isa = XCSwiftPackageProductDependency; package = 000000000000000000000501 /* swift-nio */; productName = NIOPosix; };
+		000000000000000000000613 /* Crypto */ = {isa = XCSwiftPackageProductDependency; package = 000000000000000000000502 /* swift-crypto */; productName = Crypto; };
+/* End XCSwiftPackageProductDependency section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		000000000000000000000500 /* swift-nio-ssh */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/apple/swift-nio-ssh.git"; requirement = {kind = exactVersion; version = 0.15.1; }; };
+		000000000000000000000501 /* swift-nio */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/apple/swift-nio.git"; requirement = {kind = exactVersion; version = 2.84.0; }; };
+		000000000000000000000502 /* swift-crypto */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/apple/swift-crypto.git"; requirement = {kind = exactVersion; version = 3.12.3; }; };
+		000000000000000000000503 /* swift-atomics */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/apple/swift-atomics.git"; requirement = {kind = exactVersion; version = 1.3.0; }; };
+		000000000000000000000504 /* swift-collections */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/apple/swift-collections.git"; requirement = {kind = exactVersion; version = 1.2.0; }; };
+		000000000000000000000505 /* swift-system */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/apple/swift-system.git"; requirement = {kind = exactVersion; version = 1.5.0; }; };
+		000000000000000000000506 /* swift-asn1 */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/apple/swift-asn1.git"; requirement = {kind = exactVersion; version = 1.4.0; }; };
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCBuildConfiguration section */
+		000000000000000000000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+		buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+		};
+		name = Debug;
+		};
+		000000000000000000000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+		buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+		};
+		name = Release;
+		};
+		000000000000000000000009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+		buildSettings = {
+				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = "$(PROJECT_DIR)/../shared/build/bin/iosSimulatorArm64/debugFramework";
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = "$(PROJECT_DIR)/../shared/build/bin/iosArm64/debugFramework";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					NetKitShared
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NetKit/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = cz.netkit.ios;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				CURRENT_PROJECT_VERSION = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
+		};
+		name = Debug;
+		};
+		00000000000000000000000A /* Release */ = {
+			isa = XCBuildConfiguration;
+		buildSettings = {
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = "$(PROJECT_DIR)/../shared/build/bin/iosSimulatorArm64/releaseFramework";
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = "$(PROJECT_DIR)/../shared/build/bin/iosArm64/releaseFramework";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					NetKitShared
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NetKit/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = cz.netkit.ios;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				CURRENT_PROJECT_VERSION = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
+		};
+		name = Release;
+		};
+		00000000000000000000000B /* Debug */ = {
+			isa = XCBuildConfiguration;
+		buildSettings = {
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = "$(PROJECT_DIR)/../shared/build/bin/iosSimulatorArm64/debugFramework";
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = "$(PROJECT_DIR)/../shared/build/bin/iosArm64/debugFramework";
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NetKit.app/NetKit";
+				OTHER_SWIFT_FLAGS = ("$(inherited)", "-Xfrontend", "-disable-autolink-framework", "-Xfrontend", NetKitShared);
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = cz.netkit.ios.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+		};
+		name = Debug;
+		};
+		00000000000000000000000C /* Release */ = {
+			isa = XCBuildConfiguration;
+		buildSettings = {
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*]" = "$(PROJECT_DIR)/../shared/build/bin/iosSimulatorArm64/releaseFramework";
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*]" = "$(PROJECT_DIR)/../shared/build/bin/iosArm64/releaseFramework";
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NetKit.app/NetKit";
+				OTHER_SWIFT_FLAGS = ("$(inherited)", "-Xfrontend", "-disable-autolink-framework", "-Xfrontend", NetKitShared);
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = cz.netkit.ios.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+		};
+		name = Release;
+		};
+		00000000000000000000000D /* Debug */ = {
+			isa = XCBuildConfiguration;
+		buildSettings = {
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = cz.netkit.ios.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = NetKit;
+		};
+		name = Debug;
+		};
+		00000000000000000000000E /* Release */ = {
+			isa = XCBuildConfiguration;
+		buildSettings = {
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = cz.netkit.ios.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = NetKit;
+		};
+		name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		00000000000000000000000F = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				000000000000000000000007 /* Debug */,
+				000000000000000000000008 /* Release */
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		000000000000000000000010 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				000000000000000000000009 /* Debug */,
+				00000000000000000000000A /* Release */
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		000000000000000000000011 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00000000000000000000000B /* Debug */,
+				00000000000000000000000C /* Release */
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		000000000000000000000012 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00000000000000000000000D /* Debug */,
+				00000000000000000000000E /* Release */
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 000000000000000000000030 /* Project object */;
+}

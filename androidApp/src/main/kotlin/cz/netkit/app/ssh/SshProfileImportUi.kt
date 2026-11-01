@@ -31,6 +31,8 @@ import cz.netkit.app.ui.Tag
 import cz.netkit.app.ui.Tone
 import cz.netkit.app.ui.theme.NetKitTheme
 import cz.netkit.app.ui.theme.NetKitType
+import cz.netkit.shared.ssh.needsKeySelection
+import cz.netkit.shared.ssh.SshAuthentication
 import cz.netkit.shared.ssh.SshImportEntry
 import cz.netkit.shared.ssh.SshImportSkipReason
 import cz.netkit.shared.ssh.SshProfileImportFailure
@@ -41,8 +43,8 @@ private fun endpoint(username: String, host: String, port: Int): String {
 }
 
 /**
- * Preview of a `netkit-ssh-profiles` file from the PC. Nothing is stored before confirmation;
- * the chosen phone key applies only to new profiles, existing ones keep their authentication.
+ * Preview of v1, v2 or legacy export. Nothing is stored before confirmation.
+ * A chosen key applies only to new v1 profiles or new v2/legacy KEY profiles.
  */
 @Composable
 internal fun ProfileImportDialog(pending: PendingSshProfileImport, state: SshUiState, onConfirm: (String?) -> Unit, onCancel: () -> Unit) {
@@ -61,7 +63,7 @@ internal fun ProfileImportDialog(pending: PendingSshProfileImport, state: SshUiS
                 }
                 if (plan.newProfiles.isNotEmpty()) {
                     item { Eyebrow(stringResource(R.string.ssh_import_new), Modifier.padding(top = Spacing.small)) }
-                    items(plan.newProfiles, key = { "n" + it.incoming.alias }) { ImportRow(it, Tone.OK) }
+                    items(plan.newProfiles, key = { "n" + it.incoming.alias }) { ImportRow(it, Tone.OK, keyRef, state) }
                     item {
                         Column(verticalArrangement = Arrangement.spacedBy(Spacing.tiny)) {
                             Eyebrow(stringResource(R.string.ssh_import_key), Modifier.padding(top = Spacing.small))
@@ -74,7 +76,7 @@ internal fun ProfileImportDialog(pending: PendingSshProfileImport, state: SshUiS
                 }
                 if (plan.updatedProfiles.isNotEmpty()) {
                     item { Eyebrow(stringResource(R.string.ssh_import_updated), Modifier.padding(top = Spacing.small)) }
-                    items(plan.updatedProfiles, key = { "u" + it.incoming.alias }) { ImportRow(it, Tone.WARN) }
+                    items(plan.updatedProfiles, key = { "u" + it.incoming.alias }) { ImportRow(it, Tone.WARN, keyRef, state) }
                 }
                 if (plan.skipped.isNotEmpty()) {
                     item { Eyebrow(stringResource(R.string.ssh_import_skipped), Modifier.padding(top = Spacing.small)) }
@@ -98,18 +100,47 @@ internal fun ProfileImportDialog(pending: PendingSshProfileImport, state: SshUiS
 }
 
 @Composable
-private fun ImportRow(entry: SshImportEntry, tone: Tone) {
+private fun ImportRow(entry: SshImportEntry, tone: Tone, keyRef: String?, state: SshUiState) {
     val colors = NetKitTheme.colors
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.small)) {
             Text(entry.incoming.alias, Modifier.weight(1f), style = NetKitType.panelTitle, color = colors.text, maxLines = 1, overflow = TextOverflow.Ellipsis)
             entry.incoming.group?.let { Tag(it, tone) }
         }
-        val after = endpoint(entry.after.username, entry.after.host, entry.after.port)
-        val text = entry.before?.let { endpoint(it.username, it.host, it.port) + " → " + after } ?: after
-        Text(text, style = NetKitType.addressFor(NetKitType.label), color = colors.muted)
+        val after = entry.after
+        val before = entry.before
+        if (before == null) {
+            Text(endpoint(after.username, after.host, after.port), style = NetKitType.addressFor(NetKitType.label), color = colors.muted)
+            val authentication = entry.incoming.authentication ?: if (keyRef != null) SshAuthentication.KEY else SshAuthentication.PASSWORD
+            Text(stringResource(authenticationResource(authentication)), Modifier.testTag("ssh_import_auth_${entry.incoming.alias}"), style = NetKitType.label, color = colors.muted)
+            if (after.startupCommand.isNotEmpty()) StatusBanner(stringResource(R.string.ssh_import_startup_warning) + "\n" + after.startupCommand, StatusKind.WARNING)
+        } else {
+            ImportChange(R.string.ssh_host, before.host, after.host)
+            ImportChange(R.string.ssh_port, before.port.toString(), after.port.toString())
+            ImportChange(R.string.ssh_username, before.username, after.username)
+            ImportChange(R.string.ssh_authentication_label, stringResource(authenticationResource(before.authentication)), stringResource(authenticationResource(after.authentication)))
+            ImportChange(R.string.ssh_startup_command, before.startupCommand, after.startupCommand, sensitive = true)
+            ImportChange(R.string.ssh_keepalive, before.keepaliveSeconds.toString(), after.keepaliveSeconds.toString())
+            if (after.needsKeySelection(state.data)) StatusBanner(stringResource(R.string.ssh_select_profile_key), StatusKind.WARNING)
+        }
         if (entry.detachedSecretRef != null) StatusBanner(stringResource(R.string.ssh_import_secret_moves), StatusKind.WARNING)
     }
+}
+
+@Composable
+private fun ImportChange(@StringRes label: Int, before: String, after: String, sensitive: Boolean = false) {
+    if (before == after) return
+    val text = stringResource(R.string.ssh_import_change, stringResource(label),
+        before.ifEmpty { stringResource(R.string.ssh_none) }, after.ifEmpty { stringResource(R.string.ssh_none) })
+    if (sensitive) StatusBanner(text + "\n" + stringResource(R.string.ssh_import_startup_warning), StatusKind.WARNING)
+    else Text(text, style = NetKitType.label, color = NetKitTheme.colors.muted)
+}
+
+@StringRes
+private fun authenticationResource(value: SshAuthentication) = when (value) {
+    SshAuthentication.PASSWORD -> R.string.ssh_password
+    SshAuthentication.KEY -> R.string.ssh_key
+    SshAuthentication.INTERACTIVE -> R.string.ssh_interactive
 }
 
 @StringRes

@@ -30,6 +30,8 @@ class SshSessionState(val id: String, val name: String, val terminal: TerminalSn
 data class HostChallenge(val requestId: String, val sessionId: String, val offered: TrustedHostKey, val previous: TrustedHostKey?, val lastRejected: TrustedHostKey? = null)
 data class AuthChallenge(val requestId: String, val sessionId: String, val trustedIdentity: String, val name: String, val instruction: String, val prompts: List<String>, val echo: List<Boolean>)
 data class SshUiState(val data: SshData = SshData(), val loaded: Boolean = false, val storeFailed: Boolean = false,
+    val keySelectionRequired: SshProfile? = null,
+    val exportFailure: SshProfileExportError? = null, val profileUnavailable: Boolean = false,
     val busy: Boolean = false, val error: Boolean = false, val failure: SshFailure? = null,
     val storeRecoverable: Boolean = false, val archivePath: String? = null, val protection: KeyProtection? = null,
     val sessions: List<SshSessionState> = emptyList(), val selectedSession: String? = null,
@@ -38,6 +40,16 @@ data class SshUiState(val data: SshData = SshData(), val loaded: Boolean = false
     val profileImportFailure: SshProfileImportError? = null, val profileImportBlockedByDialog: Boolean = false,
     /** Default network for the "local target without VPN" hint; the connection itself does not use it. */
     val activeKind: NetKind? = null, val activeViaVpn: Boolean = false)
+
+/** Restore export after process death; validate before opening/truncating the destination. */
+internal suspend fun completeSshProfileExport(
+    prepared: ByteArray?, read: suspend () -> SshData, write: suspend (ByteArray) -> Unit,
+): SshProfileExportError? {
+    val bytes = try { prepared ?: encodeSshProfileExport(read()) }
+    catch (error: SshProfileExportException) { return error.reason }
+    write(bytes) // Provider/IO failures still use the normal operation error handler.
+    return null
+}
 
 class SshViewModel(application: Application) : AndroidViewModel(application) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -65,9 +77,16 @@ class SshViewModel(application: Application) : AndroidViewModel(application) {
             if (session.connected && sessionNetworks[session.id]?.let(matches) == true) session.copy(networkLost = true) else session
         }) }
     }
-    fun reconnectProfile(id: String): SshProfile? = sessionProfiles[id]
+    fun reconnectProfile(id: String): SshProfile? = sessionProfiles[id]?.let { previous ->
+        _state.value.data.profiles.find { it.id == previous.id } ?: previous
+    }
     /** Called only after the same connection/startup-command confirmation as a new session. */
-    fun reconnect(id: String) { sessionProfiles[id]?.let { startConnection(it, id) } }
+    fun reconnect(id: String, confirmedProfile: SshProfile) {
+        if (sessionProfiles[id]?.id != confirmedProfile.id || _state.value.data.profiles.none { it.id == confirmedProfile.id }) {
+            _state.update { it.copy(profileUnavailable = true, keySelectionRequired = null) }; return
+        }
+        startConnection(confirmedProfile, id)
+    }
     private val hostReplies = PromptReplyGate<Boolean>()
     private val authReplies = PromptReplyGate<List<String>?>()
     private val backgroundPolicy = SshBackgroundPolicy(android.os.SystemClock::elapsedRealtime)
@@ -147,7 +166,8 @@ class SshViewModel(application: Application) : AndroidViewModel(application) {
     }
     fun confirmProfileImport(keyRef: String?) = profileImporter.confirm(keyRef)
     fun cancelProfileImport() = profileImporter.cancel()
-    fun clearError() { _state.update { it.copy(error = false, failure = null, exported = false) } }
+    fun dismissKeySelection() { _state.update { it.copy(keySelectionRequired = null) } }
+    fun clearError() { _state.update { it.copy(error = false, failure = null, exported = false, exportFailure = null, profileUnavailable = false) } }
     fun saveProfile(profile: SshProfile, password: String, remember: Boolean, onSaved: () -> Unit) = operation {
         require(profile.valid()); val previous = store.read().profiles.find { it.id == profile.id }
         var newRef: String? = null
@@ -158,10 +178,16 @@ class SshViewModel(application: Application) : AndroidViewModel(application) {
             } else previous?.secretRef
         } else null
         try {
-            store.update { data -> data.copy(profiles = data.profiles.filterNot { it.id == profile.id } + profile.copy(secretRef = ref)) }
+            store.update { data -> data.copy(profiles = if (data.profiles.any { it.id == profile.id })
+                data.profiles.map { if (it.id == profile.id) profile.copy(secretRef = ref) else it }
+                else data.profiles + profile.copy(secretRef = ref)) }
         } catch (e: Exception) { newRef?.let { secrets.delete(it) }; throw e }
         if (previous?.secretRef != ref) previous?.secretRef?.let { secrets.delete(it) }
         withContext(Dispatchers.Main) { onSaved() }
+    }
+    fun moveProfile(id: String, delta: Int) {
+        if (_state.value.busy || profileImporter.active) return
+        operation { store.update { moveSshProfile(it, id, delta) } }
     }
     fun deleteProfile(id: String) = operation {
         val profile = store.read().profiles.find { it.id == id } ?: return@operation
@@ -199,12 +225,26 @@ class SshViewModel(application: Application) : AndroidViewModel(application) {
         store.update { data -> require(data.profiles.none { it.keyRef == id }); data.copy(keys = data.keys.filterNot { it.id == id }) }
         secrets.delete(id)
     }
+    private var preparedExport: ByteArray? = null
+    /** Validate and freeze bytes BEFORE the document picker can create a destination. */
+    fun prepareExport(onReady: () -> Unit) = operation {
+        preparedExport = null
+        _state.update { it.copy(exportFailure = null) }
+        try { preparedExport = encodeSshProfileExport(store.read()) }
+        catch (error: SshProfileExportException) {
+            _state.update { it.copy(exportFailure = error.reason) }; return@operation
+        }
+        withContext(Dispatchers.Main) { onReady() }
+    }
+    fun cancelExport() { preparedExport = null }
     fun export(uri: Uri) = operation {
-        val data = store.read()
-        // Export profiles only. No saved credentials, references, host trust, or private/public keys.
-        val exported = exportSshProfiles(data)
-        getApplication<Application>().contentResolver.openOutputStream(uri, "wt")?.use { SshDataSerializer.writeTo(exported, it) } ?: error("Export failed")
-        _state.update { it.copy(exported = true) }
+        val prepared = preparedExport
+        preparedExport = null
+        _state.update { it.copy(exportFailure = null) }
+        val failure = completeSshProfileExport(prepared, store::read) { bytes ->
+            getApplication<Application>().contentResolver.openOutputStream(uri, "wt")?.use { it.write(bytes) } ?: error("Export failed")
+        }
+        _state.update { it.copy(exportFailure = failure, exported = failure == null) }
     }
     fun connect(profile: SshProfile) { startConnection(profile, null) }
     private fun startConnection(profile: SshProfile, replacement: String?) {
@@ -213,6 +253,11 @@ class SshViewModel(application: Application) : AndroidViewModel(application) {
             replacement != null && _state.value.sessions.none { it.id == replacement }) {
             _state.update { it.copy(error = true) }; return
         }
+        if (profile.needsKeySelection(_state.value.data)) {
+            _state.update { it.copy(keySelectionRequired = profile) }
+            return // No session, buffer, attempt, transport or DNS is created.
+        }
+        _state.update { it.copy(keySelectionRequired = null, profileUnavailable = false) }
         // A replacement reuses its existing tab; keep its previous output until onConnected.
         if (replacement == null) while (_state.value.sessions.size >= 4) {
             val ended = _state.value.sessions.firstOrNull { it.ended } ?: break

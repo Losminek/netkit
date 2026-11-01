@@ -28,6 +28,8 @@ import cz.netkit.app.ui.Spacing
 import cz.netkit.app.ui.theme.NetKitTheme
 import cz.netkit.app.ui.theme.NetKitType
 import cz.netkit.shared.update.UpdateInfo
+import cz.netkit.shared.update.localizedWebUrl
+import cz.netkit.app.BuildConfig
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -56,7 +58,7 @@ internal fun UpdateCard(info: UpdateInfo, onDismiss: () -> Unit, modifier: Modif
         }
         info.notesFor(language)?.let { Text(it, style = NetKitType.body, color = colors.text) }
         Text(stringResource(R.string.update_install_hint), style = NetKitType.label, color = colors.muted)
-        PrimaryButton(stringResource(R.string.update_download), { openLink(context, info.openUrl) },
+        PrimaryButton(stringResource(R.string.update_download), { openLink(context, localizedUpdateUrl(info.openUrl, language)) },
             Modifier.testTag("update_open"), icon = NetKitIcons.Download)
     }
 }
@@ -81,3 +83,7 @@ internal fun openLink(context: Context, url: String) {
         Toast.makeText(context, R.string.about_open_failed, Toast.LENGTH_SHORT).show()
     }
 }
+
+/** Update page in the UI language: the web page of `latest.json` goes to `/en/netkit` outside Czech. */
+internal fun localizedUpdateUrl(url: String, language: String): String =
+    localizedWebUrl(url, BuildConfig.UPDATE_BASE_URL.takeIf { BuildConfig.UPDATE_CONFIGURED }, language)

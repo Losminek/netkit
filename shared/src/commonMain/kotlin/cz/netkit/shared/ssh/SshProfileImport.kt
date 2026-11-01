@@ -5,6 +5,7 @@ import cz.netkit.shared.json.jsonNestingDepth
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.intOrNull
@@ -21,7 +22,9 @@ class SshProfileImportException(val reason: SshProfileImportFailure) : IllegalAr
 
 enum class SshImportSkipReason { PROXY_JUMP, PROXY_COMMAND, MATCH, WILDCARD, MISSING_HOST, UNSUPPORTED_OPTION }
 data class SshImportSkipped(val alias: String, val reason: SshImportSkipReason)
-data class SshImportProfile(val alias: String, val host: String, val port: Int, val username: String, val group: String? = null)
+data class SshImportProfile(val alias: String, val host: String, val port: Int, val username: String, val group: String? = null,
+    // null means v1: preserve local settings; v2/legacy always carry all three settings.
+    val authentication: SshAuthentication? = null, val startupCommand: String = "", val keepaliveSeconds: Int = 30)
 data class SshProfileImport(val profiles: List<SshImportProfile>, val skipped: List<SshImportSkipped>, val source: String? = null)
 
 /** Group/source/skipped are preview metadata only, never persisted in SshData. */
@@ -42,7 +45,8 @@ class SshImportPlan internal constructor(
 private fun fail(reason: SshProfileImportFailure): Nothing = throw SshProfileImportException(reason)
 private fun validAlias(alias: String) = alias.isNotBlank() && alias.length <= 100 &&
     alias.none { it.code < 32 || it.code in 127..159 }
-private fun SshImportProfile.profile(id: String) = SshProfile(id, alias, host, port, username)
+private fun SshImportProfile.profile(id: String) = SshProfile(id, alias, host, port, username, authentication ?: SshAuthentication.PASSWORD,
+    startupCommand = startupCommand, keepaliveSeconds = keepaliveSeconds)
 
 private fun validateIncoming(incoming: SshProfileImport) {
     if (incoming.profiles.size > MAX_IMPORT_ROWS || incoming.skipped.size > MAX_IMPORT_ROWS) fail(SshProfileImportFailure.LIMIT)
@@ -71,18 +75,24 @@ fun decodeSshProfileImport(bytes: ByteArray): SshProfileImport {
     if (jsonNestingDepth(text) > JSON_MAX_DEPTH) fail(SshProfileImportFailure.FORMAT)
     try {
         val root = Json.parseToJsonElement(text) as? JsonObject ?: fail(SshProfileImportFailure.FORMAT)
+        if (!root.containsKey("format")) return decodeLegacyProfiles(root).also(::validateIncoming)
         root.allowOnly(setOf("format", "schema", "source", "profiles", "skipped"))
         if (root.string("format") != "netkit-ssh-profiles") fail(SshProfileImportFailure.FORMAT)
-        if (root.integer("schema", SshProfileImportFailure.SCHEMA) != 1) fail(SshProfileImportFailure.SCHEMA)
+        val schema = root.integer("schema", SshProfileImportFailure.SCHEMA)
+        if (schema !in 1..2) fail(SshProfileImportFailure.SCHEMA)
         val profiles = root.rows("profiles")
         val skipped = root.rows("skipped")
         if (profiles.size > MAX_IMPORT_ROWS || skipped.size > MAX_IMPORT_ROWS) fail(SshProfileImportFailure.LIMIT)
         return SshProfileImport(
             profiles.map { element ->
                 val row = element as? JsonObject ?: fail(SshProfileImportFailure.FORMAT)
-                row.allowOnly(setOf("alias", "group", "host", "port", "username"))
+                row.allowOnly(setOf("alias", "group", "host", "port", "username") +
+                    if (schema == 2) setOf("authentication", "startupCommand", "keepaliveSeconds") else emptySet())
                 SshImportProfile(row.string("alias"), row.string("host"),
-                    row.integer("port", SshProfileImportFailure.INVALID_PROFILE), row.string("username"), row.optionalString("group"))
+                    row.integer("port", SshProfileImportFailure.INVALID_PROFILE), row.string("username"), row.optionalString("group"),
+                    authentication = if (schema == 2) row.authentication() else null,
+                    startupCommand = if (schema == 2) row.string("startupCommand") else "",
+                    keepaliveSeconds = if (schema == 2) row.integer("keepaliveSeconds", SshProfileImportFailure.INVALID_PROFILE) else 30)
             },
             skipped.map { element ->
                 val row = element as? JsonObject ?: fail(SshProfileImportFailure.FORMAT)
@@ -97,7 +107,37 @@ fun decodeSshProfileImport(bytes: ByteArray): SshProfileImport {
     catch (_: IllegalArgumentException) { fail(SshProfileImportFailure.FORMAT) }
 }
 
-/** Exact alias match. Local settings survive; a changed endpoint detaches its saved password. */
+private fun JsonObject.authentication(): SshAuthentication =
+    (get("authentication") as? JsonPrimitive)?.takeIf { it.isString }?.content?.let { value ->
+        SshAuthentication.entries.find { it.name == value }
+    } ?: fail(SshProfileImportFailure.INVALID_PROFILE)
+
+/** Only the credential-free export of the old serializer, never a device backup. */
+private fun decodeLegacyProfiles(root: JsonObject): SshProfileImport {
+    root.allowOnly(setOf("schema", "profiles", "hostKeys", "keys", "rejectedHostKeys"))
+    if (!root.containsKey("schema")) fail(SshProfileImportFailure.FORMAT)
+    if (root.integer("schema", SshProfileImportFailure.SCHEMA) != 1) fail(SshProfileImportFailure.SCHEMA)
+    for (field in listOf("hostKeys", "keys", "rejectedHostKeys")) {
+        if (root.rows(field).isNotEmpty()) fail(SshProfileImportFailure.FORMAT)
+    }
+    val rows = root.rows("profiles")
+    if (rows.size > MAX_IMPORT_ROWS) fail(SshProfileImportFailure.LIMIT)
+    return SshProfileImport(rows.map { element ->
+        val row = element as? JsonObject ?: fail(SshProfileImportFailure.FORMAT)
+        row.allowOnly(setOf("id", "name", "host", "port", "username", "authentication",
+            "secretRef", "keyRef", "startupCommand", "keepaliveSeconds"))
+        for (field in listOf("secretRef", "keyRef")) {
+            if (row.containsKey(field) && row[field] != JsonNull) fail(SshProfileImportFailure.FORMAT)
+        }
+        row.string("id") // Ignore the old identity; the planner generates a new local one.
+        SshImportProfile(row.string("name"), row.string("host"),
+            row.integer("port", SshProfileImportFailure.INVALID_PROFILE), row.string("username"),
+            authentication = row.authentication(), startupCommand = row.string("startupCommand"),
+            keepaliveSeconds = row.integer("keepaliveSeconds", SshProfileImportFailure.INVALID_PROFILE))
+    }, emptyList())
+}
+
+/** Exact alias match. v1 preserves local settings; v2/legacy replace portable settings; a changed endpoint detaches its saved password. */
 fun planSshProfileImport(current: SshData, incoming: SshProfileImport, keyRef: String?, generateId: () -> String): SshImportPlan {
     if (!current.valid()) fail(SshProfileImportFailure.INVALID_DATA)
     validateIncoming(incoming)
@@ -116,11 +156,18 @@ fun planSshProfileImport(current: SshData, incoming: SshProfileImport, keyRef: S
             if (!validReference(id)) fail(SshProfileImportFailure.INVALID_REFERENCE)
             if (!ids.add(id)) fail(SshProfileImportFailure.DUPLICATE_ID)
             added += SshImportEntry(row, null, row.profile(id).copy(
-                authentication = if (keyRef == null) SshAuthentication.PASSWORD else SshAuthentication.KEY, keyRef = keyRef))
+                authentication = row.authentication ?: if (keyRef == null) SshAuthentication.PASSWORD else SshAuthentication.KEY,
+                keyRef = keyRef.takeIf { row.authentication == null || row.authentication == SshAuthentication.KEY }))
         } else {
             val targetChanged = before.host != row.host || before.port != row.port || before.username != row.username
+            val authentication = row.authentication ?: before.authentication
+            val authenticationChanged = authentication != before.authentication
             val after = before.copy(host = row.host, port = row.port, username = row.username,
-                secretRef = if (targetChanged) null else before.secretRef)
+                authentication = authentication,
+                startupCommand = if (row.authentication == null) before.startupCommand else row.startupCommand,
+                keepaliveSeconds = if (row.authentication == null) before.keepaliveSeconds else row.keepaliveSeconds,
+                secretRef = if (targetChanged || authenticationChanged && authentication != SshAuthentication.PASSWORD) null else before.secretRef,
+                keyRef = if (authenticationChanged && authentication != SshAuthentication.KEY) null else before.keyRef)
             val entry = SshImportEntry(row, before, after)
             if (before == after) unchanged += entry else updated += entry
         }

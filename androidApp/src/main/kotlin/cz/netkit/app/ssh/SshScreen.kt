@@ -41,6 +41,7 @@ import android.view.WindowManager
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -115,13 +116,14 @@ fun SshScreen(viewModel: SshViewModel, modifier: Modifier = Modifier, prefillHos
             if (android.os.Build.VERSION.SDK_INT >= 33) activity?.setRecentsScreenshotEnabled(true)
         }
     }
-    val export = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri -> uri?.let(viewModel::export) }
+    val export = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri -> if (uri == null) viewModel.cancelExport() else viewModel.export(uri) }
     val importProfiles = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> uri?.let(viewModel::previewProfileImport) }
     val terminalStateHolder = rememberSaveableStateHolder()
+    val profileFormStateHolder = rememberSaveableStateHolder()
     val active = state.sessions.find { it.id == state.selectedSession }
     val inList = editor == null && !keys && !hostKeys
     // The import transaction must not race a profile/key edit or a connection confirmation.
-    val dialogOpen = editor != null || keys || hostKeys || connecting != null || deleting != null
+    val dialogOpen = editor != null || keys || hostKeys || connecting != null || reconnecting != null || state.keySelectionRequired != null || deleting != null
     LaunchedEffect(dialogOpen) { viewModel.setProfileImportBlockedByDialog(dialogOpen) }
     // Device detail "Otevřít SSH": open the new-profile form with the host filled in, once.
     LaunchedEffect(prefillHost, state.loaded) {
@@ -150,7 +152,7 @@ fun SshScreen(viewModel: SshViewModel, modifier: Modifier = Modifier, prefillHos
                         onClick = { actionsMenu = false; hostKeys = true }, modifier = Modifier.testTag("ssh_host_keys"))
                     DropdownMenuItem(text = { MenuText(stringResource(R.string.ssh_export)) }, enabled = state.loaded && !state.busy,
                         leadingIcon = { Icon(NetKitIcons.Download, null, Modifier.size(20.dp)) },
-                        onClick = { actionsMenu = false; export.launch("netkit-ssh.json") }, modifier = Modifier.testTag("ssh_export"))
+                        onClick = { actionsMenu = false; viewModel.prepareExport { export.launch("netkit-ssh-profiles.json") } }, modifier = Modifier.testTag("ssh_export"))
                     DropdownMenuItem(text = { MenuText(stringResource(R.string.ssh_import_profiles)) },
                         enabled = state.loaded && !state.busy && !state.profileImportBusy,
                         leadingIcon = { Icon(NetKitIcons.Download, null, Modifier.size(20.dp)) },
@@ -167,6 +169,14 @@ fun SshScreen(viewModel: SshViewModel, modifier: Modifier = Modifier, prefillHos
         if (state.busy) NetKitProgress()
         if (state.error) BannerWithAction(stringResource(sshFailureResource(state.failure)), StatusKind.ERROR,
             stringResource(R.string.ssh_ok), viewModel::clearError)
+        state.exportFailure?.let { failure ->
+            BannerWithAction(when (failure) {
+                is SshProfileExportError.DuplicateNames -> stringResource(R.string.ssh_export_duplicates, failure.names.joinToString(", "))
+                SshProfileExportError.TooLarge -> stringResource(R.string.ssh_export_size)
+            }, StatusKind.WARNING, stringResource(R.string.ssh_ok), viewModel::clearError)
+        }
+        if (state.profileUnavailable) BannerWithAction(stringResource(R.string.ssh_profile_unavailable), StatusKind.WARNING,
+            stringResource(R.string.ssh_ok), viewModel::clearError)
         if (state.exported) StatusBanner(stringResource(R.string.ssh_exported))
         if (state.profileImportBusy) NetKitProgress()
         state.profileImportFailure?.let { failure ->
@@ -174,8 +184,11 @@ fun SshScreen(viewModel: SshViewModel, modifier: Modifier = Modifier, prefillHos
                 stringResource(R.string.ssh_ok), viewModel::cancelProfileImport)
         }
         when {
-            editor != null -> ProfileForm(editor!!, state, viewModel, onClose = { editorJson = null })
             keys -> KeyManager(state, viewModel, onClose = { keys = false })
+            editor != null -> profileFormStateHolder.SaveableStateProvider(editor.id) {
+                ProfileForm(editor, state, viewModel, onClose = { editorJson = null; profileFormStateHolder.removeState(editor.id) },
+                    onCreateKey = { keys = true })
+            }
             hostKeys -> HostKeys(state, viewModel, onClose = { hostKeys = false })
             else -> {
                 if (state.sessions.isNotEmpty()) Row(verticalAlignment = Alignment.CenterVertically) {
@@ -229,10 +242,10 @@ fun SshScreen(viewModel: SshViewModel, modifier: Modifier = Modifier, prefillHos
                                         key(profile.id) {
                                             ProfileRow(profile,
                                                 live = state.sessions.any { it.connected && !it.ended && viewModel.reconnectProfile(it.id)?.id == profile.id },
-                                                canConnect = canConnect, busy = state.busy, first = index == 0, last = index == profiles.lastIndex,
+                                                canConnect = canConnect, busy = state.busy || state.profileImportBusy || state.pendingProfileImport != null, first = index == 0, last = index == profiles.lastIndex,
                                                 onConnect = { connecting = profile },
                                                 onEdit = { editorJson = Json.encodeToString(profile) },
-                                                onDelete = { deleting = profile })
+                                                onDelete = { deleting = profile }, onMove = { viewModel.moveProfile(profile.id, it) })
                                         }
                                     }
                                 }
@@ -271,6 +284,16 @@ fun SshScreen(viewModel: SshViewModel, modifier: Modifier = Modifier, prefillHos
             }
         }
     }
+    state.keySelectionRequired?.let { profile ->
+        val currentProfile = state.data.profiles.find { it.id == profile.id }
+        NetKitAlert(onDismiss = viewModel::dismissKeySelection,
+            text = { Text(stringResource(if (currentProfile == null) R.string.ssh_profile_unavailable else R.string.ssh_select_profile_key), Modifier.testTag("ssh_missing_key"), style = NetKitType.body) },
+            confirm = { if (currentProfile != null) PrimaryButton(stringResource(R.string.ssh_edit), small = true, modifier = Modifier.testTag("ssh_missing_key_edit"), onClick = {
+                editorJson = Json.encodeToString(currentProfile)
+                viewModel.dismissKeySelection()
+            }) },
+            dismiss = { NeutralButton(stringResource(R.string.ssh_cancel), small = true, onClick = viewModel::dismissKeySelection) })
+    }
     if (recovering) ConfirmDialog(stringResource(R.string.ssh_recover_confirm), onCancel = { recovering = false }) {
         viewModel.recoverStore(); recovering = false
     }
@@ -287,7 +310,7 @@ fun SshScreen(viewModel: SshViewModel, modifier: Modifier = Modifier, prefillHos
     reconnecting?.let { (id, profile) -> ConfirmDialog(
         stringResource(R.string.ssh_connect_confirm, profile.endpoint, profile.startupCommand.ifBlank { stringResource(R.string.ssh_none) }),
         onCancel = { reconnecting = null }, warning = localWarning(profile),
-    ) { viewModel.reconnect(id); reconnecting = null } }
+    ) { viewModel.reconnect(id, profile); reconnecting = null } }
     state.hostChallenge?.let { challenge -> HostDialog(challenge, viewModel) }
     state.authChallenge?.let { challenge -> key(challenge) { AuthenticationDialog(challenge, viewModel) } }
 }
@@ -486,41 +509,49 @@ private fun profileAddress(profile: SshProfile): String {
 }
 
 /**
- * Profile row: 44 dp monogram tile | name and `user@host :port` | tonal "Připojit". Tapping the
- * tile or the texts opens edit/delete; the connect button keeps the `ssh_connect_<id>` tag.
+ * Profile row with the WoL management layout (edit/delete/up/down).
+ * Connect retains its stable test tag.
  */
 @Composable
-private fun ProfileRow(profile: SshProfile, live: Boolean, canConnect: Boolean, busy: Boolean, first: Boolean, last: Boolean,
-    onConnect: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit) {
+internal fun ProfileRow(profile: SshProfile, live: Boolean, canConnect: Boolean, busy: Boolean, first: Boolean, last: Boolean,
+    onConnect: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit, onMove: (Int) -> Unit) {
     val colors = NetKitTheme.colors
     val divider = colors.divider
-    var menu by remember { mutableStateOf(false) }
-    Row(Modifier.fillMaxWidth()
+    Column(Modifier.fillMaxWidth()
         .then(if (first) Modifier else Modifier.drawBehind { drawLine(divider, Offset(0f, 0f), Offset(size.width, 0f), 1.dp.toPx()) })
-        .padding(top = if (first) 0.dp else Spacing.medium, bottom = if (last) 0.dp else Spacing.medium),
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.medium)) {
-        Box(Modifier.weight(1f)) {
-            Row(Modifier.fillMaxWidth().clip(NetKitShape.nested)
-                .clickable(onClickLabel = stringResource(R.string.ssh_profile_actions, profile.name), role = Role.Button) { menu = true },
-                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.medium)) {
-                Box(Modifier.size(44.dp).clip(NetKitShape.nested).background(colors.surface2), contentAlignment = Alignment.Center) {
-                    Text(profileMonogram(profile.name), style = NetKitType.panelTitle.copy(fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.02).em),
-                        color = colors.accent, maxLines = 1, softWrap = false)
-                }
-                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text(profile.name, style = NetKitType.panelTitle, color = colors.text, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                    Text(profileAddress(profile), style = NetKitType.addressFor(NetKitType.label), color = colors.muted)
-                    if (live) Tag(stringResource(R.string.ssh_chip_live), Tone.OK, dot = true, modifier = Modifier.padding(top = Spacing.tiny))
-                }
+        .padding(top = if (first) 0.dp else Spacing.medium, bottom = if (last) 0.dp else Spacing.medium)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.medium)) {
+            Box(Modifier.size(44.dp).clip(NetKitShape.nested).background(colors.surface2), contentAlignment = Alignment.Center) {
+                Text(profileMonogram(profile.name), style = NetKitType.panelTitle.copy(fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.02).em),
+                    color = colors.accent, maxLines = 1, softWrap = false)
             }
-            NetKitMenu(expanded = menu, onDismiss = { menu = false }) {
-                DropdownMenuItem(text = { MenuText(stringResource(R.string.ssh_edit)) }, enabled = !busy, onClick = { menu = false; onEdit() })
-                DropdownMenuItem(text = { Text(stringResource(R.string.ssh_delete), style = NetKitType.body, color = colors.err) },
-                    enabled = !busy, onClick = { menu = false; onDelete() })
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(profile.name, style = NetKitType.panelTitle, color = colors.text, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(profileAddress(profile), style = NetKitType.addressFor(NetKitType.label), color = colors.muted)
+                if (live) Tag(stringResource(R.string.ssh_chip_live), Tone.OK, dot = true)
+            }
+            TonalButton(stringResource(R.string.ssh_connect), onClick = onConnect, enabled = canConnect, small = true,
+                modifier = Modifier.testTag("ssh_connect_${profile.id}"))
+        }
+        HorizontalDivider(Modifier.padding(top = Spacing.small), thickness = 1.dp, color = colors.divider)
+        val editLabel = stringResource(R.string.ssh_edit_profile, profile.name)
+        val deleteLabel = stringResource(R.string.ssh_delete_profile_action, profile.name)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextButton(onClick = onEdit, enabled = !busy, shape = NetKitShape.buttonSmall,
+                modifier = Modifier.testTag("ssh_edit_${profile.id}").semantics { contentDescription = editLabel }) { Text(stringResource(R.string.ssh_edit)) }
+            TextButton(onClick = onDelete, enabled = !busy, shape = NetKitShape.buttonSmall,
+                colors = ButtonDefaults.textButtonColors(contentColor = colors.err),
+                modifier = Modifier.testTag("ssh_delete_${profile.id}").semantics { contentDescription = deleteLabel }) { Text(stringResource(R.string.ssh_delete)) }
+            Spacer(Modifier.weight(1f))
+            IconButton(onClick = { onMove(-1) }, enabled = !busy && !first, modifier = Modifier.testTag("ssh_up_${profile.id}")) {
+                Icon(NetKitIcons.ChevronRight, stringResource(R.string.ssh_move_up, profile.name), Modifier.size(20.dp).rotate(-90f),
+                    tint = if (!busy && !first) colors.muted else colors.dim)
+            }
+            IconButton(onClick = { onMove(1) }, enabled = !busy && !last, modifier = Modifier.testTag("ssh_down_${profile.id}")) {
+                Icon(NetKitIcons.ChevronRight, stringResource(R.string.ssh_move_down, profile.name), Modifier.size(20.dp).rotate(90f),
+                    tint = if (!busy && !last) colors.muted else colors.dim)
             }
         }
-        TonalButton(stringResource(R.string.ssh_connect), onClick = onConnect, enabled = canConnect, small = true,
-            modifier = Modifier.testTag("ssh_connect_${profile.id}"))
     }
 }
 
@@ -558,7 +589,7 @@ private fun Hint(text: String) {
 }
 
 @Composable
-private fun ProfileForm(original: SshProfile, state: SshUiState, viewModel: SshViewModel, onClose: () -> Unit) {
+private fun ProfileForm(original: SshProfile, state: SshUiState, viewModel: SshViewModel, onClose: () -> Unit, onCreateKey: () -> Unit) {
     var name by rememberSaveable(original.id) { mutableStateOf(original.name) }; var host by rememberSaveable(original.id) { mutableStateOf(original.host) }
     var port by rememberSaveable(original.id) { mutableStateOf(original.port.toString()) }; var user by rememberSaveable(original.id) { mutableStateOf(original.username) }
     var auth by rememberSaveable(original.id) { mutableStateOf(original.authentication) }; var keyRef by rememberSaveable(original.id) { mutableStateOf(original.keyRef) }
@@ -588,14 +619,21 @@ private fun ProfileForm(original: SshProfile, state: SshUiState, viewModel: SshV
             Hint(stringResource(R.string.ssh_password_hint))
         }
         if (auth == SshAuthentication.KEY) {
-            if (state.data.keys.isEmpty()) Hint(stringResource(R.string.ssh_add_key_first))
+            if (draft.needsKeySelection(state.data)) Box(Modifier.testTag("ssh_editor_missing_key")) {
+                StatusBanner(stringResource(R.string.ssh_select_profile_key), StatusKind.WARNING)
+            }
+            if (state.data.keys.isEmpty()) {
+                Hint(stringResource(R.string.ssh_add_key_first))
+            }
+            if (draft.needsKeySelection(state.data)) NeutralButton(stringResource(R.string.ssh_create_key), enabled = !state.busy,
+                modifier = Modifier.testTag("ssh_editor_create_key"), onClick = onCreateKey)
             Column { state.data.keys.forEach { key -> ChoiceRow(keyRef == key.id, key.name, onClick = { keyRef = key.id }) } }
         }
         SshField(command, { command = it.take(4096) }, R.string.ssh_startup_command, mono = true)
         SshField(keepalive, { keepalive = it.take(3) }, R.string.ssh_keepalive, number = true)
         Hint(stringResource(R.string.ssh_profile_validation))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.small), verticalArrangement = Arrangement.spacedBy(Spacing.small)) {
-            PrimaryButton(stringResource(R.string.ssh_save), enabled = draft.valid() && !state.busy && (auth != SshAuthentication.KEY || state.data.keys.any { it.id == keyRef }),
+            PrimaryButton(stringResource(R.string.ssh_save), modifier = Modifier.testTag("ssh_profile_save"), enabled = draft.valid() && !state.busy && (auth != SshAuthentication.KEY || state.data.keys.any { it.id == keyRef }),
                 onClick = { viewModel.saveProfile(draft, password, savePassword) { password = ""; onClose() } })
             NeutralButton(stringResource(R.string.ssh_back), enabled = !state.busy, onClick = { discard = true })
         }

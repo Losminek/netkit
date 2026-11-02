@@ -501,10 +501,17 @@ logika `shared/.../update/UpdateInfo.kt` a `UpdateFetch.kt` (`nextRedirect`, `ch
   `Accept: application/json` a standardní hlavičky OkHttp (`Host`, `Accept-Encoding: gzip`,
   `Connection`). Web (Cloudflare Workers) a při záloze GitHub a jeho úložiště assetů vidí IP adresu
   telefonu, čas a verzi aplikace.
-- **Kdy.** Nejvýš 1× za 24 h podle času posledního pokusu (i neúspěšného, nástěnné hodiny; posun hodin
-  zpět znamená novou kontrolu), jen když je aktivita spuštěná (`onStart`), běžící dotaz se ruší při
-  `onStop` a při vypnutí vypínače. Ručně „Zkontrolovat teď“ v O aplikaci (bez limitu 24 h, akce
-  uživatele, i při vypnutém vypínači). Na pozadí nic neběží, žádný `WorkManager` ani služba.
+- **Kdy (od 1.1.0).** První `onStart` procesu řeší startovní dialog:
+  síťový pokus nejvýš 1× za 60 minut podle posledního pokusu (včetně neúspěšného), jinak
+  poslední úspěšná cache. Další `onForeground` zachovávají kontrolu karty nejvýš 1× za 24 h
+  (`isUpdateCheckDue`); tato kontrola nikdy neotevře dialog. Posun hodin zpět znamená splatnou
+  kontrolu pro oba intervaly. Zrušení při `onStop` ponechá start čekající; úspěšná ruční kontrola
+  během čekajícího startu může připravit dialog. Dokončený pokus nebo použití cache start spotřebuje.
+  Běžící dotaz se ruší při `onStop` a vypnutí vypínače. Ručně „Zkontrolovat teď“ v O aplikaci
+  zůstává bez intervalu, i při vypnutém vypínači. Vypínač blokuje automatické kontroly,
+  dialog i kartu. Nic neběží na pozadí, žádný `WorkManager` ani služba. Dialog jen při
+  kompatibilní dostupné verzi, bez chyby kontroly; Zavřít platí po celý proces,
+  Nepřipomínat tuto verzi ukládá dosavadní skryté `versionCode`.
 - **Transport.** HTTPS přes výchozí síť a systémové nastavení proxy, certifikát ověřuje OkHttp proti
   systémovým CA (`network_security_config` beze změny, cleartext zakázaný). Limit 5 s na zdroj včetně
   jeho přesměrování (celkem nejvýš 10 s), bez opakování, bez HTTP cache a cookies. Tělo nejvýš
@@ -519,7 +526,7 @@ logika `shared/.../update/UpdateInfo.kt` a `UpdateFetch.kt` (`nextRedirect`, `ch
   V buildu bez webu se dobře utvořený odkaz na neznámý host jen zahodí a otevře se `apkUrl`
   nebo stránka release na GitHubu; poškozený odkaz dál odmítne celý dokument. Text poznámek se zbaví řídicích a formátovacích znaků (i bidi) a zkrátí na 500 znaků.
   Před otevřením odkazu se znovu kontroluje `https://`.
-- **Co aplikace s výsledkem dělá.** Jen ukáže kartu „Dostupná verze X“ a na žádost uživatele otevře
+- **Co aplikace s výsledkem dělá.** Ukáže startovní dialog a kartu „Dostupná verze X“ a na žádost uživatele otevře
   odkaz v prohlížeči (`ACTION_VIEW`, `CATEGORY_BROWSABLE`). Nic nestahuje ani neinstaluje;
   `REQUEST_INSTALL_PACKAGES` nikdy. Android přijme aktualizaci jen se stejným podpisovým certifikátem **[O]**.
 - **Co se ukládá.** App-private SharedPreferences `update` (zálohy vyloučené jako všechna data):

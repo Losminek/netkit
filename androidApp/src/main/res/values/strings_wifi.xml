@@ -7,7 +7,7 @@
     <string name="wifi_scan_cancelled">Sken byl přerušen, data jsou z předchozího skenu.</string>
     <string name="wifi_last_scan_age">Datová sada byla přijata před %1$d s</string>
     <string name="wifi_no_results">Zatím nejsou dostupné výsledky. Zkontrolujte oprávnění, polohu a Wi-Fi a spusťte scan.</string>
-    <string name="wifi_scan_limit_note">Android omezuje frekvenci scanů (typicky 4 za 2 minuty pro aplikaci v popředí). NetKit skenuje jen po stisku tlačítka; cache nikdy nevydává za nový scan. Pro lokální test lze omezení změnit v možnostech pro vývojáře.</string>
+    <string name="wifi_scan_limit_note">Android omezuje četnost skenů (obvykle 4 za 2 minuty). Počítadlo a odpočet jsou odhady z vlastních přijatých požadavků NetKitu. Tlačítko zůstává dostupné. Nový sken NetKit žádá jen po ruční akci; na obrazovce Spektrum přebírá i nové systémové výsledky. Cache nikdy nevydává za nový sken. Systémové omezení můžete vypnout v Možnostech pro vývojáře → Omezení vyhledávání Wi-Fi.</string>
     <string name="wifi_hidden_network">Skrytá síť / SSID nedostupné</string>
     <string name="wifi_width_mhz">%1$d MHz</string>
     <string name="wifi_centers_mhz">%1$d / %2$d MHz</string>
@@ -16,7 +16,8 @@
     <string name="wifi_unknown">—</string>
     <string name="wifi_standard_unknown">neznámý</string>
     <string name="wifi_vendor_local">Lokálně administrovaná BSSID; výrobce nelze určit podle OUI.</string>
-    <string name="wifi_vendor_unavailable">Výrobce z OUI není dostupný (bez vložené ověřené databáze).</string>
+    <string name="wifi_vendor">Výrobce: %1$s</string>
+    <string name="wifi_vendor_unknown">Výrobce neznámý</string>
     <string name="wifi_current_connection">Aktuální připojení</string>
     <string name="wifi_occupancy_title">Obsazení kanálů</string>
     <string name="wifi_occupancy_band">%1$s · nalezeno AP: %2$d</string>
@@ -77,4 +78,9 @@
     <string name="wifi_live_dns_rcode">DNS vrátil chybu (RCODE %1$d)</string>
     <string name="wifi_live_target_invalid">Zadejte číselnou adresu IPv4, například 1.1.1.1.</string>
     <string name="wifi_live_dns_name_invalid">Zadejte platné doménové jméno, například one.one.one.one.</string>
+    <string name="wifi_scan_remaining">Zbývá %1$d ze 4</string>
+    <string name="wifi_scan_wait_estimate">Další sken asi za %1$d s</string>
+    <string name="wifi_scan_limit_help">Sken nebyl potvrzen. Android omezuje četnost skenů (obvykle 4 za 2 minuty). Omezení lze vypnout v Možnostech pro vývojáře → Omezení vyhledávání Wi-Fi. Jde o systémové nastavení telefonu, které NetKit nemění.</string>
+    <string name="wifi_scan_enable_developer">Pokud Možnosti pro vývojáře nejsou dostupné, otevřou se informace o telefonu. Zapnete je 7× klepnutím na číslo sestavení.</string>
+    <string name="wifi_scan_open_developer">Otevřít možnosti pro vývojáře</string>
 </resources>

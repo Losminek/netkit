@@ -108,7 +108,7 @@ dotazy a vymaže výsledek z paměti. Nevymaže záznamy u příjemců.
 
 ## 6. Kontrola aktualizací a otevření webů
 
-Při zapnuté kontrole NetKit v popředí automaticky nejvýš jednou za 24 hodin načte
+Při zapnuté kontrole NetKit při spuštění procesu v popředí automaticky nejvýš jednou za 60 minut a při dalších návratech nejvýš jednou za 24 hodin načte
 přes HTTPS soubor `latest.json`: nejdřív z `https://www.daniel.losak.cz/netkit/latest.json`
 a jen při chybě nebo neplatné odpovědi z GitHub Releases
 (`https://github.com/Losminek/netkit/releases/latest/download/latest.json`, GitHub
@@ -187,7 +187,7 @@ provozovatelé podle svých zásad.
 
 Hosting zajišťuje Cloudflare Workers. Požadavky na web včetně `/netkit/latest.json`
 zpřístupňují hostingu veřejnou zdrojovou IP, čas, požadovanou cestu a User-Agent. Aplikace
-automaticky načítá tento soubor jen v popředí, nejvýš jednou za 24 hodin; ruční kontrolu
+automaticky načítá tento soubor v popředí při startu procesu nejvýš jednou za 60 minut a při dalších návratech nejvýš jednou za 24 hodin; ruční kontrolu
 spouštíte sami. Právním základem zpracování je oprávněný zájem správce na provozu
 a zabezpečení webu a kontroly aktualizací (čl. 6 odst. 1 písm. f) GDPR).
 [D17](data-toky.md#d17)

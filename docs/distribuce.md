@@ -126,12 +126,19 @@ ho ověří. Web ho kopíruje na `<web>/latest.json`; `pageUrl` je bez lomítka 
   (`releases/latest` nevrací drafty ani prerelease). GitHub přesměrovává dvakrát (na
   `…/releases/download/vX.Y.Z/latest.json` a na `release-assets.githubusercontent.com`, ověřeno 2026-10-29);
   aplikace sleduje jen přesměrování povolená politikou (bezpecnost.md § Kontrola aktualizací).
-- **Chování aplikace.** Kontrola nejvýš 1× za 24 h (čas posledního pokusu, i neúspěšného),
-  jen když je aplikace v popředí; ručně „Zkontrolovat teď“ v O aplikaci. Vyšší `versionCode` → karta
+- **Chování aplikace.** Kontrola při prvním `onStart` procesu, nejvýš 1× za 60 minut podle
+  posledního pokusu (i neúspěšného); při kratším intervalu použije poslední platnou cache.
+  Další návraty do popředí zachovávají automatickou kontrolu karty nejvýš 1× za 24 hodin
+  (`isUpdateCheckDue`), která nikdy neotevře dialog. Posun hodin zpět znamená splatnou kontrolu.
+  Zrušený start zůstává čekající; úspěšná ruční kontrola během něj může připravit dialog.
+  Ručně „Zkontrolovat teď“ v O aplikaci zůstává bez intervalu.
+  Kompatibilní nová verze otevře při startu dialog na kterékoli záložce: Stáhnout / Zavřít
+  (jen tento proces, i po rotaci) / Nepřipomínat tuto verzi (skryje i kartu do vyšší verze).
+  Chyba kontroly dialog neotevře. Vyšší `versionCode` → karta
   „Dostupná verze X“ nahoře v Přehledu; zavření ji skryje do další verze; `minSdk` nad zařízením → karta
   se neukáže, O aplikaci to vysvětlí. Tlačítko otevře `pageUrl` (jinak `apkUrl`) v prohlížeči
   (`ACTION_VIEW`), instalaci dělá uživatel. Vypínač „Kontrolovat aktualizace“ (výchozí zapnuto) vypíná
-  automatickou kontrolu i kartu. Síťová politika: [bezpecnost.md](bezpecnost.md) § Kontrola aktualizací.
+  automatickou kontrolu, dialog i kartu. Síťová politika: [bezpecnost.md](bezpecnost.md) § Kontrola aktualizací.
 - **Doména** je od 2026-10-31 skutečná (`https://www.daniel.losak.cz/netkit`). Se zástupnou doménou
   (TLD `invalid`, `example` aj.) `assembleRelease` i `release.yml` selžou (D17) a debug a dev build se ptají
   jen zálohy na GitHubu. Test karty na emulátoru: debug/dev

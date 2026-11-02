@@ -8,7 +8,7 @@
 |---|---|---|---|
 | JVM unit (`:shared` commonTest/jvmTest, `androidApp/src/test`) | `./gradlew testDebugUnitTest` | čisté funkce (magic packet, parsery, výpočty adres, kanály, skóre), controllery s falešnými rozhraními, serializace | cokoli závislé na Android API |
 | Lint | `lintDebug` | základní chyby manifestu, oprávnění, zastaralá API | logika |
-| Emulátor `netkit-api35` (headless) | `adb -s emulator-5556 …` | start aplikace, navigace, Compose UI, perzistence přes restart, WoL paket na host (`10.0.2.2`), TCP/ping/SSH proti hostu | **reálný Wi-Fi scan**, discovery fyzické LAN, WoL broadcast do reálné sítě, Xiaomi/HyperOS chování, StrongBox |
+| Emulátor `netkit-api35` (headless) | `adb -s emulator-5556 …` | start aplikace, navigace, Compose UI, perzistence přes restart, WoL paket na host (`10.0.2.2`), TCP/ping/SSH proti hostu | **reálný Wi-Fi scan**, discovery fyzické LAN, WoL broadcast do reálné sítě, HyperOS chování, StrongBox |
 | Fyzický telefon (správce) | ručně | vše výše uvedené „nedokáže“ | — |
 
 Pravidlo: tvrzení „funguje na telefonu“ bez záznamu fyzického testu se nepíše. Report rozlišuje
@@ -480,7 +480,8 @@ oprávnění, `wifi` po jejich udělení a se zapnutou polohou. Parser připust�
 jen s důvodem a markerem `THROTTLED_CONFIRMED`; aktuální instrumentace nemá
 spolehlivý důkaz throttlingu, proto prázdná data/chyba scanu vedou k FAIL.
 `wifi-freshness` vykresluje produkční UI nad označenými syntetickými daty (pět
-stavů stáří/cache a šest grafických stylů); není důkaz RF scanu ani OEM throttlingu.
+stavů stáří/cache, šest grafických stylů a řádek výrobce OUI pod SSID se syntetickým
+seznamem a BSSID, od 1.1.0); není důkaz RF scanu ani OEM throttlingu.
 `lan-icmp-rtt` měří dvacet ICMP odpovědí hostu a uvádí jednotlivé RTT i min/avg/max.
 `lan-confirm` ověřuje skutečný ViewModel, zamítnutí změněného cíle a sondu až po
 potvrzení; `lan-discovery` měří 127.0.0.0/24, nikoli fyzickou LAN. `ssh-ui`
@@ -597,7 +598,7 @@ APK instaluje správce, do výsledků žádná hesla, klíče ani zákaznická d
 
 ## 12. Fyzický checklist M3 — nový vzhled (0.5.1-dev)
 
-Xiaomi 15, tmavý i světlý režim systému. Výsledek PASS / FAIL + poznámka.
+Testovací telefon (Android 15, HyperOS), tmavý i světlý režim systému. Výsledek PASS / FAIL + poznámka.
 
 | # | Krok | Očekávání | Výsledek |
 |---|---|---|---|
@@ -618,9 +619,18 @@ Xiaomi 15, tmavý i světlý režim systému. Výsledek PASS / FAIL + poznámka.
 | M3-15 | Vývojářské možnosti → Měřítko animace = vypnuto. | Hodnoty skočí rovnou na cíl, pulz „živě“ ani prstenec WoL neběží, aplikace funguje. | NOT RUN |
 | M3-16 | Venku na slunci (jas max). | Čitelné hodnoty a stavy ve světlém i tmavém režimu. | NOT RUN |
 
+Doplnění 1.1.0 (výrobce z offline IEEE OUI):
+
+| # | Krok | Očekávání | Výsledek |
+|---|---|---|---|
+| OUI-01 | Spektrum → Sítě: první sken po spuštění aplikace. | Seznam se objeví bez znatelného zpoždění oproti dřívějšku (první čtení seznamu OUI běží na pozadí); pod SSID známých AP je menším tlumeným písmem výrobce, u AP s lokálně administrovanou BSSID (např. mesh/hostované SSID) řádek chybí a nezůstává po něm mezera. | NOT RUN |
+| OUI-02 | Klepněte na AP se známým výrobcem, s neznámým OUI a s lokální BSSID; CS i EN jazyk systému. | Detail: „Výrobce: X“ / „Vendor: X“, „Výrobce neznámý“ / „Vendor unknown“, u lokální BSSID vysvětlení, že výrobce nelze z OUI určit. | NOT RUN |
+| OUI-03 | Výrobce u vlastního AP (např. MikroTik, Ubiquiti) porovnejte s nálepkou / Winboxem. | Odpovídá vlastníkovi OUI podle IEEE; dlouhý název se zkrátí výpustkou, nerozbije řádek. | NOT RUN |
+| OUI-04 | O aplikaci → Licence open source. | Položka „IEEE OUI Public Listing“, po klepnutí text se zdrojem a citací IEEE. | NOT RUN |
+
 ## 13. Fyzický checklist M4 (0.6.0-dev)
 
-Xiaomi 15 (Android 15, HyperOS), Testovací SIM s podporou 5G NSA, druhá SIM podle testovacího scénáře, vlastní testovací Wi-Fi.
+Testovací telefon (Android 15, HyperOS), testovací SIM s podporou 5G NSA, druhá SIM podle testovacího scénáře, vlastní testovací Wi-Fi.
 Mobilní data spotřebují data tarifu, test rychlosti na nich spouštějte vědomě. Cíle jen vlastní
 nebo veřejné resolvery (1.1.1.1, 8.8.8.8). Výsledek PASS / FAIL + poznámka.
 
@@ -708,3 +718,28 @@ verzi/commit APK, jazyk, písmo/zobrazení, výsledek a případný screenshot.
 | SSH2-P3-01 | Exportovat profily, během SAF ukončit proces aplikace a dokončit výběr cíle. | Export vznikne z aktuálního úložiště i bez připraveného snapshotu. Při duplicitách nebo překročení 256 KiB konkrétní hláška, žádné UNKNOWN; validace před zápisem. | NOT RUN |
 | SSH2-P3-02 | Vyvolat chybu exportu / reconnectu smazaného profilu, klepnout OK. | Hláška i její OK zmizí. | NOT RUN |
 | SSH2-P3-03 | V CS i EN importovat změnu PASSWORD → KEY/INTERACTIVE s uloženým heslem. | Varování říká jen, že heslo bude odpojeno a smazáno; neslibuje jeho opětovné zadání. | NOT RUN |
+
+
+## 1.1.0 — dialog aktualizace a limit skenů (2026-11-02)
+
+Automatické výsledky a přesné příkazy jsou v interním záznamu.
+Fyzické testy provádí Daniel; následující body jsou **NOT RUN**:
+
+- [ ] Testovací telefon (HyperOS): 4 přijaté ruční skeny, postupné ubývání odhadu a obnova po 120 s;
+  při nule tlačítko stále funguje, „asi“ odpovídá odhadu, nikoli příslibu systému.
+- [ ] Na Spektru vyčkat na systémový scan bez stisku: nová sada má skutečný čas měření;
+  opakovaná cache/neudělaný scan ji neomladí. Po odchodu ze záložky a do pozadí nic neodebírá.
+- [ ] Návod a tlačítko na HyperOS: při `DEVELOPMENT_SETTINGS_ENABLED=0` (i výchozí hodnota)
+  se otevřou přímo informace o telefonu, i když je aktivita vývojářských voleb resolvovatelná.
+  Při zapnutých volbách se otevřou vývojářské volby; chybějící/nepřístupná aktivita má fallback
+  na informace o telefonu. Lokalizace a skutečná cesta k číslu sestavení / omezení vyhledávání Wi-Fi.
+  Změnu systémového přepínače provádí pouze uživatel. Ověřit také omezení čtení hodnoty:
+  současná Android reference uvádí pro aplikace třetích stran vždy 0 (pak aplikace otevírá
+  informace o telefonu i při reálně zapnutých vývojářských volbách).
+- [ ] Po vydání další verze: startovní dialog CS/EN s poznámkou, Stáhnout otevře správnou
+  ověřenou stránku; Zavřít přežije rotaci/návrat; Nepřipomínat skryje dialog i kartu do vyšší
+  verze. Vypnutá kontrola nic automaticky nekontroluje ani nezobrazuje.
+- [ ] Offline start neotevře chybový dialog; kompatibilita minSdk zůstává vysvětlená v O aplikaci.
+  Start do 60 min používá platnou cache; další návrat z pozadí po 24 h obnoví kartu bez dialogu.
+- [ ] Přerušit start přechodem do pozadí; start zůstane čekající, úspěšná ruční kontrola ho dokončí.
+  Při posunu hodin zpět je automatická kontrola opět splatná.

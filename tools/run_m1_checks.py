@@ -114,7 +114,7 @@ PHASE_MARKERS["lan-discovery"] = ("PHASE:lan-discovery:START", "LAN_DISCOVERY:LO
 
 PHASE_MARKERS["lan-icmp-rtt"] = ("PHASE:lan-icmp-rtt:START", "LAN_ICMP_RTT:20_REPLIES:PASS", "PHASE:lan-icmp-rtt:PASS")
 
-PHASE_MARKERS["wifi-freshness"] = ("PHASE:wifi-freshness:START", *("WIFI:FRESHNESS:" + name + ":UI_VERIFIED" for name in ("fresh", "aging", "within-five-minutes", "expired", "cache")), "WIFI:CHART:SYNTHETIC_SIX_STYLES:UI_VERIFIED", "PHASE:wifi-freshness:PASS")
+PHASE_MARKERS["wifi-freshness"] = ("PHASE:wifi-freshness:START", *("WIFI:FRESHNESS:" + name + ":UI_VERIFIED" for name in ("fresh", "aging", "within-five-minutes", "expired", "cache")), "WIFI:CHART:SYNTHETIC_SIX_STYLES:UI_VERIFIED", "WIFI:VENDOR:list:UI_VERIFIED", "WIFI:VENDOR:detail:UI_VERIFIED", "PHASE:wifi-freshness:PASS")
 
 UI_SCREENSHOTS = ("wifi", "lan", "ssh", "wol")
 WIFI_PASS_MARKERS = ("WIFI:VIRTUAL_AP_RESULTS:PASS", "PHASE:wifi:PASS")

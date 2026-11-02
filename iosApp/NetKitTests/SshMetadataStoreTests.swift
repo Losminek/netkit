@@ -170,6 +170,7 @@ final class SshProfileExchangeTests: XCTestCase {
             let json = try XCTUnwrap(JSONSerialization.jsonObject(with: raw(encoded)) as? [String: Any])
             XCTAssertEqual(json["schema"] as? Int, 2)
             XCTAssertEqual(json["format"] as? String, "netkit-ssh-profiles")
+            XCTAssertEqual(json["source"] as? String, "netkit-ios")
             let rows = try XCTUnwrap(json["profiles"] as? [[String: Any]])
             XCTAssertEqual(rows.compactMap { $0["alias"] as? String }, ["Target", "Second"])
             for row in rows {
@@ -266,13 +267,181 @@ final class SshProfileExchangeTests: XCTestCase {
             XCTAssertTrue(preview.startupWarning)
             model.selectImportKey("key-a")
             XCTAssertFalse(model.importPreviews(try XCTUnwrap(model.importPlan)).first?.needsKeySelection ?? true)
+            let previousPlan = try XCTUnwrap(model.importPlan)
             model.selectImportKey("missing-key")
-            XCTAssertNil(model.importPlan)
+            XCTAssertTrue(model.importPlan === previousPlan)
+            XCTAssertEqual(model.importKeyRef, "key-a")
+            XCTAssertEqual(model.error, .importFailure(.keyUnavailable))
             model.selectImportKey(nil)
             XCTAssertNotNil(model.importPlan)
+            XCTAssertNil(model.error)
             model.cancelImport()
             XCTAssertNil(model.importPlan)
             XCTAssertNil(model.importKeyRef)
+        }
+    }
+
+    @MainActor
+    func testFailedReplanKeepsExactPlanAndKeyForConfirmation() throws {
+        let selections: [String?] = [nil, "key-a"]
+        for selectedKey in selections {
+            try withStorage { root, chain in
+                let store = try SshMetadataStore(directory: root)
+                try store.save(key: SshKeyInfo(id: "key-a", name: "First", publicKey: "public"))
+                try store.save(key: SshKeyInfo(id: "key-b", name: "Second", publicKey: "public"))
+                let planner = ImportPlanningStoreDouble(store: store)
+                let model = SshViewModel(keychain: chain, directory: root, importPlanner: planner)
+                let file = root.appendingPathComponent("import.json")
+                try document(schema: 1).write(to: file)
+                model.previewImport(file)
+                model.selectImportKey(selectedKey)
+                let previous = try XCTUnwrap(model.importPlan)
+                let shown = try XCTUnwrap(model.importPreviews(previous).first).after
+                planner.failure = SshMetadataStore.Failure.io
+                model.selectImportKey("key-b")
+                XCTAssertTrue(model.importPlan === previous)
+                XCTAssertEqual(model.importKeyRef, selectedKey)
+                XCTAssertEqual(model.error, .importFailure(.storage))
+                XCTAssertFalse(model.busy)
+                XCTAssertEqual(model.importPreviews(previous).first?.after.keyRef, selectedKey)
+                model.confirmImport()
+                let saved = try XCTUnwrap(model.data?.profiles.first)
+                XCTAssertEqual(saved.id, shown.id)
+                XCTAssertEqual(saved.keyRef, selectedKey)
+                XCTAssertEqual(saved.authentication, selectedKey == nil ? .password : .key)
+                XCTAssertEqual(try SshMetadataStore(directory: root).snapshot().profiles.first?.keyRef, selectedKey)
+                XCTAssertNil(model.importPlan)
+                XCTAssertNil(model.importKeyRef)
+                XCTAssertNil(model.error)
+                XCTAssertEqual(planner.attempts, 3) // Confirmation applies the previous plan without replanning.
+            }
+        }
+    }
+
+    @MainActor
+    func testFailedReplanCanBeRetriedOrCancelled() throws {
+        try withStorage { root, chain in
+            let store = try SshMetadataStore(directory: root)
+            try store.save(key: SshKeyInfo(id: "key-a", name: "Key", publicKey: "public"))
+            let planner = ImportPlanningStoreDouble(store: store)
+            let model = SshViewModel(keychain: chain, directory: root, importPlanner: planner)
+            let file = root.appendingPathComponent("import.json")
+            try document(schema: 1).write(to: file)
+            model.previewImport(file)
+            planner.failure = SshImportFailure.duplicateAlias
+            model.selectImportKey("key-a")
+            XCTAssertEqual(model.error, .importFailure(.duplicateAlias))
+            planner.failure = nil
+            model.selectImportKey("key-a")
+            XCTAssertEqual(model.importKeyRef, "key-a")
+            XCTAssertNil(model.error)
+            planner.failure = SshMetadataStore.Failure.io
+            model.selectImportKey(nil)
+            model.cancelImport()
+            XCTAssertNil(model.importPlan)
+            XCTAssertNil(model.importKeyRef)
+            let attempts = planner.attempts
+            model.selectImportKey(nil)
+            model.confirmImport()
+            XCTAssertEqual(planner.attempts, attempts)
+            XCTAssertTrue(try SshMetadataStore(directory: root).snapshot().profiles.isEmpty)
+        }
+    }
+
+    @MainActor
+    private func assertPreviewFailure(_ contents: Data?, expected: SshImportFailure, plannerFailure: Error? = nil) throws {
+        try withStorage { root, chain in
+            let store = try SshMetadataStore(directory: root)
+            let planner = ImportPlanningStoreDouble(store: store)
+            planner.failure = plannerFailure
+            let model = SshViewModel(keychain: chain, directory: root, importPlanner: planner)
+            let file = root.appendingPathComponent("import.json")
+            if let contents { try contents.write(to: file) }
+            model.previewImport(file)
+            XCTAssertEqual(model.error, .importFailure(expected))
+            XCTAssertNil(model.importPlan)
+            XCTAssertNil(model.importKeyRef)
+            XCTAssertFalse(model.busy)
+            model.confirmImport()
+            XCTAssertTrue(try SshMetadataStore(directory: root).snapshot().profiles.isEmpty)
+        }
+    }
+
+    @MainActor
+    func testImportUnreadableFileHasReadError() throws {
+        try assertPreviewFailure(nil, expected: .read)
+    }
+
+    @MainActor
+    func testImportOver256KiBHasSizeError() throws {
+        try assertPreviewFailure(Data(repeating: 32, count: 256 * 1024 + 1), expected: .tooLarge)
+    }
+
+    @MainActor
+    func testImportInvalidFormatHasFormatError() throws {
+        try assertPreviewFailure(Data("invalid".utf8), expected: .format)
+    }
+
+    @MainActor
+    func testImportCredentialBackupHasSpecificError() throws {
+        let legacy: [String: Any] = ["schema": 1, "profiles": [], "keys": [["id": "local-key"]], "hostKeys": [], "rejectedHostKeys": []]
+        try assertPreviewFailure(JSONSerialization.data(withJSONObject: legacy), expected: .credentialBackup)
+    }
+
+    @MainActor
+    func testImportStorageFailureHasStorageError() throws {
+        try assertPreviewFailure(document(), expected: .storage, plannerFailure: SshMetadataStore.Failure.io)
+    }
+
+    @MainActor
+    func testImportDocumentCategoriesSurviveBridge() throws {
+        try assertPreviewFailure(Data([0xC3]), expected: .utf8)
+        var json = try XCTUnwrap(JSONSerialization.jsonObject(with: document()) as? [String: Any])
+        json["schema"] = 99
+        try assertPreviewFailure(JSONSerialization.data(withJSONObject: json), expected: .schema)
+        json["schema"] = 2; json["extra"] = true
+        try assertPreviewFailure(JSONSerialization.data(withJSONObject: json), expected: .unknownField)
+        json.removeValue(forKey: "extra")
+        let row = try XCTUnwrap((json["profiles"] as? [[String: Any]])?.first)
+        json["profiles"] = [row, row]
+        try assertPreviewFailure(JSONSerialization.data(withJSONObject: json), expected: .duplicateAlias)
+        json["profiles"] = Array(repeating: row, count: 201)
+        try assertPreviewFailure(JSONSerialization.data(withJSONObject: json), expected: .limit)
+        var invalid = row; invalid["port"] = 0; json["profiles"] = [invalid]
+        try assertPreviewFailure(JSONSerialization.data(withJSONObject: json), expected: .invalidProfile)
+    }
+
+    func testEveryImportErrorHasDistinctCzechAndEnglishText() throws {
+        let keys = SshImportFailure.allCases.map { errorKey(.importFailure($0)) }
+        XCTAssertEqual(Set(keys).count, keys.count)
+        for language in ["cs", "en"] {
+            let path = try XCTUnwrap(Bundle.main.path(forResource: language, ofType: "lproj"))
+            let bundle = try XCTUnwrap(Bundle(path: path))
+            let messages = keys.map { bundle.localizedString(forKey: $0, value: nil, table: nil) }
+            for (key, message) in zip(keys, messages) {
+                XCTAssertNotEqual(message, key)
+                XCTAssertFalse(message.isEmpty)
+            }
+            XCTAssertEqual(Set(messages).count, keys.count)
+        }
+    }
+
+    @MainActor
+    func testBothPlatformSourcesCanBeImportedAndConfirmed() throws {
+        for source in ["netkit-android", "netkit-ios"] {
+            try withStorage { root, chain in
+                let model = SshViewModel(keychain: chain, directory: root)
+                var json = try XCTUnwrap(JSONSerialization.jsonObject(with: document()) as? [String: Any])
+                json["source"] = source
+                let file = root.appendingPathComponent("import.json")
+                try JSONSerialization.data(withJSONObject: json).write(to: file)
+                model.previewImport(file)
+                XCTAssertEqual(model.importPlan?.source, source)
+                XCTAssertNil(model.error)
+                model.confirmImport()
+                XCTAssertEqual(model.data?.profiles.first?.host, "192.0.2.1")
+                XCTAssertNil(model.error)
+            }
         }
     }
 
@@ -498,6 +667,18 @@ final class SshProfileExchangeTests: XCTestCase {
             XCTAssertEqual(attempts.count, 2)
             model.disconnect()
         }
+    }
+}
+
+private final class ImportPlanningStoreDouble: SshImportPlanning {
+    let store: SshMetadataStore
+    var failure: Error?
+    private(set) var attempts = 0
+    init(store: SshMetadataStore) { self.store = store }
+    func planImport(_ imported: SshProfileImport, keyRef: String?) throws -> SshImportPlan {
+        attempts += 1
+        if let failure { throw failure }
+        return try store.planImport(imported, keyRef: keyRef)
     }
 }
 

@@ -84,7 +84,7 @@ suspend fun sshProfilesR1Evidence(test: Instrumentation, app: M1TestApplication,
 
         data(SshData(profiles = listOf(profile), keys = listOf(key)))
         val keyProfile = profile.copy(authentication = SshAuthentication.KEY)
-        val v2 = File(app.filesDir, "r1-v2.json").apply { writeBytes(encodeSshProfileExport(SshData(profiles = listOf(keyProfile)))) }
+        val v2 = File(app.filesDir, "r1-v2.json").apply { writeBytes(encodeSshProfileExport(SshData(profiles = listOf(keyProfile)), source = "netkit-android")) }
         test.runOnMainSync { model.previewProfileImport(Uri.fromFile(v2)) }
         withTimeout(8000) { model.state.first { it.pendingProfileImport != null } }
         ui.findText(app.getString(R.string.ssh_select_profile_key), scroll = true)
@@ -206,7 +206,7 @@ suspend fun sshProfilesP3Evidence(test: Instrumentation, app: M1TestApplication,
         for (auth in listOf(SshAuthentication.KEY, SshAuthentication.INTERACTIVE)) {
             data(SshData(profiles = listOf(profile.copy(secretRef = "fixture-reference"))))
             val input = File(app.filesDir, "p3-auth.json").apply {
-                writeBytes(encodeSshProfileExport(SshData(profiles = listOf(profile.copy(authentication = auth)))))
+                writeBytes(encodeSshProfileExport(SshData(profiles = listOf(profile.copy(authentication = auth))), source = "netkit-android"))
             }
             test.runOnMainSync { model.previewProfileImport(Uri.fromFile(input)) }
             withTimeout(8000) { model.state.first { it.pendingProfileImport != null } }

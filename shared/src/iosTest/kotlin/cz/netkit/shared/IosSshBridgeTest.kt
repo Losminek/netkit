@@ -53,10 +53,39 @@ class IosSshBridgeTest {
         assertEquals("192.0.2.2", after.profiles.single().host)
         assertNull(after.profiles.single().secretRef)
         assertEquals(SshProfileImportFailure.STALE_PLAN, domain.applyImport(after, plan).failure)
-        assertEquals(SshProfileImportFailure.SIZE, domain.decodeImport(ByteArray(SSH_PROFILE_IMPORT_LIMIT + 1)).failure)
+        assertEquals(IosSshImportFailure.SIZE, domain.decodeImport(ByteArray(SSH_PROFILE_IMPORT_LIMIT + 1)).failure)
         val runtimeValue = Random.nextBytes(16).joinToString("") { it.toUByte().toString(16) }
         val withCredential = document.replace("\"username\":\"tester\"", "\"username\":\"tester\",\"password\":\"$runtimeValue\"")
-        assertEquals(SshProfileImportFailure.UNKNOWN_FIELD, domain.decodeImport(withCredential.encodeToByteArray()).failure)
+        assertEquals(IosSshImportFailure.CREDENTIAL_BACKUP, domain.decodeImport(withCredential.encodeToByteArray()).failure)
+    }
+
+    @Test fun importFailuresExposeSafeCategoriesWithoutChangingDecoderAcceptance() {
+        val empty = """{"format":"netkit-ssh-profiles","schema":2,"profiles":[],"skipped":[]}"""
+        val cases = listOf(
+            byteArrayOf(0xC3.toByte()) to IosSshImportFailure.UTF8,
+            "[]".encodeToByteArray() to IosSshImportFailure.FORMAT,
+            empty.replace("\"schema\":2", "\"schema\":99").encodeToByteArray() to IosSshImportFailure.SCHEMA,
+            empty.replace("\"skipped\":[]", "\"skipped\":[],\"extra\":true").encodeToByteArray() to IosSshImportFailure.UNKNOWN_FIELD,
+        )
+        for ((bytes, expected) in cases) {
+            val result = domain.decodeImport(bytes)
+            assertNull(result.imported)
+            assertEquals(expected, result.failure)
+            assertFailsWith<SshProfileImportException> { decodeSshProfileImport(bytes) }
+        }
+        val legacy = """{"schema":1,"profiles":[{"id":"old","name":"Target","host":"192.0.2.1","port":22,"username":"tester","authentication":"KEY","secretRef":null,"keyRef":null,"startupCommand":"","keepaliveSeconds":30}],"keys":[],"hostKeys":[],"rejectedHostKeys":[]}"""
+        for (field in listOf("keys", "hostKeys", "rejectedHostKeys", "secretRef", "keyRef")) {
+            val backup = if (field.endsWith("Ref")) legacy.replace("\"$field\":null", "\"$field\":\"local-ref\"")
+                else legacy.replace("\"$field\":[]", "\"$field\":[{}]")
+            val result = domain.decodeImport(backup.encodeToByteArray())
+            assertNull(result.imported)
+            assertEquals(IosSshImportFailure.CREDENTIAL_BACKUP, result.failure)
+            assertFailsWith<SshProfileImportException> { decodeSshProfileImport(backup.encodeToByteArray()) }
+        }
+        val imported = assertNotNull(domain.decodeImport(legacy.encodeToByteArray()).imported)
+        val ambiguous = SshData(profiles = listOf(profile().copy(name = "Target"), profile().copy(id = "second", name = "Target")))
+        assertEquals(IosSshImportFailure.DUPLICATE_ALIAS, domain.planImport(ambiguous, imported, null) { "new" }.failure)
+        assertEquals(IosSshImportFailure.FORMAT, domain.planImport(SshData(schema = 99), imported, null) { "new" }.failure)
     }
 
     @Test fun terminalPreservesStyledOutputAndSharedKeyEncoding() {
@@ -180,6 +209,7 @@ class IosSshBridgeTest {
         val bytes = assertNotNull(exported.bytes)
         val text = bytes.decodeToString()
         assertTrue(text.contains("\"schema\":2"))
+        assertEquals("netkit-ios", assertNotNull(domain.decodeImport(bytes).imported).source)
         for (field in listOf("id", "secretRef", "keyRef", "keys", "hostKeys", "rejectedHostKeys"))
             assertFalse(text.contains("\"$field\""), field)
         assertEquals(listOf(first.name, second.name), assertNotNull(domain.decodeImport(bytes).imported).profiles.map { it.alias })

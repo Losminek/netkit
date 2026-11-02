@@ -57,4 +57,6 @@
     <string name="note_too_long">Note must be at most 1000 characters.</string>
     <string name="host_too_long">Target must be at most 253 characters.</string>
     <string name="wol_vpn_notice">The magic packet and DNS queries always use Wi-Fi outside the VPN; target names are resolved by this Wi-Fi network’s DNS. A sent packet does not prove a wake-up. The wake check then repeatedly tries the chosen port or ping: “no response” does not mean the device is off, and “already up” does not prove it was woken.</string>
+    <string name="update_dialog_close">Close</string>
+    <string name="update_dialog_dismiss_version">Do not remind me about this version</string>
 </resources>

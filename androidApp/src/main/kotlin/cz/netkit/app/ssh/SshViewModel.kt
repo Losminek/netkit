@@ -45,7 +45,7 @@ data class SshUiState(val data: SshData = SshData(), val loaded: Boolean = false
 internal suspend fun completeSshProfileExport(
     prepared: ByteArray?, read: suspend () -> SshData, write: suspend (ByteArray) -> Unit,
 ): SshProfileExportError? {
-    val bytes = try { prepared ?: encodeSshProfileExport(read()) }
+    val bytes = try { prepared ?: encodeSshProfileExport(read(), source = "netkit-android") }
     catch (error: SshProfileExportException) { return error.reason }
     write(bytes) // Provider/IO failures still use the normal operation error handler.
     return null
@@ -230,7 +230,7 @@ class SshViewModel(application: Application) : AndroidViewModel(application) {
     fun prepareExport(onReady: () -> Unit) = operation {
         preparedExport = null
         _state.update { it.copy(exportFailure = null) }
-        try { preparedExport = encodeSshProfileExport(store.read()) }
+        try { preparedExport = encodeSshProfileExport(store.read(), source = "netkit-android") }
         catch (error: SshProfileExportException) {
             _state.update { it.copy(exportFailure = error.reason) }; return@operation
         }

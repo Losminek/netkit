@@ -89,17 +89,17 @@ class M1Instrumentation : Instrumentation() {
         phase=arguments.getString("phase").orEmpty()
         try {
             check(runId.matches(Regex("[a-f0-9]{32}"))) { "Invalid runId" }
-            check(phase in listOf("ui","lan","ssh","wifi","wifi-denied","ssh-ui","ssh-rotated","lan-confirm","ssh-lifecycle","ssh-legacy","lan-discovery","lan-icmp-rtt","wifi-freshness","ssh-reconnect","json-limits","ssh-key-editor","ssh-profiles-v2","ssh-profiles-r1","ssh-profiles-p3")) { "Invalid phase" }
+            check(phase in listOf("ui","lan","ssh","wifi","wifi-denied","ssh-ui","ssh-rotated","lan-confirm","ssh-lifecycle","ssh-legacy","lan-discovery","lan-icmp-rtt","wifi-freshness","ssh-reconnect","json-limits","ssh-key-editor","ssh-profiles-v2","ssh-profiles-r1","ssh-profiles-p3","update-dialog","wifi-scan-limit")) { "Invalid phase" }
             app=targetContext.applicationContext as M1TestApplication
             marker("PHASE:$phase:START")
             runBlocking {
                 withTimeout(if (phase == "ssh-lifecycle") 380_000L else 115_000L) {
-                    when(phase) { "ssh-profiles-p3" -> sshProfilesP3Evidence(this@M1Instrumentation, app, ::screenshot, ::marker); "ssh-profiles-r1" -> sshProfilesR1Evidence(this@M1Instrumentation, app, ::screenshot, ::marker); "ssh-profiles-v2" -> sshProfilesV2Evidence(this@M1Instrumentation, app, ::screenshot, ::marker); "ssh-key-editor" -> sshKeyEditorEvidence(this@M1Instrumentation, app, arguments.getString("stage") ?: "2", arguments.getString("order") != "import-first", ::screenshot, ::marker); "json-limits" -> jsonLimitsPhase(); "ssh-reconnect" -> sshUiPhase(reconnect = true); "wifi-freshness" -> wifiFreshnessPhase(); "ui" -> uiPhase(); "lan" -> lanPhase(); "lan-icmp-rtt" -> lanIcmpRttPhase(); "lan-confirm" -> lanConfirmPhase(); "lan-discovery" -> lanDiscoveryPhase(); "ssh" -> sshPhase(); "ssh-ui" -> sshUiPhase(); "ssh-lifecycle" -> sshUiPhase(lifecycle = true); "ssh-rotated" -> sshRotatedPhase(); "ssh-legacy" -> sshLegacyPhase(); "wifi" -> wifiPhase(false); "wifi-denied" -> wifiPhase(true) }
+                    when(phase) { "wifi-scan-limit" -> wifiScanLimitEvidence(this@M1Instrumentation, app, arguments.getString("language") ?: "cs", ::marker); "update-dialog" -> updateDialogEvidence(this@M1Instrumentation, app, arguments.getString("language") ?: "cs", ::marker); "ssh-profiles-p3" -> sshProfilesP3Evidence(this@M1Instrumentation, app, ::screenshot, ::marker); "ssh-profiles-r1" -> sshProfilesR1Evidence(this@M1Instrumentation, app, ::screenshot, ::marker); "ssh-profiles-v2" -> sshProfilesV2Evidence(this@M1Instrumentation, app, ::screenshot, ::marker); "ssh-key-editor" -> sshKeyEditorEvidence(this@M1Instrumentation, app, arguments.getString("stage") ?: "2", arguments.getString("order") != "import-first", ::screenshot, ::marker); "json-limits" -> jsonLimitsPhase(); "ssh-reconnect" -> sshUiPhase(reconnect = true); "wifi-freshness" -> wifiFreshnessPhase(); "ui" -> uiPhase(); "lan" -> lanPhase(); "lan-icmp-rtt" -> lanIcmpRttPhase(); "lan-confirm" -> lanConfirmPhase(); "lan-discovery" -> lanDiscoveryPhase(); "ssh" -> sshPhase(); "ssh-ui" -> sshUiPhase(); "ssh-lifecycle" -> sshUiPhase(lifecycle = true); "ssh-rotated" -> sshRotatedPhase(); "ssh-legacy" -> sshLegacyPhase(); "wifi" -> wifiPhase(false); "wifi-denied" -> wifiPhase(true) }
                 }
             }
         } catch (failure: Throwable) {
             // Exception class/step only: provider/library messages may include credentials or key data.
-            if (phase == "ssh-key-editor" || phase == "ssh-profiles-v2" || phase == "ssh-profiles-r1" || phase == "ssh-profiles-p3") {
+            if (phase == "wifi-scan-limit" || phase == "update-dialog" || phase == "ssh-key-editor" || phase == "ssh-profiles-v2" || phase == "ssh-profiles-r1" || phase == "ssh-profiles-p3") {
                 marker("SSH_TEST_STACK:" + failure.stackTrace.take(12).joinToString(";"))
                 try { screenshot("ssh-test-failure.png") } catch (_: Exception) { }
             }
@@ -156,6 +156,7 @@ class M1Instrumentation : Instrumentation() {
         try {
             captureWifiFreshnessEvidence(this, activity, ::screenshot, ::marker)
             captureWifiChartEvidence(this, activity, ::screenshot, ::marker)
+            captureWifiVendorEvidence(this, activity, ::screenshot, ::marker)
         }
         finally { runOnMainSync { activity.finish() } }
     }

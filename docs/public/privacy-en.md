@@ -118,7 +118,7 @@ records held by recipients.
 ## 6. Update checks and opening websites
 
 When checks are enabled, NetKit automatically fetches a `latest.json` file over HTTPS
-at most once per 24 hours while the app is in the foreground: first from
+in the foreground at process startup, at most once per 60 minutes, and on later foreground returns at most once per 24 hours: first from
 `https://www.daniel.losak.cz/netkit/latest.json` and only after an error or invalid answer from
 GitHub Releases (`https://github.com/Losminek/netkit/releases/latest/download/latest.json`;
 GitHub redirects to its storage `release-assets.githubusercontent.com`). Checks are enabled
@@ -197,7 +197,7 @@ own servers) are processed by their operators under their own policies.
 The website is hosted on Cloudflare Workers. Requests to the website, including
 `/netkit/latest.json`, expose the public source IP, time, requested path and User-Agent to
 the hosting. The app fetches this file automatically only in the foreground, at most once
-per 24 hours; you start a manual check yourself. The legal basis is the controller's
+per 60 minutes at process startup and once per 24 hours on later foreground returns; you start a manual check yourself. The legal basis is the controller's
 legitimate interest in operating and securing the website and the update check
 (Art. 6(1)(f) GDPR).
 [D17](data-toky.md#d17)

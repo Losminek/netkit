@@ -2800,6 +2800,214 @@
           }
         }
       }
+    },
+    "ssh.import.error.read": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soubor s SSH profily se nepodařilo přečíst."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not read the SSH profile file."
+          }
+        }
+      }
+    },
+    "ssh.import.error.size": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soubor s SSH profily je větší než 256 KiB."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The SSH profile file is larger than 256 KiB."
+          }
+        }
+      }
+    },
+    "ssh.import.error.format": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neplatný nebo nepodporovaný formát SSH profilů."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid or unsupported SSH profile format."
+          }
+        }
+      }
+    },
+    "ssh.import.error.utf8": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soubor s SSH profily musí být v kódování UTF-8."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The SSH profile file must use UTF-8 encoding."
+          }
+        }
+      }
+    },
+    "ssh.import.error.schema": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nepodporovaná verze formátu SSH profilů."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unsupported SSH profile format version."
+          }
+        }
+      }
+    },
+    "ssh.import.error.unknown.field": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soubor s SSH profily obsahuje nepodporovaná pole."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The SSH profile file contains unsupported fields."
+          }
+        }
+      }
+    },
+    "ssh.import.error.duplicate": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import obsahuje duplicitní aliasy nebo odpovídá více uloženým profilům."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The import contains duplicate aliases or matches multiple saved profiles."
+          }
+        }
+      }
+    },
+    "ssh.import.error.invalid.profile": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soubor obsahuje neplatný SSH profil."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The file contains an invalid SSH profile."
+          }
+        }
+      }
+    },
+    "ssh.import.error.limit": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import může obsahovat nejvýše 200 profilů a 200 přeskočených záznamů."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An import can contain at most 200 profiles and 200 skipped entries."
+          }
+        }
+      }
+    },
+    "ssh.import.error.stale": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uložené profily se změnily. Otevřete import znovu a zkontrolujte náhled."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved profiles have changed. Open the import again and review the preview."
+          }
+        }
+      }
+    },
+    "ssh.import.error.backup": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zálohu s přihlašovacími údaji, klíči nebo důvěrou serverů nelze importovat. Použijte export profilů bez těchto údajů."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A backup containing credentials, keys or server trust cannot be imported. Use a profile export without this data."
+          }
+        }
+      }
+    },
+    "ssh.import.error.storage": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Náhled importu se nepodařilo připravit kvůli chybě úložiště."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not prepare the import preview because of a storage error."
+          }
+        }
+      }
+    },
+    "ssh.import.error.key.unavailable": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vybraný lokální klíč už není dostupný. Vyberte jiný klíč."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The selected local key is no longer available. Select another key."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

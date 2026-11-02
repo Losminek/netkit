@@ -22,7 +22,7 @@ final class SshViewModel: ObservableObject {
         let reply: (Bool) -> Void
     }
     struct ChangedHost { let endpoint: String; let saved: String; let offered: String }
-    enum ErrorKind: Equatable { case storage, invalid, credentials, keyInUse, connection, algorithm, unsupportedCredential, interactiveUnsupported, hostChanged, hostRejected, timeout, inputOverflow }
+    enum ErrorKind: Equatable { case storage, invalid, credentials, keyInUse, connection, algorithm, unsupportedCredential, interactiveUnsupported, hostChanged, hostRejected, timeout, inputOverflow, importFailure(SshImportFailure) }
     @Published var data: SshData?
     @Published var error: ErrorKind?
     @Published var hostPrompt: HostPrompt?
@@ -42,6 +42,7 @@ final class SshViewModel: ObservableObject {
     private let domain = IosSshDomain()
     private let credentialStore: IosSecretStoreAdapter
     private var store: SshMetadataStore?
+    private var importPlanner: SshImportPlanning?
     private var transport: SshSession?
     private let sessionFactory: SessionFactory
     private var terminal = IosTerminal(columns: 80, rows: 24)
@@ -56,7 +57,7 @@ final class SshViewModel: ObservableObject {
 
     init(nowMillis: @escaping () -> Int64 = { Int64(clock_gettime_nsec_np(CLOCK_MONOTONIC_RAW) / 1_000_000) },
          keychain: KeychainSecrets = KeychainSecrets(), directory: URL? = nil,
-         sessionFactory: SessionFactory? = nil) {
+         sessionFactory: SessionFactory? = nil, importPlanner: SshImportPlanning? = nil) {
         self.sessionFactory = sessionFactory ?? { profile, credential, validator, output, state in
             let session = try SshTransport(host: profile.host, port: Int(profile.port), username: profile.username,
                 credential: credential, validator: validator, output: output, state: state)
@@ -67,6 +68,7 @@ final class SshViewModel: ObservableObject {
         do {
             let store = try SshMetadataStore(directory: directory, onFreshInstall: { try keychain.deleteServiceItems() })
             self.store = store; data = store.snapshot()
+            self.importPlanner = importPlanner ?? store
             do { cleanupUnreferenced(try keychain.accountIDs()) }
             catch { self.error = .credentials }
         }
@@ -407,20 +409,28 @@ final class SshViewModel: ObservableObject {
         cancelImport()
         let scoped = url.startAccessingSecurityScopedResource()
         defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+        let raw: Data
         do {
             let handle = try FileHandle(forReadingFrom: url); defer { try? handle.close() }
-            let raw = try handle.read(upToCount: 256 * 1024 + 1) ?? Data()
-            guard let store, let imported = domain.decodeImport(bytes: toKotlin(raw)).imported else { throw SshMetadataStore.Failure.invalid }
-            let plan = try store.planImport(imported, keyRef: nil)
+            raw = try handle.read(upToCount: 256 * 1024 + 1) ?? Data()
+        } catch { self.error = .importFailure(.read); return }
+        let result = domain.decodeImport(bytes: toKotlin(raw))
+        if let failure = result.failure { error = .importFailure(SshImportFailure(failure)); return }
+        guard let imported = result.imported else { error = .importFailure(.format); return }
+        guard let importPlanner else { error = .importFailure(.storage); return }
+        do {
+            let plan = try importPlanner.planImport(imported, keyRef: nil)
             pendingImport = imported; importPlan = plan; error = nil
-        } catch { self.error = .invalid }
+        } catch { self.error = .importFailure((error as? SshImportFailure) ?? .storage) }
     }
     func selectImportKey(_ keyRef: String?) {
-        guard !busy, let store, let imported = pendingImport else { return }
+        guard !busy, let imported = pendingImport else { return }
         busy = true; defer { busy = false }
-        importPlan = nil; importKeyRef = nil
-        do { importPlan = try store.planImport(imported, keyRef: keyRef); importKeyRef = keyRef; error = nil }
-        catch { self.error = .invalid }
+        guard let importPlanner else { error = .importFailure(.storage); return }
+        do {
+            let plan = try importPlanner.planImport(imported, keyRef: keyRef)
+            importPlan = plan; importKeyRef = keyRef; error = nil
+        } catch { self.error = .importFailure((error as? SshImportFailure) ?? .storage) }
     }
     func cancelImport() { importPlan = nil; pendingImport = nil; importKeyRef = nil }
     func importAddedCount(_ plan: SshImportPlan) -> Int32 { domain.importAddedCount(plan: plan) }

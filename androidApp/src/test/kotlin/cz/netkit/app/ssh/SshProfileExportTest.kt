@@ -8,8 +8,15 @@ import kotlin.test.*
 class SshProfileExportTest {
     private val profile = SshProfile("fixture", "Fixture", "192.0.2.10", username = "tester")
 
+    @Test fun androidExportMatchesOriginalWireBytes() = runTest {
+        val expected = """{"format":"netkit-ssh-profiles","schema":2,"source":"netkit-android","profiles":[{"alias":"Fixture","host":"192.0.2.10","port":22,"username":"tester","authentication":"PASSWORD","startupCommand":"","keepaliveSeconds":30}],"skipped":[]}"""
+        var written: ByteArray? = null
+        assertNull(completeSshProfileExport(null, { SshData(profiles = listOf(profile)) }) { written = it })
+        assertContentEquals(expected.encodeToByteArray(), written)
+    }
+
     @Test fun preparedSnapshotDoesNotReadChangedStore() = runTest {
-        val bytes = encodeSshProfileExport(SshData(profiles = listOf(profile)))
+        val bytes = encodeSshProfileExport(SshData(profiles = listOf(profile)), source = "netkit-android")
         var written: ByteArray? = null
         assertNull(completeSshProfileExport(bytes, { error("Snapshot must not read storage") }) { written = it })
         assertContentEquals(bytes, written)

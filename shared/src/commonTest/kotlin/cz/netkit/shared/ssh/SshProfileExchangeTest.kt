@@ -18,10 +18,18 @@ class SshProfileExchangeTest {
     private fun failWith(reason: SshProfileImportFailure, text: String) {
         assertEquals(reason, assertFailsWith<SshProfileImportException> { decodeSshProfileImport(text.encodeToByteArray()) }.reason)
     }
-    private fun wire() = encodeSshProfileExport(source).decodeToString()
+    private fun wire() = encodeSshProfileExport(source, source = "netkit-android").decodeToString()
+
+    @Test fun platformSourcesRoundtripWithoutChangingPortableProfiles() {
+        for (platform in listOf("netkit-android", "netkit-ios")) {
+            val bytes = encodeSshProfileExport(source, source = platform)
+            assertEquals(platform, decodeSshProfileImport(bytes).source)
+            assertEquals(profiles.map { it.name }, restore(bytes).profiles.map { it.name })
+        }
+    }
 
     @Test fun roundtripPortableSettingsAndSelectedKeyOnlyForKeyAuthentication() {
-        val bytes = encodeSshProfileExport(source)
+        val bytes = encodeSshProfileExport(source, source = "netkit-android")
         println("SSH_V2_SYNTHETIC_EXPORT=" + bytes.decodeToString())
         val root = Json.parseToJsonElement(bytes.decodeToString()).jsonObject
         assertEquals(setOf("format", "schema", "source", "profiles", "skipped"), root.keys)
@@ -52,7 +60,7 @@ class SshProfileExchangeTest {
     @Test fun updatesReplaceAllPortableSettingsAndPreservePosition() {
         val changed = profiles[1].copy(host = "198.51.100.1", port = 2229, username = "other",
             authentication = SshAuthentication.INTERACTIVE, startupCommand = "show status", keepaliveSeconds = 0)
-        val incoming = encodeSshProfileExport(SshData(profiles = listOf(changed, profiles[0].copy(id = "new", name = "new"))))
+        val incoming = encodeSshProfileExport(SshData(profiles = listOf(changed, profiles[0].copy(id = "new", name = "new"))), source = "netkit-android")
         val result = restore(incoming, source, "selected")
         assertEquals(listOf("old-0", "old-1", "old-2", "new-0"), result.profiles.map { it.id })
         assertEquals(changed.copy(secretRef = null, keyRef = null), result.profiles[1])
@@ -60,7 +68,7 @@ class SshProfileExchangeTest {
         assertEquals(source.hostKeys, result.hostKeys)
         // Settings-only updates do not detach a password; changing endpoint still does (v1 regressions too).
         val sameTarget = profiles[0].copy(startupCommand = "show status", keepaliveSeconds = 0)
-        assertEquals(sameTarget, restore(encodeSshProfileExport(SshData(profiles = listOf(sameTarget))), source).profiles[0])
+        assertEquals(sameTarget, restore(encodeSshProfileExport(SshData(profiles = listOf(sameTarget)), source = "netkit-android"), source).profiles[0])
     }
 
     @Test fun everyFormatEnforcesSchemaFieldsLimitsAndDepth() {
@@ -98,7 +106,7 @@ class SshProfileExchangeTest {
         val moved = moveSshProfile(source, "old-1", -1)
         assertEquals(source.copy(profiles = listOf(profiles[1], profiles[0], profiles[2])), moved)
         assertEquals(source, moveSshProfile(moved, "old-1", 1))
-        assertEquals(moved.profiles.map { it.name }, restore(encodeSshProfileExport(moved)).profiles.map { it.name })
+        assertEquals(moved.profiles.map { it.name }, restore(encodeSshProfileExport(moved, source = "netkit-android")).profiles.map { it.name })
         assertFalse(profiles[0].needsKeySelection(SshData()))
         assertFalse(profiles[1].needsKeySelection(source))
         assertTrue(profiles[1].copy(keyRef = null).needsKeySelection(source))
@@ -108,18 +116,18 @@ class SshProfileExchangeTest {
         val duplicate = source.copy(profiles = listOf(profiles[0], profiles[1].copy(name = profiles[0].name)))
         assertTrue(duplicate.valid()) // Saving duplicate names remains allowed.
         assertEquals(SshProfileExportError.DuplicateNames(listOf("fixture-0")),
-            assertFailsWith<SshProfileExportException> { encodeSshProfileExport(duplicate) }.reason)
+            assertFailsWith<SshProfileExportException> { encodeSshProfileExport(duplicate, source = "netkit-android") }.reason)
         val large = SshData(profiles = (1..70).map { profiles[0].copy(id = "p$it", name = "p$it", startupCommand = "ž".repeat(4096)) })
         assertTrue(large.valid())
         assertEquals(SshProfileExportError.TooLarge,
-            assertFailsWith<SshProfileExportException> { encodeSshProfileExport(large) }.reason)
+            assertFailsWith<SshProfileExportException> { encodeSshProfileExport(large, source = "netkit-android") }.reason)
     }
 
     @Test fun authenticationTransitionsDetachOnlyReferencesUnusedByNewType() {
         for (old in SshAuthentication.entries) for (new in SshAuthentication.entries) {
             val before = profiles[0].copy(authentication = old)
             val data = SshData(profiles = listOf(before))
-            val incoming = decodeSshProfileImport(encodeSshProfileExport(SshData(profiles = listOf(before.copy(authentication = new)))))
+            val incoming = decodeSshProfileImport(encodeSshProfileExport(SshData(profiles = listOf(before.copy(authentication = new))), source = "netkit-android"))
             val plan = planSshProfileImport(data, incoming, null) { error("Existing") }
             val after = applySshImportPlan(data, plan).profiles.single()
             val expectedSecretRef = before.secretRef.takeUnless { old != new && new != SshAuthentication.PASSWORD }
@@ -128,7 +136,7 @@ class SshProfileExchangeTest {
             assertEquals(if (expectedSecretRef == null) listOf(before.secretRef) else emptyList(), plan.detachedSecretRefs)
         }
         val keyProfile = profiles[1]
-        val moved = restore(encodeSshProfileExport(SshData(profiles = listOf(keyProfile.copy(host = "198.51.100.8")))), source)
+        val moved = restore(encodeSshProfileExport(SshData(profiles = listOf(keyProfile.copy(host = "198.51.100.8"))), source = "netkit-android"), source)
         assertEquals(keyProfile.keyRef, moved.profiles[1].keyRef) // Endpoint alone never detaches the key.
     }
 

@@ -9,14 +9,14 @@ sealed interface SshProfileExportError {
 class SshProfileExportException(val reason: SshProfileExportError) : IllegalArgumentException()
 
 /** Explicit wire allowlist: local identities, credential references and server trust never leave here. */
-fun encodeSshProfileExport(data: SshData): ByteArray {
+fun encodeSshProfileExport(data: SshData, source: String): ByteArray {
     require(data.valid())
     val duplicates = data.profiles.groupingBy { it.name }.eachCount().filterValues { it > 1 }.keys.toList()
     if (duplicates.isNotEmpty()) throw SshProfileExportException(SshProfileExportError.DuplicateNames(duplicates))
     val document = buildJsonObject {
         put("format", "netkit-ssh-profiles")
         put("schema", 2)
-        put("source", "netkit-android")
+        put("source", source)
         putJsonArray("profiles") {
             data.profiles.forEach { profile ->
                 addJsonObject {

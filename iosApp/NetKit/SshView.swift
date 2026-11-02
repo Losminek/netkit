@@ -73,6 +73,25 @@ func errorKey(_ error: SshViewModel.ErrorKind) -> String {
     case .hostRejected: "ssh.error.host.rejected"
     case .timeout: "ssh.error.timeout"
     case .inputOverflow: "ssh.error.input"
+    case .importFailure(let failure): sshImportErrorKey(failure)
+    }
+}
+
+func sshImportErrorKey(_ failure: SshImportFailure) -> String {
+    switch failure {
+    case .read: "ssh.import.error.read"
+    case .tooLarge: "ssh.import.error.size"
+    case .format: "ssh.import.error.format"
+    case .utf8: "ssh.import.error.utf8"
+    case .schema: "ssh.import.error.schema"
+    case .unknownField: "ssh.import.error.unknown.field"
+    case .duplicateAlias: "ssh.import.error.duplicate"
+    case .invalidProfile: "ssh.import.error.invalid.profile"
+    case .limit: "ssh.import.error.limit"
+    case .stalePlan: "ssh.import.error.stale"
+    case .credentialBackup: "ssh.import.error.backup"
+    case .storage: "ssh.import.error.storage"
+    case .keyUnavailable: "ssh.import.error.key.unavailable"
     }
 }
 
@@ -245,7 +264,7 @@ struct SshView: View {
         .fileImporter(isPresented: $showImporter, allowedContentTypes: [.json]) { result in
             switch result {
             case .success(let url): model.previewImport(url); showImportConfirm = model.importPlan != nil
-            case .failure(let error): if !isUserCancellation(error) { model.error = .invalid }
+            case .failure(let error): if !isUserCancellation(error) { model.error = .importFailure(.read) }
             }
         }
         .fileExporter(isPresented: $showExporter, document: exportDocument, contentType: .json,
@@ -468,6 +487,13 @@ private struct SshImportPreviewView: View {
         NavigationStack {
             if let plan = model.importPlan {
                 List {
+                    if let error = model.error {
+                        Section {
+                            Text(LocalizedStringKey(errorKey(error))).foregroundStyle(.red)
+                                .accessibilityIdentifier("ssh.import.error")
+                            Button("ssh.ok") { model.error = nil }
+                        }
+                    }
                     Section {
                         LabeledContent("ssh.import.new", value: String(model.importAddedCount(plan)))
                         LabeledContent("ssh.import.updated", value: String(plan.updatedProfiles.count))

@@ -188,6 +188,14 @@
       "artifacts": ["org.bouncycastle:bcprov-jdk18on"]
     },
     {
+      "id": "ieee-oui",
+      "name": "IEEE OUI Public Listing",
+      "version": "MA-L, MA-M, MA-S; downloaded 2026-11-02 (assets/oui/ieee-oui.tsv, prefixes and organization names only)",
+      "license": "No copyright asserted by IEEE (see notice)",
+      "copyright": "IEEE Registration Authority, https://standards-oui.ieee.org/. Statement attributed to IEEE (quoted by Debian ieee-data): IEEE does not assert any copyright in the OUI Public Listing or attempt to restrict distribution of the listing in any way.",
+      "texts": ["ieee-oui-NOTICE.txt"]
+    },
+    {
       "id": "manrope",
       "name": "Manrope (font)",
       "version": "4.505",

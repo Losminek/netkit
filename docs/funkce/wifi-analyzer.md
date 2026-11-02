@@ -1,6 +1,6 @@
 # Funkce: Wi-Fi analyzér
 
-**Stav:** implementováno v M1c; fyzické ověření na Xiaomi 15 je stále otevřené.
+**Stav:** implementováno v M1c; fyzické ověření na telefonu je stále otevřené.
 Náhrada základního přehledu Wi-Fi z WiFiman a Wi-Fi části Network Analyzeru. Výsledky
 emulátoru ani napsaný kód se nepovažují za důkaz fyzického skenu.
 
@@ -15,10 +15,16 @@ emulátoru ani napsaný kód se nepovažují za důkaz fyzického skenu.
 - Android scan vyžaduje runtime `ACCESS_FINE_LOCATION` společně s
   `ACCESS_COARSE_LOCATION`; aplikace pokračuje jen s uděleným přesným oprávněním a zapnutou
   systémovou polohou. Nepoužívá `NEARBY_WIFI_DEVICES`. Scan je ruční a foreground-only.
-  Throttled/nepotvrzený scan ponechá data označená jako cache; UI nezobrazuje odhadovaný
-  odpočet, protože Android nedává aplikaci spolehlivý čas příštího povoleného scanu.
-- OUI databáze není součástí aplikace: výrobce proto není známý. UI jen oznamuje, zda je
-  BSSID lokálně administrovaná; tento bit sám neurčuje výrobce ani zařízení.
+  Throttled/nepotvrzený scan ponechá data označená jako cache. UI ukazuje vlastní odhad
+  zbývajících skenů a při nule „asi za N s“; systém skutečný čas příštího povolení neoznamuje.
+- Výrobce AP (od 1.1.0): offline seznam IEEE OUI (MA-L/MA-M/MA-S) přibalený v APK
+  (`assets/oui/ieee-oui.tsv`, generátor `tools/update_oui.py`, licence `docs/zavislosti.md` §10).
+  Lookup ve `shared` (`OuiDatabase`) bere nejdelší prefix 36 → 28 → 24 bitů; lokálně
+  administrovaná (bit 0x02) a multicast (bit 0x01) BSSID výrobce nemá. Seznam sítí ukazuje výrobce
+  pod SSID menším tlumeným písmem, jen když je známý; detail AP „Výrobce: X“, u neznámého OUI
+  „Výrobce neznámý“, u lokální BSSID vysvětlení, že výrobce nelze z OUI určit. Výrobce je vlastník
+  OUI podle IEEE, ne ověřená identita zařízení. Asset se čte jednou za proces na Dispatchers.IO
+  (předem na pozadí v `init`, jinak při prvním mapování skenu) a drží se v paměti.
 - Zabezpečení z `ScanResult.capabilities` zachovává `UNKNOWN` pro nepodporované/neznámé
   příznaky. WPA2/WPA3 enterprise klasifikace používá zveřejněné Android capability příznaky.
   Obecné `RSN-EAP` samo nerozliší WPA2-Enterprise od běžného WPA3-Enterprise; proto se
@@ -60,7 +66,7 @@ bezdrátové audity (zachytávání paketů, deauth apod. — **nikdy**), spušt
 
 | Omezení | Důsledek | Přístup |
 |---|---|---|
-| Android omezuje četnost scanů podle verze a stavu foreground/background | Živý graf se nemusí obnovit po každém stisku | Aplikace spouští scan jen po ruční akci v popředí; při throttlingu ponechá cache se skutečným stářím a zobrazí omezení, bez smyšleného odpočtu |
+| Android omezuje četnost scanů podle verze a stavu foreground/background | Živý graf se nemusí obnovit po každém stisku | Aplikace spouští scan jen po ruční akci v popředí; při throttlingu ponechá cache se skutečným stářím; odhad rozpočtu vychází jen z vlastních přijatých požadavků |
 | Výsledky skenu vyžadují přesné oprávnění polohy a zapnutou systémovou polohu | Bez potřebného oprávnění nelze získat nový scan | Aplikace žádá `FINE` a `COARSE` společně, vyžaduje grant `FINE`, oznamuje chybějící oprávnění nebo vypnutou polohu; `NEARBY_WIFI_DEVICES` nepřidává |
 | `WifiInfo` SSID/BSSID bez oprávnění vrací zástupné hodnoty | Aktuální připojení může mít redigovanou identitu | Redigovaná/neznámá hodnota se ukáže jako skrytá či neznámá, ne jako odhad |
 | `startScan` je od API 28 zastaralé a Android může požadavek odmítnout | Výsledek nemusí být nový | Sleduje se scan callback/receiver, freshness timestampu a stav volání; cache se neoznačí jako nový scan |
@@ -76,8 +82,8 @@ bezdrátové audity (zachytávání paketů, deauth apod. — **nikdy**), spušt
   - skóre kanálu (váha podle RSSI, např. lineární převod dBm → mW);
   - přepočet dBm → úroveň 0–4 a procento;
   - klasifikace zabezpečení z `capabilities` řetězce;
-  - flag lokálně administrované adresy (bit 2 prvního oktetu); OUI lookup není implementován,
-    protože nebyl nalezen vhodný ověřený dataset s jasnou permisivní licencí.
+  - flag lokálně administrované adresy (bit 0x02 prvního oktetu); OUI lookup nad seznamem IEEE
+    (`OuiDatabase`).
 - **Platformní:** `WifiScanner` nad `WifiManager`; `NetworkInfoProvider` nad `ConnectivityManager`
   + `WifiInfo`.
 - **Zdroje fixtur:** unit testy používají zachycená data (seznam `ScanResult`-like záznamů v JSON)
@@ -167,7 +173,7 @@ JVM testů a screenshoty konkrétního APK eviduje report 06.
   toto oprávnění se nepřidává. [Scan workflow](https://developer.android.com/develop/connectivity/wifi/wifi-scan)
   uvádí pro API 29+ i CHANGE_WIFI_STATE a zapnutou systémovou polohu.
 
-OUI databáze, mDNS starých API, automatické skeny na pozadí a spektrální měření jsou
+mDNS starých API, automatické skeny na pozadí a spektrální měření jsou
 mimo tento řez. Screenshoty světlo/tma, CS/EN, fontScale 2.0 a ověření IME/polohy/OEM
 nejsou prokázány samotnými unit testy; dokládají se samostatným během nebo zůstávají NOT RUN.
 
@@ -197,7 +203,8 @@ Per-AP stáří na kartě je diagnostika původního měření, nezávislá na v
 První nepotvrzená cache může naplnit seznam/graf, ale doporučení nemá. Pokud už
 existuje předchozí sada, nepotvrzený nebo prázdný výsledek zachová její obsah i čas;
 opakované neúspěšné scany ji nemohou omladit. Potvrzení nadále vyžaduje úspěšnou
-scan cestu a důkaz alespoň jednoho nového timestampu z doby požadavku. Android
+scan cestu a důkaz alespoň jednoho nového timestampu z doby požadavku; pasivní
+výsledky od verze 1.1.0 nevyžadují vlastní požadavek, ale vyžadují novější měření (viz níže). Android
 nemusí vysvětlit příčinu odmítnutí; chybějící potvrzení není samo důkaz throttlingu.
 
 Výběr AP a uchovaná historie při stárnutí sady nezaniknou. Vzorky mají skutečný
@@ -450,3 +457,33 @@ Mobilní část: [mobilni-sit.md §7](mobilni-sit.md#7-ui-v-přehledu-m4-a3).
 - **Roaming:** čas vlevo, změna pásma („2,4 → 5 GHz“) nebo kanálu („k. 36 → 100“) jako štítek
   (`roamingChange`), „po výpadku“ jako štítek warn, BSSID mono vpravo; na 412 dp nejvýš dva řádky.
 
+
+
+## Počítadlo a pasivní výsledky (1.1.0, 2026-11-02)
+
+- ViewModel uchovává v paměti časy vlastních úspěšně spuštěných `startScan` (`true`),
+  posuvné okno 120 s, rozpočet 4. „Zbývá X ze 4“ / „Další sken asi za N s“ se obnovuje
+  po sekundě; po rotaci časy zůstávají, po novém procesu začíná odhad znovu.
+  Tlačítko se kvůli rozpočtu nevypíná — systémové omezení může být vypnuté. Nejde o
+  zbývající systémovou kvótu, NetKit nezná požadavky ostatních aplikací ani rozhodnutí Androidu.
+- Jen při otevřené obrazovce Spektrum a lifecycle STARTED běží pasivní odběr:
+  API 29 `SCAN_RESULTS_AVAILABLE_ACTION` s `EXTRA_RESULTS_UPDATED=true`; API 30+
+  `ScanResultsCallback`. Callback nemá příznak updated, proto se navíc vyžaduje novější
+  platný timestamp měření. Prázdné výsledky, budoucí čas, cache a duplicitní timestamp
+  se nikdy nevydávají za novou sadu. Při vstupu je hranicí aktuální monotónní čas;
+  později musí měření předčit i poslední potvrzenou sadu. Pasivní sada nese skutečný
+  nejnovější čas měření z `ScanResult.timestamp`, nikoli okamžik přečtení cache.
+- Odchod ze záložky, `onStop` i zrušení ViewModelu odregistrují pasivní odběr a zruší
+  probíhající čtení. Při aktivním vlastním skenu se pasivní čtení přeskočí, aby jeho výsledek
+  nesoutěžil s vlastní scan cestou. Žádný periodický scan ani práce na pozadí nepřibývá.
+- Nepotvrzený scan ukáže CS/EN návod: Android → Možnosti pro vývojáře → Omezení
+  vyhledávání Wi-Fi. Aplikace systémové nastavení sama nemění. Tlačítko otevírá jen
+  `ACTION_APPLICATION_DEVELOPMENT_SETTINGS`, pokud je `Settings.Global.DEVELOPMENT_SETTINGS_ENABLED`
+  nenulové. Při hodnotě 0 (výchozí) jde rovnou na `ACTION_DEVICE_INFO_SETTINGS`; výjimka při
+  otevření vývojářských voleb je druhá pojistka se stejným fallbackem. Text vysvětluje zapnutí 7× klepnutím na číslo
+  sestavení. Při nedostupnosti obou aktivit zobrazí chybu otevření nastavení.
+- Android API ověřena 2026-11-02: [skenování a throttling](https://developer.android.com/develop/connectivity/wifi/wifi-scan),
+  [ScanResultsCallback](https://developer.android.com/reference/android/net/wifi/WifiManager.ScanResultsCallback),
+  [Settings](https://developer.android.com/reference/android/provider/Settings),
+  [zapnutí vývojářských voleb](https://developer.android.com/studio/debug/dev-options).
+  API 29 a reálné RF/HyperOS chování čekají na fyzické ověření; automatické důkazy jsou v interním záznamu.

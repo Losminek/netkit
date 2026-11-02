@@ -1,0 +1,25 @@
+IEEE OUI Public Listing
+
+NetKit shows the vendor of a Wi-Fi access point from an offline copy of the IEEE Registration
+Authority public listings MA-L (24-bit OUI), MA-M (28-bit) and MA-S (36-bit). Only the assigned
+prefix and the organization name are included; organization addresses are not. The copy was
+downloaded on 2026-11-02 from:
+
+- https://standards-oui.ieee.org/oui/oui.csv
+- https://standards-oui.ieee.org/oui28/mam.csv
+- https://standards-oui.ieee.org/oui36/oui36.csv
+
+Statement attributed to IEEE: "IEEE does not assert any copyright in the OUI Public Listing or attempt to restrict
+distribution of the listing in any way. The IEEE Registration Authority does, however, strongly
+encourage those who use the list to obtain it directly from IEEE (and to update it on a regular
+basis) to ensure the integrity of the information."
+
+Source of the statement: Debian package ieee-data, copyright file (2014),
+https://metadata.ftp-master.debian.org/changelogs/main/i/ieee-data/ieee-data_20141019.1_copyright
+(checked 2026-11-02). Debian classifies these files as "License: other" with the note "Public
+Domain"; that is Debian's classification, not a statement by IEEE. An IEEE page carrying this
+statement was not found on 2026-11-02 (the IEEE Registration Authority FAQ does not contain it).
+
+The listing is not part of the NetKit source code licence. Names are shown as published by IEEE
+(whitespace and invisible characters normalized); NetKit does not verify them, and the vendor of
+an access point may differ from the owner of its OUI.

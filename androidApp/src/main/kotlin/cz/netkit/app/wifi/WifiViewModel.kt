@@ -78,6 +78,59 @@ class WifiViewModel(application: Application) : AndroidViewModel(application) {
     private var scanJob: Job? = null
     private var currentJob: Job? = null
     private var selectedBssid: String? = null
+    private val scanWindow = WifiScanWindow(SystemClock::elapsedRealtime)
+    private val _scanStarts = MutableStateFlow(0)
+    val scanStarts: StateFlow<Int> = _scanStarts.asStateFlow()
+    private var passiveJob: Job? = null
+    private var passiveAfterMs = 0L
+    private val passiveObserver = ForegroundScanObserver(WifiScanEvents(app, wifi)::subscribe, ::readPassiveResults)
+
+    internal fun scanBudget(): WifiScanBudget = scanWindow.budget()
+
+    /** Called by the Wi-Fi screen's STARTED block and explicitly at activity onStop. */
+    fun setScreenActive(active: Boolean) {
+        if (active && !passiveObserver.active) passiveAfterMs = SystemClock.elapsedRealtime()
+        try { passiveObserver.setActive(active) }
+        catch (_: SecurityException) { _state.update { it.copy(status = WifiScanStatus.PERMISSION_REQUIRED) } }
+        catch (_: RuntimeException) { _state.update { it.copy(status = WifiScanStatus.ERROR) } }
+        if (!active) { passiveJob?.cancel(); passiveJob = null }
+    }
+
+    private fun scanStarted() {
+        scanWindow.accepted()
+        _scanStarts.update { it + 1 }
+    }
+
+    private fun readPassiveResults() {
+        if (!passiveObserver.active || scanJob?.isActive == true) return
+        passiveJob?.cancel()
+        passiveJob = viewModelScope.launch {
+            try {
+                val snapshot = withContext(Dispatchers.IO) {
+                    if (!hasScanPermission() || !isLocationEnabled()) return@withContext null
+                    val results = wifi.scanResults
+                    val now = SystemClock.elapsedRealtime()
+                    val timestamp = newPassiveScanTime(results.map { it.timestamp / 1000L }, now,
+                        maxOf(passiveAfterMs, _state.value.lastUpdatedElapsedMs ?: 0L)) ?: return@withContext null
+                    ScanSnapshot(deduplicateAccessPoints(results.map { it.toPoint(now) }), true, timestamp)
+                } ?: return@launch
+                if (!passiveObserver.active || scanJob?.isActive == true) return@launch
+                if (snapshot.receivedElapsedMs <= (_state.value.lastUpdatedElapsedMs ?: 0L)) return@launch
+                passiveAfterMs = snapshot.receivedElapsedMs
+                _state.update { old -> publishScanResult(old, markPoints(snapshot.points, old.current?.bssid),
+                    true, snapshot.receivedElapsedMs) }
+                appendHistory()
+                refreshCurrent()
+            } catch (cancel: CancellationException) { throw cancel }
+            catch (_: SecurityException) { /* Permission may have been revoked since subscription. */ }
+            catch (_: RuntimeException) { _state.update { it.copy(status = WifiScanStatus.ERROR) } }
+        }
+    }
+
+    override fun onCleared() {
+        setScreenActive(false)
+        super.onCleared()
+    }
 
 
     init {
@@ -87,6 +140,8 @@ class WifiViewModel(application: Application) : AndroidViewModel(application) {
                 _state.update { it.copy(status = WifiScanStatus.PERMISSION_REQUIRED) }
             }
         }
+        // Warm-up: parse the OUI list in the background so the first scan does not wait for it.
+        viewModelScope.launch(Dispatchers.IO) { OuiAssets.loadedOnIo(app) }
     }
 
     fun hasScanPermission(): Boolean = ContextCompat.checkSelfPermission(app, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -200,6 +255,7 @@ class WifiViewModel(application: Application) : AndroidViewModel(application) {
                     wifi.registerScanResultsCallback(app.mainExecutor, callback)
                     continuation.invokeOnCancellation { runCatching { wifi.unregisterScanResultsCallback(callback) } }
                     val started = wifi.startScan()
+                    if (started) scanStarted()
                     if (!started && continuation.isActive) {
                         wifi.unregisterScanResultsCallback(callback)
                         continuation.resume(false)
@@ -225,6 +281,7 @@ class WifiViewModel(application: Application) : AndroidViewModel(application) {
                 else @Suppress("DEPRECATION") app.registerReceiver(receiver, filter)
                 continuation.invokeOnCancellation { runCatching { app.unregisterReceiver(receiver) } }
                 val started = wifi.startScan()
+                if (started) scanStarted()
                 if (!started && continuation.isActive) {
                     runCatching { app.unregisterReceiver(receiver) }
                     continuation.resume(false)
@@ -280,6 +337,8 @@ class WifiViewModel(application: Application) : AndroidViewModel(application) {
             locallyAdministered = isLocallyAdministered(BSSID.orEmpty()),
             stationCount = bssLoad?.stationCount,
             channelUtilizationPercent = bssLoad?.channelUtilizationPercent,
+            // toPoint runs only inside the scan's Dispatchers.IO block; usually warmed up by init.
+            vendor = OuiAssets.loadedOnIo(app).vendorFor(BSSID),
         )
     }
 

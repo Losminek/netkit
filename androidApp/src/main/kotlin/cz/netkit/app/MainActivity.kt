@@ -38,6 +38,7 @@ import androidx.lifecycle.ViewModelProvider
 import cz.netkit.app.wol.WolViewModel
 import cz.netkit.app.ui.about.AboutScreen
 import cz.netkit.app.ui.about.OssLicensesScreen
+import cz.netkit.app.update.UpdateDialog
 import cz.netkit.app.update.UpdateCard
 import cz.netkit.app.update.UpdateViewModel
 import cz.netkit.app.wol.WolScreen
@@ -81,6 +82,7 @@ class MainActivity : ComponentActivity() {
     private val update by lazy { ViewModelProvider(this)[UpdateViewModel::class.java] }
 
     override fun onStop() {
+        wifi.setScreenActive(false)
         if (!isChangingConfigurations) {
             wol.controller.cancelWake()
             lan.cancelActive()
@@ -98,7 +100,7 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         ssh.onForeground()
-        // D14: the update check runs only in the foreground, at most once per 24 h.
+        // Startup can show a dialog; later onStart checks only refresh the card (24 h).
         update.onForeground()
     }
 
@@ -135,6 +137,9 @@ fun NetKitApp(wol: WolViewModel, lan: LanViewModel, wifi: WifiViewModel, live: W
     // Open-source licences, a subscreen of About; closed together with About.
     var licensesOpen by rememberSaveable { mutableStateOf(false) }
     val updateState by update.state.collectAsStateWithLifecycle()
+    updateState.dialog?.let { info ->
+        UpdateDialog(info, onClose = update::closeDialog, onDismissVersion = { update.dismiss(info) })
+    }
     val destination = Destination.entries[selectedTab]
     val savedTabs = rememberSaveableStateHolder()
     val sshState by ssh.state.collectAsStateWithLifecycle()

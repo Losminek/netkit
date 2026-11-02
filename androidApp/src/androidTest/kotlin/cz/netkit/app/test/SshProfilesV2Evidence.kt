@@ -118,7 +118,7 @@ suspend fun sshProfilesV2Evidence(test: Instrumentation, app: M1TestApplication,
         ui.clickTag("tab_ssh")
         val changed = profiles[0].copy(host = "198.51.100.1", port = 2222, username = "other",
             authentication = SshAuthentication.INTERACTIVE, startupCommand = "show version", keepaliveSeconds = 60)
-        val input = File(app.filesDir, "incoming-v2.json").apply { writeBytes(encodeSshProfileExport(SshData(profiles = listOf(changed)))) }
+        val input = File(app.filesDir, "incoming-v2.json").apply { writeBytes(encodeSshProfileExport(SshData(profiles = listOf(changed)), source = "netkit-android")) }
         test.runOnMainSync { model.previewProfileImport(Uri.fromFile(input)) }
         withTimeout(8000) { model.state.first { it.pendingProfileImport != null } }
         for ((label, old, new) in listOf(

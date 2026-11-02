@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0 — upozornění na novou verzi a výrobce Wi-Fi (2026-11-02)
+
+- Při spuštění aplikace se zkontroluje nová verze a nabídne se v okně s volbami Stáhnout, Zavřít a Nepřipomínat tuto verzi; bez notifikací na pozadí.
+- U skenu Wi-Fi je vidět, kolik skenů zbývá v limitu Androidu (4 za 2 minuty) a kdy bude další; aplikace přebírá i výsledky skenů, které telefon provedl sám, a nabízí návod k vypnutí omezení v Možnostech pro vývojáře.
+- Výrobce přístupového bodu pod názvem sítě podle offline seznamu IEEE OUI (bez síťového dotazu; u náhodných BSSID se nezobrazuje).
+- Chyby importu SSH profilů na iOS jsou konkrétní a nezahodí náhled; export z iOS se označuje vlastním zdrojem.
+
 ## 1.0.1 — SSH profily a iOS ve zdrojích (2026-11-01)
 
 - Export SSH profilů v novém formátu v2 (typ ověření, startovací příkaz, keepalive, pořadí; bez hesel a klíčů) a import v1, v2 i starších exportů z telefonu.

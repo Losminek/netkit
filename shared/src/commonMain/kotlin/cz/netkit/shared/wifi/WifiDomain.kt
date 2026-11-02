@@ -29,6 +29,8 @@ data class AccessPoint(
     val stationCount: Int? = null,
     /** BSS Load (IE 11) channel utilization 0..100 % of the AP's primary channel; null when absent. */
     val channelUtilizationPercent: Int? = null,
+    /** Organization owning the BSSID's OUI ([OuiDatabase]); null when unknown, local or multicast. */
+    val vendor: String? = null,
 )
 
 data class SignalSample(val elapsedMs: Long, val rssiDbm: Int)

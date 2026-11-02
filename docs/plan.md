@@ -25,7 +25,7 @@ Kritérium úspěchu M1: správce týden nepoužije žádnou ze čtyř původní
 
 | # | Rozhodnutí | Důvod / poznámka |
 |---|---|---|
-| D1 | Android nativně: Kotlin + Jetpack Compose. minSdk 29, compileSdk/targetSdk 35. Primární telefon Xiaomi 15 (HyperOS na Androidu 15). | Wi-Fi scan, kanály a šířka pásma, soketové operace a SSH jsou závislé na nativním Android API. minSdk 29 pokryje běžné telefony kolegů a vynechá legacy větve (Wi-Fi 6 info je od API 30, řeší se runtime kontrolou). |
+| D1 | Android nativně: Kotlin + Jetpack Compose. minSdk 29, compileSdk/targetSdk 35. Primární testovací telefon s HyperOS na Androidu 15. | Wi-Fi scan, kanály a šířka pásma, soketové operace a SSH jsou závislé na nativním Android API. minSdk 29 pokryje běžné telefony kolegů a vynechá legacy větve (Wi-Fi 6 info je od API 30, řeší se runtime kontrolou). |
 | D2 | KMP-ready: `:shared` (Kotlin Multiplatform, `commonMain` bez `java.*`) + `:androidApp`. V M1 se deklaruje jen `androidTarget()` a `jvm()` (pro rychlé testy). iOS targety se nedeklarují. | Na Linuxu Kotlin/Native pro Apple nejde sestavit; deklarace by přidala šum a stahování toolchainu. Disciplína „commonMain bez JVM“ se hlídá grepem, takže přidání iOS později není přepis. |
 | D3 | M1 obsahuje všechny čtyři funkce. Pořadí implementace: WoL → LAN → Wi-Fi → SSH. | WoL je nejmenší, otestuje celý řetězec. SSH je nejnáročnější (terminál + bezpečnost), proto až poslední. |
 | D4 | Distribuce: sideload/GitHub Releases pro správce. Později kolegové (open-source nebo vlastní web). Žádný Google Play v1. **Změněno 2026-10-27: viz D9–D12** (veřejné GitHub Releases + web; Play jako fáze 2 po stabilním vydání). | Play má přísnou politiku na polohu a Wi-Fi scan. Bez Play odpadá review. |

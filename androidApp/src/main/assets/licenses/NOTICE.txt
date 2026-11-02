@@ -33,6 +33,12 @@ SLF4J API (testovací závislost) — MIT; docs/licenses/slf4j-api-META-INF_LICE
 jQuery WebJar (prostředek testovacích reportů) — MIT, OpenJS Foundation
 and other contributors; https://jquery.org/license/.
 
+IEEE OUI Public Listing (MA-L, MA-M, MA-S; jen prefixy a názvy organizací, staženo
+2026-11-02 z https://standards-oui.ieee.org/). Podle prohlášení IEEE, citovaného v copyright
+souboru Debian ieee-data, IEEE k seznamu nenárokuje autorská práva ani neomezuje jeho šíření
+(„does not assert any copyright … or attempt to restrict distribution“); Debian soubor zařazuje
+jako „other“ / Public Domain. Podrobnosti: androidApp/src/main/assets/licenses/ieee-oui-NOTICE.txt.
+
 Manrope — Copyright 2018 The Manrope Project Authors; SIL OFL 1.1.
 JetBrains Mono — Copyright 2020 The JetBrains Mono Project Authors; SIL OFL 1.1.
 Úplné licence dodané společně s fonty:

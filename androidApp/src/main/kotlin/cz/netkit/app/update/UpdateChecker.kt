@@ -107,8 +107,8 @@ internal class UpdateChecker(context: Context) {
     fun dismiss(versionCode: Int) = preferences.edit { putInt(KEY_DISMISSED_CODE, versionCode) }
 
     /**
-     * Fetches and validates the manifest. Any attempt (also a failed one) counts for the 24 h limit,
-     * so an unreachable source is not asked on every start; a failure keeps the previous valid result.
+     * Fetches and validates the manifest. Every attempt is timestamped for startup (60 min) and card-only foreground (24 h) limits;
+     * a failure keeps the previous valid result for the overview card.
      * Cancellation cancels the HTTP call.
      */
     suspend fun check(nowMs: Long = System.currentTimeMillis()): UpdateCheckOutcome {

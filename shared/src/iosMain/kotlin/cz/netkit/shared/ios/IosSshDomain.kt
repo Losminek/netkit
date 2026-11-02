@@ -5,14 +5,17 @@ import cz.netkit.shared.json.jsonNestingDepth
 import cz.netkit.shared.ssh.*
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.intOrNull
 
 enum class IosSshDataFailure { SIZE, UTF8, FORMAT, SCHEMA, INVALID_DATA, CONFLICT }
 data class IosSshDataResult(val data: SshData?, val failure: IosSshDataFailure?)
-data class IosSshImportResult(val imported: SshProfileImport?, val failure: SshProfileImportFailure?)
-data class IosSshPlanResult(val plan: SshImportPlan?, val failure: SshProfileImportFailure?)
+enum class IosSshImportFailure { SIZE, UTF8, FORMAT, SCHEMA, UNKNOWN_FIELD, DUPLICATE_ALIAS, INVALID_PROFILE, LIMIT, STALE_PLAN, CREDENTIAL_BACKUP }
+data class IosSshImportResult(val imported: SshProfileImport?, val failure: IosSshImportFailure?)
+data class IosSshPlanResult(val plan: SshImportPlan?, val failure: IosSshImportFailure?)
 data class IosSshImportApplyResult(val data: SshData?, val failure: SshProfileImportFailure?)
 data class IosSshEndpointChange(val profileId: String, val before: String, val after: String)
 enum class IosSshExportFailure { DUPLICATE_NAMES, TOO_LARGE, INVALID_DATA }
@@ -51,7 +54,7 @@ class IosSshDomain {
 
     /** Swift must obtain validated, frozen bytes before presenting the file exporter. */
     fun prepareExport(data: SshData): IosSshExportResult = try {
-        IosSshExportResult(encodeSshProfileExport(data), null)
+        IosSshExportResult(encodeSshProfileExport(data, source = "netkit-ios"), null)
     } catch (error: SshProfileExportException) {
         when (val reason = error.reason) {
             is SshProfileExportError.DuplicateNames -> IosSshExportResult(null, IosSshExportFailure.DUPLICATE_NAMES, reason.names)
@@ -117,11 +120,46 @@ class IosSshDomain {
 
     fun decodeImport(bytes: ByteArray): IosSshImportResult = try {
         IosSshImportResult(decodeSshProfileImport(bytes), null)
-    } catch (error: SshProfileImportException) { IosSshImportResult(null, error.reason) }
+    } catch (error: SshProfileImportException) {
+        val failure = if (error.reason in setOf(SshProfileImportFailure.FORMAT, SshProfileImportFailure.UNKNOWN_FIELD) &&
+            containsBackupMaterial(bytes)) IosSshImportFailure.CREDENTIAL_BACKUP else importFailure(error.reason)
+        IosSshImportResult(null, failure)
+    }
 
     fun planImport(current: SshData, imported: SshProfileImport, keyRef: String?, generateId: () -> String): IosSshPlanResult = try {
         IosSshPlanResult(planSshProfileImport(current, imported, keyRef, generateId), null)
-    } catch (error: SshProfileImportException) { IosSshPlanResult(null, error.reason) }
+    } catch (error: SshProfileImportException) { IosSshPlanResult(null, importFailure(error.reason)) }
+
+    /** Stable categories only: never expose parser messages or document values to Swift UI. */
+    private fun importFailure(reason: SshProfileImportFailure): IosSshImportFailure = when (reason) {
+        SshProfileImportFailure.SIZE -> IosSshImportFailure.SIZE
+        SshProfileImportFailure.UTF8 -> IosSshImportFailure.UTF8
+        SshProfileImportFailure.SCHEMA -> IosSshImportFailure.SCHEMA
+        SshProfileImportFailure.UNKNOWN_FIELD -> IosSshImportFailure.UNKNOWN_FIELD
+        SshProfileImportFailure.DUPLICATE_ALIAS, SshProfileImportFailure.AMBIGUOUS_ALIAS -> IosSshImportFailure.DUPLICATE_ALIAS
+        SshProfileImportFailure.INVALID_PROFILE -> IosSshImportFailure.INVALID_PROFILE
+        SshProfileImportFailure.LIMIT -> IosSshImportFailure.LIMIT
+        SshProfileImportFailure.STALE_PLAN -> IosSshImportFailure.STALE_PLAN
+        SshProfileImportFailure.FORMAT, SshProfileImportFailure.INVALID_REFERENCE,
+        SshProfileImportFailure.DUPLICATE_ID, SshProfileImportFailure.INVALID_DATA -> IosSshImportFailure.FORMAT
+    }
+
+    /** Inspect only already rejected, bounded JSON. This does not relax the shared decoder. */
+    private fun containsBackupMaterial(bytes: ByteArray): Boolean {
+        if (bytes.size > SSH_PROFILE_IMPORT_LIMIT) return false
+        val text = try { bytes.decodeToString(throwOnInvalidSequence = true).removePrefix("\uFEFF") }
+            catch (_: CharacterCodingException) { return false }
+        if (jsonNestingDepth(text) > JSON_MAX_DEPTH) return false
+        val root = try { Json.parseToJsonElement(text) as? JsonObject }
+            catch (_: IllegalArgumentException) { null } ?: return false
+        if (listOf("keys", "hostKeys", "rejectedHostKeys").any { (root[it] as? JsonArray)?.isNotEmpty() == true }) return true
+        return (root["profiles"] as? JsonArray)?.any { element ->
+            val row = element as? JsonObject ?: return@any false
+            listOf("secretRef", "keyRef", "password", "privateKey").any { field ->
+                row[field]?.let { it != JsonNull } == true
+            }
+        } == true
+    }
 
     fun applyImport(current: SshData, plan: SshImportPlan): IosSshImportApplyResult = try {
         IosSshImportApplyResult(applySshImportPlan(current, plan), null)

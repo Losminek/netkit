@@ -1,8 +1,32 @@
 import Foundation
 import NetKitShared
 
+/// Safe import diagnostics; no parser messages or input values reach the UI.
+enum SshImportFailure: Error, Equatable, CaseIterable {
+    case read, tooLarge, format, utf8, schema, unknownField, duplicateAlias, invalidProfile, limit, stalePlan, credentialBackup, storage, keyUnavailable
+
+    init(_ failure: IosSshImportFailure) {
+        switch failure {
+        case .size: self = .tooLarge
+        case .utf8: self = .utf8
+        case .schema: self = .schema
+        case .unknownField: self = .unknownField
+        case .duplicateAlias: self = .duplicateAlias
+        case .invalidProfile: self = .invalidProfile
+        case .limit: self = .limit
+        case .stalePlan: self = .stalePlan
+        case .credentialBackup: self = .credentialBackup
+        default: self = .format
+        }
+    }
+}
+
+protocol SshImportPlanning {
+    func planImport(_ imported: SshProfileImport, keyRef: String?) throws -> SshImportPlan
+}
+
 /// Serializes profile and host-key updates, including compare-and-insert after TOFU approval.
-final class SshMetadataStore {
+final class SshMetadataStore: SshImportPlanning {
     enum Failure: Error { case io, invalid, conflict }
     private let lock = NSLock()
     private let domain: IosSshDomain
@@ -96,18 +120,22 @@ final class SshMetadataStore {
     }
 
     func previewImport(_ raw: Data, keyRef: String? = nil) throws -> SshImportPlan {
-        guard raw.count <= 256 * 1024 else { throw Failure.invalid }
+        guard raw.count <= 256 * 1024 else { throw SshImportFailure.tooLarge }
         let bytes = KotlinByteArray(size: Int32(raw.count))
         for (index, value) in raw.enumerated() { bytes.set(index: Int32(index), value: Int8(bitPattern: value)) }
-        guard let parsed = domain.decodeImport(bytes: bytes).imported else { throw Failure.invalid }
+        let result = domain.decodeImport(bytes: bytes)
+        if let failure = result.failure { throw SshImportFailure(failure) }
+        guard let parsed = result.imported else { throw SshImportFailure.format }
         return try planImport(parsed, keyRef: keyRef)
     }
 
     func planImport(_ imported: SshProfileImport, keyRef: String?) throws -> SshImportPlan {
         lock.lock(); defer { lock.unlock() }
-        if let keyRef, !data.keys.contains(where: { $0.id == keyRef }) { throw Failure.invalid }
-        guard let plan = domain.planImport(current: data, imported: imported, keyRef: keyRef,
-                                           generateId: { UUID().uuidString }).plan else { throw Failure.invalid }
+        if let keyRef, !data.keys.contains(where: { $0.id == keyRef }) { throw SshImportFailure.keyUnavailable }
+        let result = domain.planImport(current: data, imported: imported, keyRef: keyRef,
+                                      generateId: { UUID().uuidString })
+        if let failure = result.failure { throw SshImportFailure(failure) }
+        guard let plan = result.plan else { throw SshImportFailure.format }
         return plan
     }
 

@@ -58,4 +58,6 @@
     <string name="note_too_long">Poznámka může mít nejvýše 1000 znaků.</string>
     <string name="host_too_long">Cíl může mít nejvýše 253 znaků.</string>
     <string name="wol_vpn_notice">Magický paket i DNS dotazy jdou vždy přes Wi-Fi mimo VPN; jména cílů překládá DNS této Wi-Fi. Odeslaný paket probuzení nedokazuje. Kontrola probuzení po odeslání opakovaně zkouší zvolený port nebo ping: „bez odpovědi“ neznamená, že je zařízení vypnuté, a „odpovídal už předtím“ probuzení neprokazuje.</string>
+    <string name="update_dialog_close">Zavřít</string>
+    <string name="update_dialog_dismiss_version">Nepřipomínat tuto verzi</string>
 </resources>

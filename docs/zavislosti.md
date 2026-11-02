@@ -146,8 +146,8 @@ Hotový `org.connectbot:termlib` byl posouzen včetně starších 0.0.2 a 0.0.4 
 jeho AndroidX/Compose sada vyžaduje vyšší compileSdk než pevné API35. Neměníme toolchain
 ani nevynucujeme neověřené starší transitivy. Volíme vlastní omezený VT/ANSI emulátor;
 není deklarován jako plná kompatibilita xterm. Podrobnosti a zbylé limity jsou v reportu.
-LAN/Wi-Fi používají Android SDK a Compose Canvas, bez dalších knihoven. OUI databáze
-IEEE se nepřebírá bez doložené licence; výrobce je pravdivě nedostupný.
+LAN/Wi-Fi používají Android SDK a Compose Canvas, bez dalších knihoven. Výrobce Wi-Fi AP
+se určuje z přibaleného seznamu IEEE OUI (viz [§10](#10-ieee-oui-public-listing-110-ověřeno-2026-11-02)).
 
 ### Přibalené písmo (M3, schváleno správcem 2026-10-27)
 
@@ -604,3 +604,46 @@ nikoli rozšíření povolených licencí pro nové knihovny.
 
 Offline zobrazení nevyžaduje síťový přístup. Stav implementace a dosud neprovedeného P3
 simulátorového ověření je v [ios.md §11](ios.md#11-dokončení--p3-ověřeno-2026-11-01).
+
+
+## Android API — verze 1.1.0 (ověřeno 2026-11-02)
+
+Žádná nová knihovna, změna verze ani oprávnění. Ověření veřejné dokumentace:
+
+| API / chování | Použití a zdroj |
+|---|---|
+| API 29+: pasivní broadcast dokončení skenů, updated příznak; foreground limit 4 / 2 min | [Wi-Fi scanning overview](https://developer.android.com/develop/connectivity/wifi/wifi-scan) |
+| API 30+: `WifiManager.ScanResultsCallback` | [Reference](https://developer.android.com/reference/android/net/wifi/WifiManager.ScanResultsCallback); callback neposkytuje `EXTRA_RESULTS_UPDATED`, čerstvost proto ověřuje timestamp měření |
+| `ACTION_APPLICATION_DEVELOPMENT_SETTINGS`, `ACTION_DEVICE_INFO_SETTINGS` | [Settings](https://developer.android.com/reference/android/provider/Settings); aplikace jen otevírá aktivitu, nemění hodnoty nastavení |
+| Zapnutí vývojářských voleb 7× klepnutím na číslo sestavení | [Developer options](https://developer.android.com/studio/debug/dev-options); umístění/názvy se mohou podle výrobce lišit |
+| Otevření cizí aktivity bez `<queries>` | [Package visibility use cases](https://developer.android.com/training/package-visibility/use-cases); přímé `startActivity` + zachycení `ActivityNotFoundException`, ověřeno 2026-11-02 |
+
+Revize 1.1.0, ověřeno 2026-11-02: [Settings.Global.DEVELOPMENT_SETTINGS_ENABLED](https://developer.android.com/reference/android/provider/Settings.Global#DEVELOPMENT_SETTINGS_ENABLED),
+čtení `getInt(contentResolver, ..., 0)` pro volbu cíle nastavení; žádný zápis ani nové oprávnění.
+Současná reference navíc uvádí, že aplikace třetích stran dostávají vždy 0; na takovém
+systému vede požadovaná politika přímo na informace o telefonu. Reálné chování HyperOS je
+v checklistu a nebylo fyzicky ověřeno.
+
+## 10. IEEE OUI Public Listing (1.1.0, ověřeno 2026-11-02)
+
+Nejde o knihovnu ani o Gradle závislost: datový soubor `androidApp/src/main/assets/oui/ieee-oui.tsv`
+(rozhodnutí Daniela 2026-11-02: offline seznam v APK, výrobce pod SSID). Nahrazuje dřívější větu
+„OUI databáze IEEE se nepřebírá bez doložené licence“.
+
+| Položka | Hodnota |
+|---|---|
+| Zdroj | IEEE Registration Authority: MA-L <https://standards-oui.ieee.org/oui/oui.csv>, MA-M <https://standards-oui.ieee.org/oui28/mam.csv>, MA-S <https://standards-oui.ieee.org/oui36/oui36.csv> |
+| Staženo | 2026-11-02 (`tools/update_oui.py`), MA-L 39 876, MA-M 6 587, MA-S 7 221, celkem 53 684 prefixů |
+| Stav práv | Prohlášení přisuzované IEEE: „IEEE does not assert any copyright in the OUI Public Listing or attempt to restrict distribution of the listing in any way.“ Zdrojem citace je copyright soubor Debian `ieee-data` (2014): <https://metadata.ftp-master.debian.org/changelogs/main/i/ieee-data/ieee-data_20141019.1_copyright> (staženo a přečteno 2026-11-02). Debian soubory zařazuje jako `License: other` s poznámkou „Public Domain“ — to je klasifikace Debianu, ne tvrzení IEEE; NetKit netvrdí, že seznam je volné dílo, jen že IEEE nenárokuje autorská práva a neomezuje šíření. |
+| Primární zdroj IEEE | Nenalezen (hledáno 2026-11-02). [FAQ IEEE RA](https://standards.ieee.org/faqs/regauth/) prohlášení neobsahuje; uvádí jen, že přidělení (assignment) nesmí prodávat ani šířit nikdo jiný než IEEE, a obecnou patičku webu „© Copyright 2026 IEEE – All rights reserved“. Stránky standards.ieee.org vracejí přímému `curl` 403, obsah FAQ byl přečten jiným klientem. Stažené CSV žádné licenční ujednání neobsahují. |
+| Co se přebírá | jen prefix a název organizace; adresy organizací ne |
+| Atribuce | O aplikaci → Licence open source, položka „IEEE OUI Public Listing“ (`assets/licenses/ieee-oui-NOTICE.txt`, `components.json`), `NOTICE` |
+
+IEEE zároveň „strongly encourage[s]“ získávat seznam přímo od IEEE a pravidelně ho obnovovat. Proto
+se generuje ze zdroje IEEE, ne z kopie třetí strany, a obnovuje se ručně před vydáním:
+`python3 -I tools/update_oui.py` (jen stdlib; CI nic nestahuje). Generátor stáhne CSV přes HTTPS do
+nového dočasného adresáře, zkontroluje hlavičky, registr a formát prefixů a soubor jen parsuje jako CSV.
+Pravidla: NFKC, odstranění řídicích a neviditelných znaků (tabulátor, zero-width, bidi), sloučení mezer,
+nejvýše 120 znaků; záznamy „Private“ a MA-L bloky „IEEE Registration Authority“ (kontejnery MA-M/MA-S)
+se vynechávají; prefix uvedený vícekrát (historická data IEEE) nese všechny různé názvy seřazené
+a spojené ` / `. Výstup je seřazený a deterministický; první řádek je komentář s datem a počty.

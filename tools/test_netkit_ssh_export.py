@@ -22,7 +22,7 @@ PROFILE_KEYS = {"alias", "group", "host", "port", "username"}
 PRIVATE_MARKER = "-----BEGIN OPENSSH " + "PRIVATE" + " KEY-----"
 
 
-def fake_pubkey(comment: str = "netkit@xiaomi15", key_type: str = "ssh-ed25519") -> str:
+def fake_pubkey(comment: str = "netkit@telefon", key_type: str = "ssh-ed25519") -> str:
     name = key_type.encode()
     blob = len(name).to_bytes(4, "big") + name + (32).to_bytes(4, "big") + bytes(32)
     return f"{key_type} {base64.b64encode(blob).decode()} {comment}".rstrip() + "\n"
@@ -413,7 +413,7 @@ class InstallPubkeyTests(unittest.TestCase):
         for key_type in ("ecdsa-sha2-nistp256", "ssh-rsa"):
             self.key.write_text(fake_pubkey("tester@pc", key_type))
             self.assertEqual(self.install("--all", "--dry-run"), 0)
-        self.assertIn("netkit@xiaomi15", self.box.stderr.getvalue())
+        self.assertIn("netkit@telefon", self.box.stderr.getvalue())
 
     def test_dry_run_prints_argv_without_executing(self) -> None:
         runner = Mock(return_value=0)

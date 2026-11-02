@@ -362,12 +362,15 @@ Fyzický iPhone, entitlementy, distribuce a export compliance zůstávají mimo 
 checklist zařízení v §8 a §10 platí dál. Nezávislá revize před merge je nadále nutná.
 
 
-## 12. Opravy nezávislé revize — R1 (implementace, čeká CI)
+## 12. Opravy nezávislé revize — R1 (ověřeno CI 2026-11-01)
 
 R1 opravuje nálezy nad P0–P2 a přidává schválené cílené kontroly. Předchozí zelený P3 běh
 nepotvrzuje tyto nové změny. Výsledek Swift sestavení, Kotlin/Native a simulátorových testů R1
 se doplní po CI; na Linuxu nelze Apple transporty ani Keychain ověřit. Přenosné Kotlin bridge
 testy prošly v dočasné JVM konfiguraci (22 testů); nejde o Swift ani Kotlin/Native běh.
+
+Výsledek: simulátorové CI `netkit-ios` 41301816210 PASS (XCTest 68, UI 8) před přenosem do
+`netkit-dev` (2026-11-01).
 
 - SSH: monotónní hodiny zahrnující spánek a životní cyklus na úrovni aplikace, překryv terminálu
   při neaktivní scéně, úklid odpojených hesel až po úspěšném zápisu metadat a mazání profilů/klíčů.
@@ -403,9 +406,13 @@ zakázané importy v `commonMain` stejně jako hlavní CI. R1 nemění `commonMa
 Android ani Gradle konfiguraci. Nezávislá kontrola diffu a zelené R1 CI zůstávají branou před předáním.
 
 
-## 13. SSH profily v2 — implementace, čeká simulátorové CI
+## 13. SSH profily v2 (ověřeno simulátorovým CI 2026-11-01)
 
-SwiftUI používá stávající sdílené jádro přes `IosSshDomain`; `commonMain` ani Android se nemění.
+Výsledek: kontrola „ARM iOS simulator“ ve veřejném PR vydání 1.0.1 PASS (2026-11-01).
+Fyzický iPhone dál NOT RUN.
+
+SwiftUI používá sdílené jádro přes `IosSshDomain`. Platforma předává zdroj exportu povinným
+parametrem: iOS zapisuje `netkit-ios`, Android dál `netkit-android`; formát v2 se nemění.
 Export vytváří pouze v2 (`netkit-ssh-profiles.json`), se stejným pořadím jako v seznamu a bez
 lokálních ID, referencí, přihlašovacích údajů, klíčů a důvěry serverů. Před otevřením Files se
 připraví a ověří neměnný snapshot. Duplicitní jména se vypíšou, překročení 256 KiB má vlastní
@@ -417,6 +424,14 @@ Upozorňuje na změnu příkazu, odpojení hesla a chybějící klíč. Volba lo
 náhled nových profilů; v1 se podle ní přepne mezi heslem a klíčem, v2/legacy zachová explicitní
 typ ověření. Změna typu z PASSWORD odpojí heslo stejně jako změna cíle; nepoužívaný záznam
 se smaže z Keychainu až po úspěšném uložení potvrzeného importu. Import nepřenáší klíče ani důvěru.
+
+Při selhání změny klíče zůstává poslední platný náhled i jeho volba klíče; potvrzení použije
+právě tento plán. Chyba se zobrazí přímo v náhledu, lze ji zavřít a volbu opakovat nebo import
+zrušit. Nově otevřený neplatný soubor předchozí náhled zruší. CS/EN hlášky rozlišují chybu
+čtení, velikost nad 256 KiB, UTF-8, formát/verzi, nepodporovaná pole, duplicity, neplatný profil,
+limit počtu záznamů, zastaralý plán, odmítnutou zálohu s přihlašovacími údaji/klíči/důvěrou,
+úložiště a nedostupný lokální klíč. Nezobrazují obsah souboru ani původní výjimku.
+Toto doplnění vyžaduje nový běh simulátorového CI; následující důkazy se vztahují k předchozí verzi.
 
 Pořadí se mění šipkami nahoru/dolů, ukládá se do metadat a přežije restart. Krajní šipky a šipky
 během operace či otevřeného náhledu jsou zakázané. VoiceOver popisky CS/EN obsahují jméno profilu.

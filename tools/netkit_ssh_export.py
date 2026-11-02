@@ -53,7 +53,7 @@ FORBIDDEN_HOST_CHARS = frozenset("/\\@?#[]")
 WILDCARD_CHARS = frozenset("*?!")
 PUBKEY_TYPES = frozenset({"ssh-ed25519", "ecdsa-sha2-nistp256", "ecdsa-sha2-nistp384",
                           "ecdsa-sha2-nistp521", "ssh-rsa"})
-RECOMMENDED_COMMENT = "netkit@xiaomi15"
+RECOMMENDED_COMMENT = "netkit@telefon"
 GROUP_COMMENT = re.compile(r"^#\s*netkit-group:\s*(.*?)\s*$")
 KEYWORD_LINE = re.compile(r"^([^\s=]+)\s*(?:=\s*)?(.*)$")
 RESOLVED_KEYS = ("hostname", "user", "port", "proxyjump", "proxycommand")

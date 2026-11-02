@@ -308,7 +308,7 @@ class SshProfileImportControllerTest {
         for (auth in listOf(SshAuthentication.KEY, SshAuthentication.INTERACTIVE)) {
             val original = SshProfile("saved", "Fixture", "192.0.2.10", username = "tester", secretRef = "saved-secret")
             val fixture = Fixture(this, SshData(profiles = listOf(original)))
-            val input = encodeSshProfileExport(SshData(profiles = listOf(original.copy(authentication = auth))))
+            val input = encodeSshProfileExport(SshData(profiles = listOf(original.copy(authentication = auth))), source = "netkit-android")
             fixture.controller.preview { input }; advanceUntilIdle()
             assertEquals(listOf("saved-secret"), fixture.controller.state.value.pendingProfileImport!!.plan.detachedSecretRefs)
             assertTrue(fixture.deleted.isEmpty())

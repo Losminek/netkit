@@ -53,6 +53,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -88,6 +89,7 @@ private const val TAB_HEALTH = 1
 fun WifiScreen(viewModel: WifiViewModel, modifier: Modifier = Modifier) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val history by viewModel.history.collectAsStateWithLifecycle()
+    val scanStarts by viewModel.scanStarts.collectAsStateWithLifecycle()
     // null = automatic: the connected AP's band, else 2.4 GHz.
     var selectedBand by rememberSaveable { mutableStateOf<WifiBand?>(null) }
     var sort by rememberSaveable { mutableStateOf(WifiSort.SIGNAL) }
@@ -113,12 +115,15 @@ fun WifiScreen(viewModel: WifiViewModel, modifier: Modifier = Modifier) {
     }
     LaunchedEffect(lifecycle) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            refreshIssue()
-            viewModel.refreshCurrent()
-            while (isActive) {
-                elapsedNow = SystemClock.elapsedRealtime()
-                delay(1_000L)
-            }
+            viewModel.setScreenActive(true)
+            try {
+                refreshIssue()
+                viewModel.refreshCurrent()
+                while (isActive) {
+                    elapsedNow = SystemClock.elapsedRealtime()
+                    delay(1_000L)
+                }
+            } finally { viewModel.setScreenActive(false) }
         }
     }
     val counts = remember(state.accessPoints) { wifiBandCounts(state.accessPoints) }
@@ -151,6 +156,7 @@ fun WifiScreen(viewModel: WifiViewModel, modifier: Modifier = Modifier) {
             WifiAccessIssue.NONE -> viewModel.scan()
         }
     }
+    val budget = remember(scanStarts, elapsedNow) { viewModel.scanBudget() }
     val scanning = state.status == WifiScanStatus.SCANNING
     val notice = scanNotice(state, datasetAge)
     // No list-wide spacing: the networks card is split into one lazy item per row, and those
@@ -163,6 +169,7 @@ fun WifiScreen(viewModel: WifiViewModel, modifier: Modifier = Modifier) {
                     icon = NetKitIcons.Refresh, enabled = !scanning, small = true)
             }
         }
+        item { WifiScanBudgetNotice(budget, Modifier.padding(top = Spacing.small)) }
         if (issue != WifiAccessIssue.NONE || settingsFailure || notice != null) item {
             Column(gap, verticalArrangement = Arrangement.spacedBy(Spacing.small)) {
                 if (issue != WifiAccessIssue.NONE) {
@@ -180,6 +187,7 @@ fun WifiScreen(viewModel: WifiViewModel, modifier: Modifier = Modifier) {
                 }
                 if (settingsFailure) StatusBanner(stringResource(R.string.wifi_settings_failed), StatusKind.ERROR)
                 notice?.let { (text, kind) -> StatusBanner(stringResource(text), kind) }
+                WifiScanThrottleNotice(state.status)
             }
         }
         // The connected AP's band is the automatic choice: picking it again returns to automatic
@@ -446,11 +454,12 @@ internal fun uniqueRowKeys(keys: List<String>): List<String> {
 }
 
 /**
- * Compact AP row: series swatch | SSID (+ "připojeno") and "k. 7 · 40 MHz · WPA2" | RSSI.
+ * Compact AP row: series swatch | SSID (+ "připojeno"), the OUI vendor when known and
+ * "k. 7 · 40 MHz · WPA2" | RSSI.
  * Tapping a row with a BSSID selects it for the RSSI history (one at a time) and expands its
  * details; rows without a BSSID expand locally.
  */
-@Composable private fun AccessPointRow(ap: AccessPoint, series: Color?, showDivider: Boolean, state: WifiAnalyzerState,
+@Composable internal fun AccessPointRow(ap: AccessPoint, series: Color?, showDivider: Boolean, state: WifiAnalyzerState,
     history: List<SignalSample>, elapsedNow: Long, onOwn: (Boolean) -> Unit, onSelect: () -> Unit) {
     val colors = NetKitTheme.colors
     val divider = colors.divider
@@ -477,6 +486,10 @@ internal fun uniqueRowKeys(keys: List<String>): List<String> {
                     Text(ap.ssid ?: stringResource(R.string.wifi_hidden_network), Modifier.weight(1f, fill = false),
                         style = NetKitType.body.copy(fontSize = 14.5.sp, fontWeight = FontWeight.SemiBold), color = colors.text)
                     if (ap.isCurrent) Tag(stringResource(R.string.wifi_spectrum_connected), Tone.ACCENT, dot = true)
+                }
+                ap.vendor?.let { vendor ->
+                    Text(vendor, Modifier.testTag("wifi_ap_vendor"), style = NetKitType.label, color = colors.dim,
+                        maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 if (subtitle.isNotEmpty()) Text(subtitle, style = NetKitType.label, color = colors.muted)
             }
@@ -519,8 +532,12 @@ internal fun uniqueRowKeys(keys: List<String>): List<String> {
             load.takeIf { it.isNotEmpty() }?.let { KeyValue(stringResource(R.string.wifi_label_bss_load), it) },
         ))
         if (ap.bssid.isNotBlank() && ap.isSelected) RssiHistory(history)
-        Text(stringResource(if (ap.locallyAdministered) R.string.wifi_vendor_local else R.string.wifi_vendor_unavailable),
-            style = NetKitType.label, color = colors.dim)
+        val vendor = ap.vendor
+        Text(when {
+            vendor != null -> stringResource(R.string.wifi_vendor, vendor)
+            ap.locallyAdministered -> stringResource(R.string.wifi_vendor_local)
+            else -> stringResource(R.string.wifi_vendor_unknown)
+        }, style = NetKitType.label, color = colors.dim)
         if (excluded) Text(stringResource(R.string.wifi_ap_excluded), style = NetKitType.label, color = colors.dim)
         WifiCheckboxRow(manuallyOwned, onOwn, stringResource(R.string.wifi_own_ap), enabled = ap.bssid.isNotBlank())
     }

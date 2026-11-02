@@ -7,7 +7,7 @@
     <string name="wifi_scan_cancelled">The scan was cancelled; the data is from the previous scan.</string>
     <string name="wifi_last_scan_age">Dataset received %1$d s ago</string>
     <string name="wifi_no_results">No results are available yet. Check permissions, Location and Wi-Fi, then scan.</string>
-    <string name="wifi_scan_limit_note">Android limits scan frequency (typically 4 per 2 minutes for a foreground app). NetKit scans only when you tap the button; cached data is never presented as a new scan. For local testing, this limit can be changed in Developer options.</string>
+    <string name="wifi_scan_limit_note">Android limits scan frequency (usually 4 per 2 minutes). The counter and countdown estimate the budget from NetKit’s own accepted requests. The button stays available. NetKit requests scans only after a manual action; while Spectrum is open it also receives new system results. Cached data is never presented as a new scan. You can disable the system limit in Developer options → Wi-Fi scan throttling.</string>
     <string name="wifi_hidden_network">Hidden network / SSID unavailable</string>
     <string name="wifi_width_mhz">%1$d MHz</string>
     <string name="wifi_centers_mhz">%1$d / %2$d MHz</string>
@@ -16,7 +16,8 @@
     <string name="wifi_unknown">—</string>
     <string name="wifi_standard_unknown">Unknown</string>
     <string name="wifi_vendor_local">Locally administered BSSID; vendor cannot be identified from the OUI.</string>
-    <string name="wifi_vendor_unavailable">OUI vendor unavailable (no verified database bundled).</string>
+    <string name="wifi_vendor">Vendor: %1$s</string>
+    <string name="wifi_vendor_unknown">Vendor unknown</string>
     <string name="wifi_current_connection">Current connection</string>
     <string name="wifi_occupancy_title">Channel occupancy</string>
     <string name="wifi_occupancy_band">%1$s · APs found: %2$d</string>
@@ -77,4 +78,9 @@
     <string name="wifi_live_dns_rcode">DNS returned an error (RCODE %1$d)</string>
     <string name="wifi_live_target_invalid">Enter a numeric IPv4 address, for example 1.1.1.1.</string>
     <string name="wifi_live_dns_name_invalid">Enter a valid domain name, for example one.one.one.one.</string>
+    <string name="wifi_scan_remaining">%1$d of 4 scans remaining</string>
+    <string name="wifi_scan_wait_estimate">Next scan in about %1$d s</string>
+    <string name="wifi_scan_limit_help">The scan was not confirmed. Android limits scan frequency (usually 4 per 2 minutes). You can disable the limit in Developer options → Wi-Fi scan throttling. This is a phone system setting; NetKit does not change it.</string>
+    <string name="wifi_scan_enable_developer">If Developer options are unavailable, About phone will open. Enable them by tapping the build number 7 times.</string>
+    <string name="wifi_scan_open_developer">Open Developer options</string>
 </resources>

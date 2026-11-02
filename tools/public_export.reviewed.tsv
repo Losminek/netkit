@@ -1,4 +1,4 @@
-# Reviewed 2026-10-28 (F2), refreshed 2026-10-31 (F3–F7, independent subagent review): path, SHA256 of entire file, classification.; refreshed 2026-11-01 (1.0.1: SSH profiles v2 and iOS, two independent subagent reviews); 2026-11-01 iOS zadání 30 (independent subagent review + Claude review of R1 diff); 2026-11-01 docs P3 6046126 (manual diff review: phone model removed, iOS CI status); 2026-11-02 1.1.0 (independent review of the export diff, internal references removed)
+# Reviewed 2026-10-28 (F2), refreshed 2026-10-31 (F3–F7, independent subagent review): path, SHA256 of entire file, classification.; refreshed 2026-11-01 (1.0.1: SSH profiles v2 and iOS, two independent subagent reviews); 2026-11-01 iOS zadání 30 (independent subagent review + Claude review of R1 diff); 2026-11-01 docs P3 6046126 (manual diff review: phone model removed, iOS CI status); 2026-11-02 1.1.0 (independent review of the export diff, internal references removed); 2026-11-02 1.1.0 manifest fix (12 files of the update dialog / scan limit change, manual review)
 # Changes require manual review, including context. Do not auto-refresh.
 .gitattributes	ae58971fd773ee1c787aabb95003ac562a6e70406754341dc00e8bc0469cb661	code
 .github/workflows/ci.yml	bea84d1b09d4a29d21332db81764fedd98f23dc9641b36c8eff8bb98dd29c01f	code
@@ -22,7 +22,9 @@ androidApp/src/androidTest/kotlin/cz/netkit/app/test/NetKitTestApplication.kt	a7
 androidApp/src/androidTest/kotlin/cz/netkit/app/test/SshKeyEditorEvidence.kt	25a8ca2a8c1b95bdd6e0590f438e2d4a03185fbd8fc0f1b87a2b9d48c8015120	synthetic
 androidApp/src/androidTest/kotlin/cz/netkit/app/test/SshProfilesR1Evidence.kt	264d57a610a5ef15c654a2828e4af23b98e8e1dbf9442333918bc124c1f9f376	synthetic
 androidApp/src/androidTest/kotlin/cz/netkit/app/test/SshProfilesV2Evidence.kt	e9b2e36909212c1b891327d58cc0fd32fd12aac22f7cc7c36e8783a062f2cc2d	synthetic
+androidApp/src/androidTest/kotlin/cz/netkit/app/test/UpdateDialogEvidence.kt	80f5b17b1b22cdeb6c90418b104d6397237ec8ffac03fb12edd67156191fc1c3	code
 androidApp/src/androidTest/kotlin/cz/netkit/app/test/WifiFreshnessEvidence.kt	64fccb274984a4a2663afa7fe390bfdd7fcf4f6fa111f5e0eb328fd8c76b7372	synthetic
+androidApp/src/androidTest/kotlin/cz/netkit/app/test/WifiScanLimitEvidence.kt	735783521879baed066aff6cbda92becfa4061f0bcad7f91fb0f458dbf51c053	code
 androidApp/src/androidTest/kotlin/cz/netkit/app/test/WifiVendorEvidence.kt	af09bcd5d3321f0bd4b4019bc2e63b4cfee9ae947ddca085af9a82a90b3577bc	code
 androidApp/src/dev/res/drawable/ic_launcher_background.xml	625231d3902f22287e65d8e2f5423e18a6239e6e120e556042d66bff56c3249f	code
 androidApp/src/dev/res/values/strings.xml	108a1b751c7b8705111ce5c13135c3e4e4a82681212d47a766835a58b90ff995	code
@@ -87,12 +89,18 @@ androidApp/src/main/kotlin/cz/netkit/app/ui/chart/FullscreenChart.kt	0dc50ed0129
 androidApp/src/main/kotlin/cz/netkit/app/ui/chart/TimeSeriesChart.kt	3c7aff1ce2c7785e3d87aa5631b1ba033c89535d8556576de6d8c79b2f6986dd	code
 androidApp/src/main/kotlin/cz/netkit/app/ui/motion/Motion.kt	9d4fc200415ea03a0a486e2405a6ee93550835ea3079cfb586d8a6d52629475e	code
 androidApp/src/main/kotlin/cz/netkit/app/ui/theme/Theme.kt	7d389067b5e70b91334669524904a72dfd572b490267f51a4cd7862211780595	code
+androidApp/src/main/kotlin/cz/netkit/app/update/StartupUpdateSession.kt	a9b91564d03366a2b9e80af4b3f3d7adb450e39cdba3db125a2495c19bd9dd16	code
 androidApp/src/main/kotlin/cz/netkit/app/update/UpdateCard.kt	f3478a034d16c4d22ed6d3f854d2f0547b8862a0cea7b7a32d1047d5d6e62d47	code
 androidApp/src/main/kotlin/cz/netkit/app/update/UpdateChecker.kt	092d56c6a84cc2afe0ef86412cb144b30ac4b6d4dc103c46bad1c3663e6b53e2	code
+androidApp/src/main/kotlin/cz/netkit/app/update/UpdateDialog.kt	f1362d1e615ed8d8b4b6606543927f616d6f909136dc09c2f95323f64f375206	code
 androidApp/src/main/kotlin/cz/netkit/app/update/UpdateViewModel.kt	e09327a22a898f40178466679b702cfae2bccd2689627b5d07c2ad31df36509c	code
+androidApp/src/main/kotlin/cz/netkit/app/wifi/ForegroundScanObserver.kt	5f248c2720c1813b8ac2fd9bf4d2a49d671d5533d5ebe0189c16be47ccd6be0f	code
 androidApp/src/main/kotlin/cz/netkit/app/wifi/OuiAssets.kt	206ddbebd60edeb62bfb6137179531bb63ddeec225b786a9ae0223b3f6bdf79a	code
 androidApp/src/main/kotlin/cz/netkit/app/wifi/SpectrumChart.kt	e8b4bb619d04caa1f9e3c7e600e6e4873ebb8c255989c1cb47971a82cd3d74c4	code
 androidApp/src/main/kotlin/cz/netkit/app/wifi/WifiChartPalette.kt	290039abd7f9a60a0ae09ee08234daf9b115252db9f4356959831430c35007cb	code
+androidApp/src/main/kotlin/cz/netkit/app/wifi/WifiScanBudget.kt	37660b10b0a2eec240116dcc95f027f24a05638966115472327aaacdf4b0b5c4	code
+androidApp/src/main/kotlin/cz/netkit/app/wifi/WifiScanEvents.kt	71bfb17d312841d3cc4ca96749fbeedc1deea5df63952a3f25eddaebe32fb437	code
+androidApp/src/main/kotlin/cz/netkit/app/wifi/WifiScanLimitHelp.kt	a95f6d6f818d46164d7971fdf341320b58e795208ef45671e19839831334a036	code
 androidApp/src/main/kotlin/cz/netkit/app/wifi/WifiScreen.kt	7607c2b66bdc963fba3d33f696d0a2016eab119edcc8e0c29d2f5efe16c6b414	code
 androidApp/src/main/kotlin/cz/netkit/app/wifi/WifiViewModel.kt	515562b654c80bf660d525819f80c8fd4860bf87d823a7a98895e6e268657b12	code
 androidApp/src/main/kotlin/cz/netkit/app/wifi/live/LiveRadioSource.kt	45d73a0d5ac23e93dae757f2c6f6309e76fe84a5f9ec090d39d923789cf9390e	code
@@ -192,8 +200,12 @@ androidApp/src/test/kotlin/cz/netkit/app/ui/DesignSystemTest.kt	42305f6d6a44eee4
 androidApp/src/test/kotlin/cz/netkit/app/ui/about/OssComponentsTest.kt	abf72b015a2e76f19046da718d9455e3d7d358792cdcf32e8a0773843aaf40a0	synthetic
 androidApp/src/test/kotlin/cz/netkit/app/ui/chart/FullscreenChartTest.kt	9c56963cb5f509906c632a051dd548018d62ffde1c767a80585ec5cf959e1699	synthetic
 androidApp/src/test/kotlin/cz/netkit/app/update/OkHttpUpdateHttpTest.kt	47f5008ad78cacae4966bfbc2cf3bd3adf3174f4c03181965ce660e1d3f8f399	synthetic
+androidApp/src/test/kotlin/cz/netkit/app/update/StartupUpdateTest.kt	7cd5ac76c2b8687f921d1a85e589627a96036b1f5733c550209fa3a8758f8637	code
+androidApp/src/test/kotlin/cz/netkit/app/wifi/ForegroundScanObserverTest.kt	21e9011d1ab97db473caa7d2d93778a228dd6a8d4249c4d669f7ba7c2ea01e8c	code
 androidApp/src/test/kotlin/cz/netkit/app/wifi/OuiAssetTest.kt	1232c52c7074d78d58243a587d3b9575bd808e7cce9e88af845d155f68962bc2	code
 androidApp/src/test/kotlin/cz/netkit/app/wifi/WifiChartPaletteTest.kt	a137738f3f66c555a37fd1e6bd5efa3841a71414ab2a3befa55b9a53993e4e14	synthetic
+androidApp/src/test/kotlin/cz/netkit/app/wifi/WifiDeveloperSettingsTest.kt	76b0c59377d5708b01d2f2d935fef1b48099c51d8a8f7d08066087580765fe40	code
+androidApp/src/test/kotlin/cz/netkit/app/wifi/WifiScanWindowTest.kt	ada8a88c4e61edd756526e668393da7e121b4d2e8beb7795085fe92ef263829b	code
 androidApp/src/test/kotlin/cz/netkit/app/wifi/live/LiveRadioSourceTest.kt	7d8babd715ca5cce7e6ce87b83cba8df741e9ce8a85e63d92dca5a68849e5d26	synthetic
 androidApp/src/test/kotlin/cz/netkit/app/wol/BoundedStreamIoTest.kt	671d6042fc41dee9a0a59c456610010420342b4e0002ad3ca707852a8029d9bf	synthetic
 androidApp/src/test/kotlin/cz/netkit/app/wol/DeviceSerializerTest.kt	bba5b5768ac4ca78671beb6b8cb0b91785c7b12a2ff847a5dcbd2858bf2111db	synthetic
@@ -411,7 +423,7 @@ tools/check_release_version.sh	71bdd2e01f862fd123e01f14fbaa380dd5c8e45acf7f4c662
 tools/m1_provision.py	c116d8c87ad1dcc9995bf7260268b1f368fd58fbc60879216a13e96f8b10e9a0	code
 tools/make_public_export.sh	da89e4e62b4fa20240c2dc436898862e89549b7a8ab41a36ac5f194512ca5fa5	code
 tools/netkit_ssh_export.py	6173d6cb09b379d991aa7c96b62a24c5ecbb51ecda6d6681946dcc1c4414c613	code
-tools/public_export.manifest	5a987712ebcd421b858ee55d9c788f92ef84ef54a8cbbdd96a77060e3f596796	code
+tools/public_export.manifest	8c38891210702e0cbbcf39b2b2c7586c9c35b1935999f4328727ee71ea296b9a	code
 tools/public_export.py	e2bb5273ea3b14653ac644558fad2773f154c95a318d4153b3333058c78dfa61	code
 tools/release_latest_json.py	a09e0a0436669e6a03f8e618f52591c6e739692a0aafc4e374a7570a9992ae28	code
 tools/run_m1_checks.py	cff6be0b27d3f0423e2d679e587817722dfbb91a9b760e8d34587b01d3db7331	code
